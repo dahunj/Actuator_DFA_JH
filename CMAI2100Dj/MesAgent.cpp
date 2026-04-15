@@ -540,7 +540,7 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 			strRosResult = "NG";
 		}    
 
-		strSend.Format("CM,END,%s,%s,%s,%s,%s,%s,%d,%s,%d", sLotID, strCmId, strResult, strNgCode, sFmMZ, sFmTray, nCmNo, sToTray, m_nPorketNo);
+		strSend.Format("CM,END,%s,%s,%s,%s,%s,%s,%d,%s,%d,%s", sLotID, strCmId, strResult, strNgCode, sFmMZ, sFmTray, nCmNo, sToTray, m_nPorketNo, strRosResult);
 		if (gData.bJahwa) m_nPorketNo--;
 		else			  m_nPorketNo++;
 	} 
@@ -555,8 +555,7 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 			strRosResult = "NG";
 		}  
 
-
-		strSend.Format("CM,END,%s,%s,%s,%s,%s,%s,%d,%s,%d", sLotID, strCmId, strResult, strNgCode, sFmMZ, sFmTray, nCmNo, sToTray, nOut);
+		strSend.Format("CM,END,%s,%s,%s,%s,%s,%s,%d,%s,%d,%s", sLotID, strCmId, strResult, strNgCode, sFmMZ, sFmTray, nCmNo, sToTray, nOut, strRosResult);
 	}
 	g_objLogFile.Save_TestLog(strSend);
 	Send_Command(strSend);	

@@ -9043,7 +9043,7 @@ BOOL CSequenceMain::Run_UnloadPicker1()
 			gLot.nHistory[n1UP][n1UT][n1UM+n1ModuleNo-1][6] = 1;
 			gLot.nHistory[n1UP][n1UT][n1UM+n1ModuleNo-1][7] = (n1PosY-1) * 4 + n1PosX;
 			gLot.nHistory[n1UP][n1UT][n1UM+n1ModuleNo-1][8] = n1NSNo-4;
-			g_objMesAgent.Set_CmEnd(1, n1UP+1, n1UT+1, n1UM+n1ModuleNo, (n1PosY-1) * 4 + n1PosX, gData.sCarID_NGTray[n1NSNo-5], gData.InfoNgTray[n1PosY-1][n1PosX-1]);
+			g_objMesAgent.Set_CmEnd(1, n1UP+1, n1UT+1, n1UM+n1ModuleNo, (n1PosY-1) * 4 + n1PosX, gData.sCarID_NGTray[n1NSNo-5],gLot.nJudge_R[n1UP][n1UT][n1UM+n1ModuleNo-1],   gData.InfoNgTray[n1PosY-1][n1PosX-1]);
 			g_objLogFile.Save_OutTrayNLog(n1UP+1, n1UT+1, n1UM+n1ModuleNo, n1NSNo-5); 
 
 			if (m_nGoodStage1Case == 30 && gData.nPortNo_GoodTray[0] == 0)			 gData.nPortNo_GoodTray[0] = gData.nPortNo_NGTray[n1NSNo-5];
@@ -9186,7 +9186,7 @@ BOOL CSequenceMain::Run_UnloadPicker1()
 				gLot.nHistory[n1UP][n1UT][n1UM+n1ModuleNo-1+i][5] = 1;
 				gLot.nHistory[n1UP][n1UT][n1UM+n1ModuleNo-1+i][7] = (n1PosY-1) * 4 + n1PosX + i;
 				gLot.nHistory[n1UP][n1UT][n1UM+n1ModuleNo-1+i][8] = n1NSNo-6;
-				g_objMesAgent.Set_CmEnd(0, n1UP+1, n1UT+1, n1UM+n1ModuleNo+i, (n1PosY-1) * 4 + n1PosX + i, gData.sCarID_GoodTray[n1NSNo-7]);
+				g_objMesAgent.Set_CmEnd(0, n1UP+1, n1UT+1, n1UM+n1ModuleNo+i, (n1PosY-1) * 4 + n1PosX + i, gData.sCarID_GoodTray[n1NSNo-7], gLot.nJudge_R[n1UP][n1UT][n1UM+n1ModuleNo-1+i]);
 				g_objLogFile.Save_OutTrayGLog(n1UP+1, n1UT+1, n1UM+n1ModuleNo+i, n1NSNo-7);
 			}
 
@@ -9567,7 +9567,7 @@ BOOL CSequenceMain::Run_UnloadPicker2()
 			gLot.nHistory[n2UP][n2UT][n2UM+n2ModuleNo-1][6] = 1;
 			gLot.nHistory[n2UP][n2UT][n2UM+n2ModuleNo-1][7] = (n2PosY-1) * 4 + n2PosX;
 			gLot.nHistory[n2UP][n2UT][n2UM+n2ModuleNo-1][8] = n2NSNo-4;
-			g_objMesAgent.Set_CmEnd(1, n2UP+1, n2UT+1, n2UM+n2ModuleNo, (n2PosY-1) * 4 + n2PosX, gData.sCarID_NGTray[n2NSNo-5], gData.InfoNgTray[n2PosY-1][n2PosX-1]);
+			g_objMesAgent.Set_CmEnd(1, n2UP+1, n2UT+1, n2UM+n2ModuleNo, (n2PosY-1) * 4 + n2PosX, gData.sCarID_NGTray[n2NSNo-5], gLot.nJudge_R[n2UP][n2UT][n2UM+n2ModuleNo-1] , gData.InfoNgTray[n2PosY-1][n2PosX-1]);
 			g_objLogFile.Save_OutTrayNLog(n2UP+1, n2UT+1, n2UM+n2ModuleNo, n2NSNo-5); 
 
 			if (m_nGoodStage1Case == 30 && gData.nPortNo_GoodTray[0] == 0)			 gData.nPortNo_GoodTray[0] = gData.nPortNo_NGTray[n2NSNo-5];
@@ -9710,7 +9710,7 @@ BOOL CSequenceMain::Run_UnloadPicker2()
 				gLot.nHistory[n2UP][n2UT][n2UM+n2ModuleNo-1+i][5] = 1;
 				gLot.nHistory[n2UP][n2UT][n2UM+n2ModuleNo-1+i][7] = (n2PosY-1) * 4 + n2PosX + i;
 				gLot.nHistory[n2UP][n2UT][n2UM+n2ModuleNo-1+i][8] = n2NSNo-6;
-				g_objMesAgent.Set_CmEnd(0, n2UP+1, n2UT+1, n2UM+n2ModuleNo+i, (n2PosY-1) * 4 + n2PosX + i, gData.sCarID_GoodTray[n2NSNo-7]);
+				g_objMesAgent.Set_CmEnd(0, n2UP+1, n2UT+1, n2UM+n2ModuleNo+i, (n2PosY-1) * 4 + n2PosX + i, gData.sCarID_GoodTray[n2NSNo-7], gLot.nJudge_R[n2UP][n2UT][n2UM+n2ModuleNo-1+i]);
 				g_objLogFile.Save_OutTrayGLog(n2UP+1, n2UT+1, n2UM+n2ModuleNo+i, n2NSNo-7);
 			}
 

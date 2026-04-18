@@ -549,11 +549,19 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 		strResult = "OK";
 		strNgCode = "00";
 
-		strRosResult = "OK";
-		if(nRosInfo == 3 || nRosInfo == 4)
+		
+		if(nRosInfo == 2)
+		{
+			strRosResult = "OK";
+		}
+		else if(nRosInfo == 3 || nRosInfo == 4)
 		{
 			strRosResult = "NG";
-		}  
+		}
+		else
+		{
+			strRosResult = "Empty";
+		}
 
 		strSend.Format("CM,END,%s,%s,%s,%s,%s,%s,%d,%s,%d,%s", sLotID, strCmId, strResult, strNgCode, sFmMZ, sFmTray, nCmNo, sToTray, nOut, strRosResult);
 	}

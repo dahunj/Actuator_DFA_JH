@@ -117,6 +117,7 @@ void COperatorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 //		m_stcOperModel.SetWindowText("AVI");
 		m_stcOperModel.SetWindowText(pEquipData->sModelName);
 		if (gData.sOperID.GetLength() < 1) gData.sOperID = "11111";
+		else m_stcOperOperId.SetWindowText(gData.sOperID);
 
 		Display_Status();
 

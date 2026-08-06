@@ -75,7 +75,7 @@
 #endif
 
 //****************************************************************************
-#define AJIN_BOARD_USE
+//#define AJIN_BOARD_USE
 #define CARRIER_TYPE_MEM
 //****************************************************************************
 
@@ -348,6 +348,10 @@ typedef struct {
 	int		nAlmNo;
 	int		nPortNo;
 	CString sAlmMsg;
+
+	CString sAlmCatMajor;
+	CString sAlmCatMiddle;
+
 	CString sStartTime;
 	CString sEndTime;
 	CString sLotID;
@@ -445,3 +449,32 @@ typedef struct {
 extern GLOVAL_TEST* Gt;
 */
 
+
+
+struct eEquipState
+{
+	enum Name
+	{
+		RUN = 1,
+		IDLE = 2,
+		DOWN = 3,
+		IDLE_STARVED = 4,
+		IDLE_BLOCKED = 5, 
+
+	};
+};
+
+
+struct eAccessMode
+{
+	enum Name
+	{
+		Undefined = 0,
+		OP = 1,
+		Maint = 2,
+		Eng_Vendor = 3,
+		Eng_MI = 4,
+		Engineer = 5,
+		Admini = 6,
+	};
+};

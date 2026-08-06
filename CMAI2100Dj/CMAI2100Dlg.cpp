@@ -747,6 +747,7 @@ void CCMAI2100Dlg::Set_NoWork()
 	strLog.Format("비가동 집계 시작\t%s", g_dlgNoWork.m_strStartTime);
 	g_objLogFile.Save_HandlerLog(strLog);
 
+	g_dlgNoWork.Set_Auto(TRUE);
 	g_dlgNoWork.ShowWindow(TRUE);
 }
 

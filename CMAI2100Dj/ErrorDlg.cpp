@@ -31,14 +31,11 @@ CErrorDlg::~CErrorDlg()
 void CErrorDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	for (int i = 0; i < 4; i++) DDX_Control(pDX, IDC_GROUP_0 + i, m_Group[i]);
-	for (int i = 0; i < 9; i++) DDX_Control(pDX, IDC_LABEL_0 + i, m_Label[i]);
+	//for (int i = 0; i < 4; i++) DDX_Control(pDX, IDC_GROUP_0 + i, m_Group[i]);
+	for (int i = 0; i < 13; i++) DDX_Control(pDX, IDC_LABEL_0 + i, m_Label[i]);
 	for (int i = 0; i < 4; i++) DDX_Control(pDX, IDC_STC_ERR_BACK_0 + i, m_stcErrBack[i]);
 	DDX_Control(pDX, IDC_STC_ERR_TITLE, m_stcErrTitle);
 	DDX_Control(pDX, IDC_IMAGE_0, m_Image);
-	for (int i = 0; i < 4; i++) DDX_Control(pDX, IDC_LED_MAIN_AIR_0 + i, m_ledMainAir[i]);
-	for (int i = 0; i < 6; i++) DDX_Control(pDX, IDC_LED_EMG_SW_0 + i, m_ledEmgSw[i]);
-	for (int i = 0; i < 21; i++) DDX_Control(pDX, IDC_LED_DOOR_UNLOCK_0 + i, m_ledDoorUnlock[i]);
 	for (int i = 0; i < 14; i++) DDX_Control(pDX, IDC_STC_ERR_POS_0 + i, m_stcErrPos[i]);
 	DDX_Control(pDX, IDC_STC_ERR_NO, m_stcErrNo);
 	DDX_Control(pDX, IDC_STC_MSG_BACK, m_stcMsgBack);
@@ -50,6 +47,15 @@ void CErrorDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BTN_ERR_OK, m_btnErrOK);
 	DDX_Control(pDX, IDC_BTN_ERR_SYSTEM_EXIT, m_btnErrSystemExit);
 	DDX_Control(pDX, IDC_STC_ERROR_CARID, m_stcCarrierID);
+
+	DDX_Control(pDX, IDC_STC_ALM_CAT, m_stcAlmCatNo);
+	DDX_Control(pDX, IDC_CBO_DOWNREASONCAT, m_cboDownReasonCat);
+	DDX_Control(pDX, IDC_CBO_DOWNREASON, m_cboDownReason);
+	DDX_Control(pDX, IDC_CBO_DOWNACTION, m_cboDownAction);
+	DDX_Control(pDX, IDC_CBO_DOWNACTIONDETAIL, m_cboDownActionDetail);
+	
+	DDX_Control(pDX, IDC_STC_ALARMTIME, m_stcAlmTime);
+	DDX_Control(pDX, IDC_EDT_ACTION_DETAIL, m_edtActionDetail);
 }
 
 BEGIN_MESSAGE_MAP(CErrorDlg, CDialogEx)
@@ -62,6 +68,7 @@ BEGIN_MESSAGE_MAP(CErrorDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_ERR_OK, &CErrorDlg::OnBnClickedBtnErrOk)
 	ON_BN_CLICKED(IDC_BTN_ERR_SYSTEM_EXIT, &CErrorDlg::OnBnClickedBtnErrSystemExit)
 	ON_STN_CLICKED(IDC_STC_ERROR_CARID, &CErrorDlg::OnStnClickedCarID)
+	ON_CBN_SELCHANGE(IDC_CBO_DOWNACTIONDETAIL, &CErrorDlg::OnCbnSelchangeCboDownactiondetail)
 END_MESSAGE_MAP()
 
 // CErrorDlg ¸Þ½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
@@ -79,9 +86,122 @@ BOOL CErrorDlg::OnInitDialog()
 	m_nBackColorLoop = 0;
 	m_strErrSubMsg = "";
 
+	CString strErrPick, strMiddle, strMiddleMsg;
+
+	if (gData.nLanguage == 0) strErrPick = gsCurrentDir + "\\System\\ErrorList_KOR.ini";
+	else					  strErrPick = gsCurrentDir + "\\System\\ErrorList_ENG.ini";
+	CIniFileCS INI(strErrPick);
+	if (!INI.Check_File()) {
+		AfxMessageBox("ErrorList.ini File Not Found!!!");
+		return FALSE;
+	}
+
+	for(int i = 0; i < 5; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_01", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 7; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_02", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 6; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_03", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 9; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_04", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 5; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_05", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 4; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_06", strMiddle, "");
+		m_cboDownReason.SetWindowText(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 7; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_07", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 5; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_08", strMiddle, "");
+		m_cboDownReason.SetWindowText(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 1; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_99", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	CString sAction, sDetail, sKey;
+
+	for(int i = 1; ;i++)
+	{
+		sKey.Format("%d", i);
+		sAction = INI.Get_String("DOWNACTION", sKey, "");
+		sDetail = INI.Get_String("ACTIONDETAIL", sKey, "");
+
+		m_cboDownAction.AddString(sAction);
+		m_cboDownActionDetail.AddString(sDetail);
+
+		if(sAction == "") break;
+	}	
+
+
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹ÝÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
 }
+
+
+void CErrorDlg::Set_DownActionCboList(CString sData)
+{
+	m_cboDownAction.Clear();
+
+	CString sCode, sText;
+
+	int i = 1, j = 2;
+	BOOL bCode = FALSE, bText = FALSE;
+	while(TRUE)
+	{
+		bCode = AfxExtractSubString(sCode, sData, i, '-');
+		bText = AfxExtractSubString(sText, sData, j, '-');
+
+		if(!bCode) break;
+
+		m_cboDownReasonCat.AddString(sText);		
+		m_mssDownAction.insert(make_pair(sCode, sText));
+		i += 2; j += 2;		
+	}		
+}
+
+
 
 BOOL CErrorDlg::PreTranslateMessage(MSG* pMsg) 
 {
@@ -108,6 +228,9 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		CString strErrNo, strErrMsg, strErrPick, strShow, strLog, strNo, strCMNo, strInfo;
 		strErrNo.Format("%04d", m_nErrNo);
 		m_stcErrNo.SetWindowText(strErrNo);
+
+		m_stcAlmCatNo.SetWindowText("33");
+		m_edtActionDetail.SetWindowText("");
 		
 		if (gData.nLanguage == 0) strErrPick = gsCurrentDir + "\\System\\ErrorList_KOR.ini";
 		else					  strErrPick = gsCurrentDir + "\\System\\ErrorList_ENG.ini";
@@ -248,6 +371,42 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		strShow.Replace("#", "\n\n");
 		m_stcErrMsg.SetWindowText(strShow);
 
+		////////////////////// Down Action 
+		int nIndex = 0;
+		gAlm.sAlmCatMajor.Empty();
+		gAlm.sAlmCatMiddle.Empty();
+
+		CString strCat, strTemp;
+		strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
+		AfxExtractSubString(gAlm.sAlmCatMajor, strCat, 0, '-');
+		AfxExtractSubString(gAlm.sAlmCatMiddle, strCat, 1, '-');
+
+		for (std::map<CString, CString>::const_iterator it = m_mssDownAction.begin();
+			it != m_mssDownAction.end();
+			++it)
+		{
+			const CString& strKey   = it->first;
+			const CString& strValue = it->second;
+
+			strTemp = strKey.Right(2);			
+			if (strTemp == gAlm.sAlmCatMajor)
+			{
+				nIndex = m_cboDownReasonCat.FindStringExact(-1, strValue);
+				m_cboDownReasonCat.SetCurSel(nIndex);
+			}
+		}
+
+		CString strCatMsg, strMajorNo;
+		strMajorNo.Format("CAT_TYPE_%s", gAlm.sAlmCatMajor);
+		strCatMsg = INI.Get_String(strMajorNo, gAlm.sAlmCatMiddle, "");
+
+		nIndex = m_cboDownReason.FindStringExact(-1, strCatMsg);
+		m_cboDownReason.SetCurSel(nIndex);
+
+		m_cboDownAction.SetCurSel(0);
+
+
+
 		SYSTEMTIME time;
 		GetLocalTime(&time);
 		for (int i = 2; i > 0; i--) gData.sAlarmTime[i] = gData.sAlarmTime[i - 1];
@@ -255,7 +414,16 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		gData.sAlarmTime[0].Format("%02d:%02d:%02d", time.wHour, time.wMinute, time.wSecond);
 		gData.sAlarmList[0].Format("[%s] %s", strErrNo, m_strErrMsg);
 
-		g_objMesAgent.Set_ErrorUpdate(1, strErrNo);
+
+		CString strTime;
+		strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);
+		m_stcAlmTime.SetWindowText(strTime);
+
+		m_strAlmStart.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+
+
+
+		g_objMesAgent.Set_ErrorUpdate(1, strErrNo, gAlm.sAlmCatMajor);
 		Set_SPCError(m_nErrNo, m_strErrMsg);
 		Set_AlarmLog(m_nErrNo, m_strErrMsg);
 		strLog.Format("%s,%s,%s", m_strLotID, strErrNo, m_strErrMsg);
@@ -328,18 +496,7 @@ void CErrorDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (m_nBackColorLoop == 10) m_nBackColorLoop = 0;
 	m_nBackColorLoop++;
 
-	m_ledMainAir[0].Set_On(pDX13->iMainAir1);
-	m_ledMainAir[1].Set_On(pDX13->iMainAir2);
-	m_ledMainAir[2].Set_On(pDX13->iMainAir3);
-
-	m_ledEmgSw[0].Set_On(pDX20->iEmgSw1);
-	m_ledEmgSw[1].Set_On(pDX20->iEmgSw2);
-	m_ledEmgSw[2].Set_On(pDX13->iEmgSw3);
-	m_ledEmgSw[3].Set_On(pDX13->iEmgSw4);
-	m_ledEmgSw[4].Set_On(pDX13->iEmgSw5);
-	m_ledEmgSw[5].Set_On(pDX13->iEmgSw6);
-
-	for (int i = 0; i < 21; i++) m_ledDoorUnlock[i].Set_On((pDX14->nValue >> (i + 0)) & 1);
+	
 
 	SetTimer(0, 100, NULL);
 	CDialogEx::OnTimer(nIDEvent);
@@ -678,6 +835,72 @@ void CErrorDlg::OnBnClickedBtnErrOk()
 		}
 	}
 
+	CString strReasonCat, strReason, strActionCode, strActionDetail;
+
+	int nIndex = m_cboDownReasonCat.GetCurSel();
+
+	if (nIndex != CB_ERR)
+	{
+		m_cboDownReasonCat.GetLBText(nIndex, strReasonCat);
+	}
+
+	if (!strReasonCat.IsEmpty())
+	{
+		// Pass
+	}
+	else
+	{
+		AfxMessageBox("Please Input Down Reason Cat");
+		return;
+	}
+
+
+	nIndex = m_cboDownReason.GetCurSel();
+	if (nIndex != CB_ERR)
+	{
+		m_cboDownReason.GetLBText(nIndex, strReason);
+	}
+	if (!strReason.IsEmpty())
+	{
+		// Pass
+	}
+	else
+	{
+		AfxMessageBox("Please Input Down Reason");
+		return;
+	}
+
+	nIndex = m_cboDownAction.GetCurSel();
+	if (nIndex != CB_ERR)
+	{
+		m_cboDownAction.GetLBText(nIndex, strActionCode);
+	}
+	if (!strActionCode.IsEmpty())
+	{
+		// Pass
+	}
+	else
+	{
+		AfxMessageBox("Please Input Down Action");
+		return;
+	}
+
+	strActionDetail.Empty();
+	m_edtActionDetail.GetWindowText(strActionDetail);
+	if(strActionDetail.GetLength() < 5)
+	{
+		AfxMessageBox("Please Input Action Detail more than 5 string");
+		return;
+	}
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
+
+	g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, m_nErrNo, atoi(gAlm.sAlmCatMajor), m_strErrMsg);
+
+
+
 	g_objLogFile.Save_HandlerLog("[Error Mode] OK button push");
 	ShowWindow(SW_HIDE);
 }
@@ -759,8 +982,8 @@ void CErrorDlg::OnStnClickedCarID()
 
 void CErrorDlg::Initial_Controls() 
 {
-	for (int i = 0; i < 4; i++) m_Group[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0xFF), COLOR_DEFAULT);
-	for (int i = 0; i < 8; i++) m_Label[i].Init_Ctrl("¹ÙÅÁ", 20, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x60, 0x60, 0x60));
+	//for (int i = 0; i < 4; i++) m_Group[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0xFF), COLOR_DEFAULT);
+	for (int i = 0; i < 13; i++) m_Label[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x60, 0x60, 0x60));
 	for (int i = 0; i < 4; i++) m_stcErrBack[i].Set_Color(COLOR_DEFAULT, RGB(0x00, 0x00, 0xFF));
 	m_stcErrTitle.Init_Ctrl("¹ÙÅÁ", 24, TRUE, RGB(0xFF, 0xFF, 0xFF),RGB(0xFF, 0x00, 0x00));
 
@@ -769,15 +992,14 @@ void CErrorDlg::Initial_Controls()
 // 	m_Image.SetWindowPos(NULL, 0, 0, 1060, 600, SWP_NOZORDER | SWP_NOMOVE);	// ¿øº» 960x540 (1680x945)
 	m_Image.SetWindowPos(NULL, 0, 0, 1100, 620, SWP_NOZORDER | SWP_NOMOVE);	// 640x360 : ¿øº» 960x540 (1680x945)
 
-	for (int i = 0; i < 4; i++) m_ledMainAir[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em24);
-	for (int i = 0; i < 6; i++) m_ledEmgSw[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emRed, CLedCS::em24);
-	for (int i = 0; i < 21; i++) m_ledDoorUnlock[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em24);
-
+	
 	for (int i = 0; i < 14; i++) m_stcErrPos[i].Init_Ctrl("¹ÙÅÁ", 12, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
 
-	m_stcErrNo.Init_Ctrl("¹ÙÅÁ", 30, TRUE, RGB(0x00, 0x00, 0xFF), RGB(0xFF, 0xF0, 0xE0));
+	m_stcErrNo.Init_Ctrl("¹ÙÅÁ", 20, TRUE, RGB(0x00, 0x00, 0xFF), RGB(0xFF, 0xF0, 0xE0));
+	m_stcAlmCatNo.Init_Ctrl("¹ÙÅÁ", 20, TRUE, RGB(0x00, 0x00, 0xFF), RGB(0xFF, 0xF0, 0xE0));
+
 	m_stcMsgBack.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
-	m_stcErrMsg.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
+	m_stcErrMsg.Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
 
 	m_btnErrBuzzOff.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
 	m_btnErrSkip.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
@@ -787,6 +1009,14 @@ void CErrorDlg::Initial_Controls()
 	m_btnErrSystemExit.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
 	m_Label[8].Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x60, 0x60, 0x60));
 	m_stcCarrierID.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x66, 0xFF, 0xCC));
+
+	m_cboDownReasonCat.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
+	m_cboDownReason.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
+	m_cboDownAction.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
+	m_cboDownActionDetail.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
+
+	m_stcAlmTime.Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -973,4 +1203,12 @@ void CErrorDlg::Set_SPCError(int nErrNo, CString sErrMsg)
 	if (nErrNo > 8800 && nErrNo < 9000) gAlm.sUnit = "ShipAlign";
 	if (nErrNo > 8999 && nErrNo < 9100) gAlm.sUnit = "MES";
 	if (nErrNo > 9100 && nErrNo < 9999) gAlm.sUnit = "Vision";
+}
+
+void CErrorDlg::OnCbnSelchangeCboDownactiondetail()
+{
+	CString sText;
+	m_cboDownActionDetail.GetWindowText(sText);
+
+	m_edtActionDetail.SetWindowText(sText);
 }

@@ -2,7 +2,9 @@
 //
 #pragma once
 
-// CErrorDlg 대화 상자입니다.
+#include <map>
+using namespace std;
+
 
 class CErrorDlg : public CDialogEx
 {
@@ -15,15 +17,16 @@ public:
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_ERROR_DLG };
 	CGroupCS	m_Group[4];
-	CLabelCS	m_Label[9];
+	CLabelCS	m_Label[13];
 	CStaticCS	m_stcErrBack[4];
 	CStaticCS	m_stcErrTitle;
 	CPictureCS	m_Image;
-	CLedCS		m_ledMainAir[4];
-	CLedCS		m_ledEmgSw[6];
-	CLedCS		m_ledDoorUnlock[21];
+
 	CStaticCS	m_stcErrPos[14];
 	CStaticCS	m_stcErrNo;
+	CStaticCS	m_stcAlmCatNo;
+
+
 	CStaticCS	m_stcMsgBack;
 	CStaticCS	m_stcErrMsg;
 	CButtonCS	m_btnErrBuzzOff;
@@ -33,6 +36,14 @@ public:
 	CButtonCS	m_btnErrOK;
 	CButtonCS	m_btnErrSystemExit;
 	CStaticCS	m_stcCarrierID;
+
+	CComboCS	m_cboDownReasonCat;
+	CComboCS	m_cboDownReason;
+	CComboCS	m_cboDownAction;
+	CComboCS	m_cboDownActionDetail;
+
+	CStaticCS	m_stcAlmTime;
+	CEditCS		m_edtActionDetail;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
@@ -49,6 +60,7 @@ protected:
 	afx_msg void OnBnClickedBtnErrOk();
 	afx_msg void OnBnClickedBtnErrSystemExit();
 	afx_msg void OnStnClickedCarID();
+	afx_msg void OnCbnSelchangeCboDownactiondetail();
 
 private:
 	CBitmap		m_bmpImage;
@@ -62,6 +74,11 @@ private:
 	int			m_nBackColorLoop;
 	BOOL		m_bErrShow;
 
+	CString		m_strAlmStart;
+	CString		m_strAlmEnd;
+
+	map<CString, CString> m_mssDownAction;
+
 private:
 	void Initial_Controls();
 	void ErrorTimeEdit();
@@ -71,6 +88,11 @@ private:
 public:
 	void Set_ErrorNumber(int nErrNo) { m_nErrNo = nErrNo; }
 	void Set_ErrorSubMessage(CString sErrMsg) { m_strErrSubMsg = sErrMsg; }
+
+	void Set_DownActionCboList(CString sData);
+
+
+
 };
 
 extern CErrorDlg g_dlgError;

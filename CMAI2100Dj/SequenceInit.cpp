@@ -215,13 +215,13 @@ BOOL CSequenceInit::Initial_MainRun()
 		break;
 
 	case 2:
-		if (!m_pDX03->iTransferLTrayExist) {
+	/*	if (!m_pDX03->iTransferLTrayExist) {
 			g_objCommon.Set_VisionVacuumOn(1);
 			g_objCommon.Set_VisionVacuumOn(2);
 			g_objCommon.Set_VisionVacuumOn(3);
 			g_objCommon.Set_VisionVacuumOn(4);
 			m_niMainCase++; m_tiMainLoop.Set_LoopTime(3000);
-		}
+		}*/
 		break;
 	case 3:
 		if (!m_pDX03->iTransferRTrayExist) {
@@ -417,8 +417,8 @@ BOOL CSequenceInit::Initial_MainRun()
 		// 변수 초기화
 		g_objSequenceMain.Reset_MainRunCase();
 		g_objSequenceMain.Set_ClearRunData(0);
-		g_objMesAgent.Set_EquipState(2);	//Idle
-
+		g_objMesAgent.Set_EquipState(eEquipState::IDLE);
+		g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 		gData.nTransferXLock = 0;
 		for(int i=0; i< 5; i++) gData.nNG_MC[i][1] = 0;
 

@@ -50,12 +50,15 @@ public:
 	DWORD		m_dwStartTime;
 	CString		m_strStartTime;
 
+	BOOL		m_bAuto;			// 수동 비가동인지 시간되서 자동비가동 보고 뜬건지  
+
 private:
 	BOOL Initial_Controls();
 	BOOL Read_StopLossList();
 
 public:
 	void Set_NoWorkReport();
+	void Set_Auto(BOOL bAuto) { m_bAuto = bAuto; } 
 };
 
 extern CNoWorkDlg g_dlgNoWork;

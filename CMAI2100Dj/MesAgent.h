@@ -49,6 +49,10 @@ private:
 	void Get_CarrierConfirm(CString sCarrierID);
 	void Get_CarrierCancel(CString sCarrierId, CString sCode, CString sText);
 
+	void Get_IdleReasonCode(CString sData);
+	void Get_DownActionCode(CString sData);
+
+
 	void Send_Command(CString sSend);
 
 public:
@@ -62,12 +66,17 @@ public:
 	void Set_OperUpdate(CString sOperId);				// Operator ID 변경시 보고
 	void Set_ControlState(int nFlag, CString sOperId);	// 1:Onine, 2:Offline
 	void Set_EquipState(int nFlag);						// 1:Init, 2:Idle, 3:Setup, 4:Ready, 5:Run(=Executing), 6;Pause(=Down)
-	void Set_ErrorUpdate(int nFlag, CString sErrNo);	// 0:해제, 1:발생
+	void Set_ErrorUpdate(int nFlag, CString sErrNo, CString sErrCat);	// 0:해제, 1:발생
 	void Set_RecipeList(int nFlag);						// 0:All, 1:Current Recipe
-	void Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sType);	//1:Start, 2:End
+	void Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sText, CString sType);	//1:Start, 2:End, 3: Auto 
 
+	void Set_ModeChanged(int nMode);
+	void Set_UnitState(int nState);
+	
 	void Set_CmRequest(CString sLotId, CString sCmId, int nPortNo, int nTrayNo, int nCmNo);
 	void Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nOut, CString sCarID, int nRosInfo, int nNGType=0);
+
+	void Set_UnitMaterialCount(int nMDCount, int nPortNo, int nInputCnt, int nOk, int nNG);
 
 	void Set_LotStart(CString sLotId, CString sMGZId, int nSlot, CString sTrayID, CString sRecipe);
 	void Set_LotAbort(CString sLotId);
@@ -80,6 +89,10 @@ public:
 	void Set_CarrierIDReport(CString sType, CString sMGZID, CString sCarrierID);
 	CString Set_NGSort(int nPno, int nTNo, int CNo);
 	void Set_OcapFaiNG(int nPno, int nType, CString sFaiNGCode);
+
+	void Set_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, int nErrNo, int nErrCat, CString sErrMsg);
+	void Set_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime);
+
 };
 
 extern CMesAgent g_objMesAgent;

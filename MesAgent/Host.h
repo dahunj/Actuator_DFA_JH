@@ -6,6 +6,11 @@
 
 using namespace JWXml;
 
+#include <vector>
+#include <map>
+
+using namespace std;
+
 // CHost
 
 class CHost : public CWnd
@@ -45,6 +50,9 @@ private:
 	CString m_sHostMsg;
 	CString m_sLastProcID;
 
+	map<CString, CString> m_mssReasonData;
+	map<CString, CString> m_mssDownActionData;
+
 private:
 	BOOL Extract_Xml(CString sXmlData);
 
@@ -64,6 +72,9 @@ private:
 	void Get_S2F49_ProductData();
 	void Get_S2F49_Module_Fail();
 	void Get_S2F49_LabelPrint();
+
+	void Get_S2F49_SETCODE_Idle_Reason();
+	void Get_S2F49_SETCODE_Down_Action();
 
 	void Reply_HeartBeat();	// Heart Beat
 	void Send_Command(CString sSend, BOOL bReply, CString sStFn, CString sRcmd="");	// XML
@@ -92,8 +103,16 @@ public:
 	void Set_S2F50_Module_Fail();		// Module_Fail Ack
 
 	void Set_S6F11_ControlState(int nState);			// 1:Online, 2:Offline
-	void Set_S6F11_EquipState(int nState, int nErrNo);	// 2:Idle, 5:Run, 6:Down
+	void Set_S6F11_EquipState(int nState, int nErrNo, int nErrCat = 03);	// 2:Idle, 5:Run, 6:Down
 	void Set_S6F11_IdleReportSet(BOOL bSet);
+	void Set_S6F11_IdleReasonReport();
+
+	void Set_S6F11_AccessModeChanged(CString sMode);
+	void Set_S6F11_UnitState(int nState);
+
+	void Set_S2F50_SetCode_IdleReason();
+	void Set_S2F50_SetCode_DownAction(); 
+
 
 	void Set_S6F11_LotStart(CString sLotId, CString sMGZId, CString sSlot, CString sTrayID, CString sRecipe);
 	void Set_S6F11_LotEnd(CString sLotId, CString sMZId, CString sTrayId, CString sRecipeId, int nHCount, int nOk, int nNg);
@@ -112,6 +131,11 @@ public:
 	void Set_S2F50_CarrierCancel();		// TRAY_CANCEL Ack
 	void Set_S2F50_CarrierConfirm();	// TRAY_ID_CONFIRM Ack
 	void Set_S2F50_LabelPrint();		// LABEL_DATA_SEND Ack
+
+	void Set_S6F11_UnitMaterialReport(CString nMDCount, CString sPortNo, CString sInputCnt, CString sOK, CString sNG);
+	void Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg);
+	void Set_S6F11_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime);
+
 
 	void Test_Send();
 	void Test_WriteLog();

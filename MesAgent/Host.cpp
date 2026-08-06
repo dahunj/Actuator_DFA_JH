@@ -175,6 +175,8 @@ LRESULT CHost::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 				else if (m_strRcmd == "PRODUCT_DATA")	 Get_S2F49_ProductData();
 				else if (m_strRcmd == "PRODUCT_ID_FAIL") Get_S2F49_Module_Fail();
 				else if (m_strRcmd == "LABEL_DATA_SEND") Get_S2F49_LabelPrint();
+				else if(m_strRcmd == "SETCODE_IDLE_REASON") Get_S2F49_SETCODE_Idle_Reason();
+				else if(m_strRcmd == "SETCODE_DOWN_ACTION") Get_S2F49_SETCODE_Down_Action();
 
 			}
 		}
@@ -328,7 +330,9 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 				if (strName	== "TRAYID")	gMes.sHostTrayID = strData;
 			}
 
-		}else if (m_strRcmd == "LABEL_DATA_SEND") {
+		}
+		else if (m_strRcmd == "LABEL_DATA_SEND") 
+		{
 			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
 			int nCount = nodes.GetCount();
 
@@ -348,6 +352,74 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 			}
 
 		}
+		else if ( m_strRcmd == "SETCODE_IDLE_REASON" )
+		{
+			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
+			int nCount = nodes.GetCount();
+
+			CString strName, strData;
+			CString sCode, sText, sCodeTemp, sTextTemp;
+
+			for (int i = 0; i < nCount; i++) 
+			{
+				strName = nodes[i]->GetChild("CPNAME")->GetAttribute("VALUE");
+				strData = nodes[i]->GetChild("CPVAL")->GetAttribute("VALUE");
+
+				if(strName == "CODE")
+				{
+					sCode = strData;
+				}
+				if(strName == "TEXT")
+				{
+					sText = strData;
+				}				
+			}
+
+			for (int i = 0; ; ++i)
+			{
+				if (!AfxExtractSubString(sCodeTemp, sCode, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
+				if (!AfxExtractSubString(sTextTemp, sText, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
+
+				sCodeTemp.Trim();
+				sTextTemp.Trim();
+
+				m_mssReasonData.insert(make_pair(sCodeTemp, sTextTemp));
+			}			
+		}
+		else if ( m_strRcmd == "SETCODE_DOWN_ACTION" )
+		{
+			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
+			int nCount = nodes.GetCount();
+
+			CString strName, strData;
+			CString sCode, sText, sCodeTemp, sTextTemp;
+
+			for (int i = 0; i < nCount; i++) 
+			{
+				strName = nodes[i]->GetChild("CPNAME")->GetAttribute("VALUE");
+				strData = nodes[i]->GetChild("CPVAL")->GetAttribute("VALUE");
+
+				if(strName == "CODE")
+				{
+					sCode = strData;
+				}
+				if(strName == "TEXT")
+				{
+					sText = strData;
+				}				
+			}
+
+			for (int i = 0; ; ++i)
+			{
+				if (!AfxExtractSubString(sCodeTemp, sCode, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
+				if (!AfxExtractSubString(sTextTemp, sText, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
+
+				sCodeTemp.Trim();
+				sTextTemp.Trim();
+
+				m_mssDownActionData.insert(make_pair(sCodeTemp, sTextTemp));
+			}			
+		}
 	}
 	m_xml.Close();
 	return TRUE;
@@ -355,6 +427,8 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Get Command
+
+
 
 void CHost::Get_S1F2()
 {
@@ -469,6 +543,21 @@ void CHost::Get_S2F49_LabelPrint()
 	g_objCommon.Set_LabelPrinter(gMes.sLabelPrint);
 	Set_S2F50_LabelPrint();
 }
+
+
+void CHost::Get_S2F49_SETCODE_Idle_Reason()
+{
+	Set_S2F50_SetCode_IdleReason();
+	g_objHandler.Set_IdleReasonCode(m_mssReasonData);
+}
+
+
+void CHost::Get_S2F49_SETCODE_Down_Action()
+{
+	Set_S2F50_SetCode_DownAction();
+	g_objHandler.Set_DownActionCode(m_mssDownActionData);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Set Command
 
@@ -634,12 +723,13 @@ void CHost::Set_S6F11_ControlState(int nState)
 	m_bHostOnline = (nState == 1 ? TRUE : FALSE);
 }
 
-void CHost::Set_S6F11_EquipState(int nState, int nErrNo)
+void CHost::Set_S6F11_EquipState(int nState, int nErrNo, int nErrCat)
 {
-	CString	strState, strErrNo, strOldState;
+	CString	strState, strErrNo, strOldState, strErrCat;
 	strState.Format("%d", nState);
 	strErrNo.Format("%d", nErrNo);
-	if (nState != 6 || nErrNo < 1) { strErrNo = gData.sAlarmTxt = ""; }
+	strErrCat.Format("00004%d", nErrCat);
+	if (nErrNo < 1) { strErrNo = gData.sAlarmTxt = ""; }
 
 	gData.nPreEquipState = gData.nPreEquipState == 0 ? 1 : gData.nCurEquipState;
 	gData.nCurEquipState = nState;
@@ -660,22 +750,74 @@ void CHost::Set_S6F11_EquipState(int nState, int nErrNo)
 	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
 	strSend += "  </ELEMENT>" + CRLF;
 	strSend += "  <ITEM>" + CRLF;
-	strSend += "    <CEID NAME=\"CEID\" VALUE=\"10102\" />" + CRLF;
-	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"10102\" />" + CRLF;
-	strSend += "    <DVLIST COUNT=\"7\">" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"10108\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"10108\" />" + CRLF;
+	if(strState == "3")
+	{
+		strSend += "    <DVLIST COUNT=\"8\">" + CRLF;
+	}
+	else
+	{
+		strSend += "    <DVLIST COUNT=\"5\">" + CRLF;
+	}
 	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"PREVEQPSTATE\" VALUE=\"" + strOldState + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"CUREQPSTATE\" VALUE=\"" + strState + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"ALARMID\" VALUE=\"" + strErrNo + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"ALARMCODE\" VALUE=\"" + strErrNo + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"ALARMTEXT\" VALUE=\"" + gData.sAlarmTxt + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"PREVNEWEQPSTATE\" VALUE=\"" + strOldState + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"CURRNEWEQPSTATE\" VALUE=\"" + strState + "\" />" + CRLF;
+
+	if(strState == "3")
+	{
+		strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"1\" />" + CRLF;
+		strSend += "      <DV NAME=\"ALARMID#1\" VALUE=\"" + strErrNo + "\" />" + CRLF;
+		strSend += "      <DV NAME=\"ALARMCATEGORY#1\" VALUE=\"" + strErrCat +  "\" />" + CRLF;
+		strSend += "      <DV NAME=\"ALARMTEXT#1\" VALUE=\"" + gData.sAlarmTxt + "\" />" + CRLF;
+	}
+	else
+	{
+		strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"0\" />" + CRLF;
+	}
+
 	strSend += "    </DVLIST>" + CRLF;
 	strSend += "  </ITEM>" + CRLF;
 	strSend += "</EIF>";
 
-	Send_Command(strSend, FALSE, "S6F11", "10102");
+	Send_Command(strSend, FALSE, "S6F11", "10108");
 }
+
+
+void CHost::Set_S6F11_UnitState(int nState)
+{
+	CString	strState, strErrNo, strOldState;
+	strState.Format("%d", nState);
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strTime;
+	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"10201\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"10201\" />" + CRLF;
+	strSend += "    <DVLIST COUNT=\"5\">" + CRLF;
+	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"UNITLISTQTY\" VALUE=\"1\" />" + CRLF;
+	strSend += "      <DV NAME=\"UNITID#1\" VALUE=\"0\" />" + CRLF;
+	strSend += "      <DV NAME=\"UNITSTATE#1\" VALUE=\"" + strState + "\" />" + CRLF;
+	strSend += "    </DVLIST>" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, FALSE, "S6F11", "10201");
+}
+
 
 void CHost::Set_S5F1_Alarm(int nSet, int nErrNo)
 {
@@ -1147,6 +1289,186 @@ void CHost::Set_S6F11_CarrierInReport(CString sType, CString sLotId, CString sMG
 	Send_Command(strSend, FALSE, "S6F11", "20310");
 }
 
+
+void CHost::Set_S6F11_IdleReasonReport()
+{
+	CString strCEID;
+
+	int nCEID = 50104;
+	strCEID.Format("%d", nCEID);
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strTime;
+	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"" + strCEID + "\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"" + strCEID + "\" />" + CRLF;
+	strSend += "    <DVLIST COUNT=\"6\">" + CRLF;
+	strSend += "      <DV NAME=\"IDLESTARTTIME\" VALUE=\"" + gIdle.sStartTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"IDLEENDTIME\" VALUE=\"" + gIdle.sEndTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"IDLECODE\" VALUE=\"" + gIdle.sCode + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"IDLETEXT\" VALUE=\"" + gIdle.sText + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"IDLENOTE\" VALUE=\"\" />" + CRLF;
+	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "    </DVLIST>" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, FALSE, "S6F11", strCEID);
+}
+
+
+void CHost::Set_S6F11_AccessModeChanged(CString sMode)
+{
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strTime;
+	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"10109\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"10109\" />" + CRLF;
+	strSend += "    <DVLIST COUNT=\"3\">" + CRLF;
+	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"EQUIPMENTACCESSMODE\" VALUE=\"" + sMode + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "    </DVLIST>" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, FALSE, "S6F11", "10109");
+}
+
+
+void CHost::Set_S6F11_UnitMaterialReport(CString nMDCount, CString sPortNo, CString sInputCnt, CString sOK, CString sNG)
+{
+	CString strCount, strMOk, strNg;
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strTime;
+	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"10202\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"10202\" />" + CRLF;
+	strSend += "    <DVLIST COUNT=\"9\">" + CRLF;
+	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"UNITID\" VALUE=\"0\" />" + CRLF;
+	strSend += "      <DV NAME=\"MATERIALCOUNTLISTQTY\" VALUE=\"1\" />" + CRLF;
+	strSend += "      <DV NAME=\"MATERIALTYPE#1\" VALUE=\"MAIN\" />" + CRLF;
+	strSend += "      <DV NAME=\"SLOTNO#1\" VALUE=\"1\" />" + CRLF;
+	//strSend += "      <DV NAME=\"SLOTNO#1\" VALUE=\"" + sPortNo + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"INPUTMATERIALCOUNT#1\" VALUE=\"" + sInputCnt + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"GOODMATERIALCOUNT#1\" VALUE=\"" + sOK + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"NGMATERIALCOUNT#1\" VALUE=\"" + sNG + "\" />" + CRLF;
+	strSend += "    </DVLIST>" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, FALSE, "S6F11", "10202");
+}
+
+
+
+void CHost::Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg)
+{
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strTime, sAlmCat;
+	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+
+	sAlmCat.Format("00004%s", sErrCat); // 7자리 3자리(유닛번호)+2자리(긴급도)+2자리(대분류)
+
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"50105\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"50105\" />" + CRLF;
+	strSend += "    <DVLIST COUNT=\"10\">" + CRLF;
+	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ACTIONCODE\" VALUE=\"" + sActionCode + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ACTIONDESCRIPTION\" VALUE=\"" + sActionDetail + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"DOWNSTARTTIME\" VALUE=\""+ sStartTime +"\" />" + CRLF;
+	strSend += "      <DV NAME=\"DOWNENDTIME\" VALUE=\"" + sEndTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"1\" />" + CRLF;
+	strSend += "      <DV NAME=\"ALARMID#1\" VALUE=\"" + sErrNo + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ALARMCATEGORY#1\" VALUE=\"" + sAlmCat + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ALARMTEXT#1\" VALUE=\"" + sErrMsg + "\" />" + CRLF;
+	strSend += "    </DVLIST>" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, FALSE, "S6F11", "50105");
+}
+
+
+void CHost::Set_S6F11_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime)
+{
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strTime;
+	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"50106\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"50106\" />" + CRLF;
+	strSend += "    <DVLIST COUNT=\"10\">" + CRLF;
+	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"LOTID\" VALUE=\"" + sLotID + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"PROCESSID\" VALUE=\"" + sProcessID + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"MODELID\" VALUE=\""+ sModelID +"\" />" + CRLF;
+	strSend += "      <DV NAME=\"RECIPEID\" VALUE=\"" + sRecipe + "\" />" + CRLF;	
+	strSend += "      <DV NAME=\"UNITLISTQTY\" VALUE=\"1\" />" + CRLF;
+	strSend += "      <DV NAME=\"UNITID#1\" VALUE=\"0\" />" + CRLF;
+	strSend += "      <DV NAME=\"UNITTACTTIME#1\" VALUE=\"" + sTactTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"UNITCYCLETIME#1\" VALUE=\"" + sCycleTime + "\" />" + CRLF;
+	strSend += "    </DVLIST>" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, FALSE, "S6F11", "50106");
+}
+
+
 // S2F49에 대한 응답으로 S2F50 송신
 void CHost::Set_S2F50_LotStart()
 {
@@ -1323,6 +1645,46 @@ void CHost::Set_S2F50_LabelPrint()
 
 	Send_Command(strSend, TRUE, "S2F50", "LABEL_DATA_SEND");
 }
+
+
+void CHost::Set_S2F50_SetCode_IdleReason()
+{
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S2F50\" NAME=\"Enhanced Remote Command Acknowledge\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <RCMDCP>" + CRLF;
+	strSend += "      <RCMD NAME=\"RCMD\" VALUE=\"SETCODE_IDLE_REASON\" />" + CRLF;
+	strSend += "    </RCMDCP>" + CRLF;
+	strSend += "    <HCACK NAME=\"HCACK\" VALUE=\"0\" />" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, TRUE, "S2F50", "SETCODE_IDLE_REASON");
+}
+
+void CHost::Set_S2F50_SetCode_DownAction()
+{
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S2F50\" NAME=\"Enhanced Remote Command Acknowledge\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <RCMDCP>" + CRLF;
+	strSend += "      <RCMD NAME=\"RCMD\" VALUE=\"SETCODE_DOWN_ACTION\" />" + CRLF;
+	strSend += "    </RCMDCP>" + CRLF;
+	strSend += "    <HCACK NAME=\"HCACK\" VALUE=\"0\" />" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, TRUE, "S2F50", "SETCODE_DOWN_ACTION");
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

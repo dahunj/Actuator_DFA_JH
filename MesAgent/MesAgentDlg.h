@@ -42,6 +42,10 @@ protected:
 	afx_msg void OnDblclkLstHostMsg();
 	afx_msg void OnBnClickedBtnTest();
 
+	afx_msg void OnBnClickedBtnTest2();
+	afx_msg void OnBnClickedBtnTest3();
+	afx_msg void OnBnClickedBtnTest4();
+
 private:
 	void Check_DeleteLog();
 

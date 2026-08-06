@@ -44,6 +44,10 @@ BEGIN_MESSAGE_MAP(CMesAgentDlg, CDialogEx)
 	ON_LBN_DBLCLK(IDC_LST_HANDLER_MSG, &CMesAgentDlg::OnDblclkLstHandlerMsg)
 	ON_LBN_DBLCLK(IDC_LST_HOST_MSG, &CMesAgentDlg::OnDblclkLstHostMsg)
 	ON_BN_CLICKED(IDC_BTN_TEST, &CMesAgentDlg::OnBnClickedBtnTest)
+
+	ON_BN_CLICKED(IDC_BTN_TEST2, &CMesAgentDlg::OnBnClickedBtnTest2)
+	ON_BN_CLICKED(IDC_BTN_TEST3, &CMesAgentDlg::OnBnClickedBtnTest3)
+	ON_BN_CLICKED(IDC_BTN_TEST4, &CMesAgentDlg::OnBnClickedBtnTest4)
 END_MESSAGE_MAP()
 
 // CMesAgentDlg 메시지 처리기
@@ -169,7 +173,7 @@ void CMesAgentDlg::OnTimer(UINT_PTR nIDEvent)
 	Check_DeleteLog();	// 오래된 로그 삭제
 
 	DWORD dwTerm = GetTickCount() - g_objHost.Get_LastTime();
-	if (g_objHost.Is_Connected() && g_objHost.Is_HostOnline() && dwTerm > 20000) {
+	if (g_objHost.Is_Connected() && g_objHost.Is_HostOnline() && dwTerm > 70000) {
 		g_objHost.Set_S6F11_ControlState(2);	// 1:Online, 2:Offline
 		g_objHandler.Set_ControlState(2);		// 1:Online, 2:Offline
 	}
@@ -327,4 +331,23 @@ void CMesAgentDlg::OnBnClickedBtnTest()
 	CString szplComm;
 	szplComm = "^XA^CI26^FO30,53^A0N,73,73^FDTEST1TEST2TEST^FS^FO650,75^BY2^BQN,,5^FDMA,TEST1TEST2TEST^FS^FO30,137^GB550,0,1^FS^FO30,189^A0N,73,73^FDMGZ: TESTTSET^FS^XZ";
 	g_objCommon.Set_LabelPrinter(szplComm);
+}
+
+
+
+void CMesAgentDlg::OnBnClickedBtnTest2()
+{
+	g_objHost.Set_S6F11_UnitMaterialReport("80", "1","80","77","3");
+}
+
+
+void CMesAgentDlg::OnBnClickedBtnTest3()
+{
+	g_objHost.Set_S6F11_DownActionReport("Machine Validation", "Validation action 1", "20260804101733", "20260804101755", "1002", "04", "Tray Transfer 1 Head에 Tray가 있는지 확인하여 주십시오");
+}
+
+
+void CMesAgentDlg::OnBnClickedBtnTest4()
+{
+	g_objHost.Set_S6F11_UnitProcessingTimeReport("Test-Lot","12345", "Memphis", "DPAMS-0912","1027.1", "1289.4"); 
 }

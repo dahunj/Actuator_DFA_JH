@@ -86,6 +86,8 @@ typedef struct {
 
 	int			nAlarmID;
 	CString		sAlarmTxt;
+
+	int			nAccessMode;
 } GLOVAL_DATA;
 
 typedef struct {

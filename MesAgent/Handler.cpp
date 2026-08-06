@@ -142,7 +142,7 @@ LRESULT CHandler::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 			if (strOp == "STATE") Get_EquipState(strArg[0], strArg[1]);
 
 		} else if (strCmd == "ERROR") {
-			if (strOp == "UPDATE") Get_ErrorUpdate(strArg[0], strArg[1]);
+			if (strOp == "UPDATE") Get_ErrorUpdate(strArg[0], strArg[1], strArg[2]);
 
 		} else if (strCmd == "CONTROL") {
 			if (strOp == "STATE") Get_ControlState(strArg[0], strArg[1]);
@@ -160,7 +160,7 @@ LRESULT CHandler::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 			if (strOp == "REQUEST")	Get_RecipeList(strRecv);
 
 		} else if (strCmd == "IDLE") {
-			if (strOp == "REPORT") 	Get_IdleReport(strArg[0], strArg[1], strArg[2], strArg[3]);
+			if (strOp == "REPORT") 	Get_IdleReport(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4], strArg[5]);
 
 		} else if (strCmd == "TERMINAL") {
 			if (strOp == "MSG") 	Get_TerminalOK();
@@ -175,6 +175,20 @@ LRESULT CHandler::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 			if (strOp == "IN")		Get_CarrierInReport(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4]);
 
 		} 
+		else if (strCmd == "UNIT")
+		{
+			if (strOp == "REPORT") Get_UnitProcessingTimeReport(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4], strArg[5]);
+			if (strOp == "STATE") Get_UnitState(strArg[0]);
+			if (strOp == "COUNT") Get_UnitMaterialCount(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4]);
+		} 
+		else if ( strCmd == "ACCESS")
+		{
+			if (strOp == "CHANGED") Get_AccessChanged(strArg[0]);
+		}
+		else if ( strCmd == "DOWN")
+		{
+			if(strOp == "REPORT") Get_DownAction(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4], strArg[5], strArg[6]);
+		}
 	}
 
 	return 0;
@@ -195,10 +209,36 @@ void CHandler::Get_EquipState(CString sState, CString sOperId)
 	g_objHost.Set_S6F11_EquipState(nState, 0);
 }
 
-void CHandler::Get_ErrorUpdate(CString sFlag, CString sErrNo)
+
+void CHandler::Get_UnitState(CString sState)
+{
+	int nState = atoi(sState);
+	g_objHost.Set_S6F11_UnitState(nState);
+}
+
+void CHandler::Get_UnitMaterialCount(CString sMDCount, CString sPortNo, CString sInputCnt, CString sOK, CString sNG )
+{
+	g_objHost.Set_S6F11_UnitMaterialReport(sMDCount, sPortNo, sInputCnt, sOK, sNG);
+	//int nState = atoi(sState);
+	//g_objHost.Set_S6F11_UnitState(nState);
+}
+
+void CHandler::Get_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime)
+{
+	g_objHost.Set_S6F11_UnitProcessingTimeReport(sLotID, sProcessID, sModelID, sRecipe, sTactTime, sCycleTime);
+}
+
+void CHandler::Get_DownAction(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg)
+{
+	g_objHost.Set_S6F11_DownActionReport(sActionCode, sActionDetail, sStartTime, sEndTime, sErrNo, sErrCat, sErrMsg);
+}
+
+
+void CHandler::Get_ErrorUpdate(CString sFlag, CString sErrNo, CString sErrCat)
 {
 	int nFlag = atoi(sFlag);
 	int nErrNo = atoi(sErrNo);
+	int nErrCat = atoi(sErrCat);
 	CString strErrFile, strErrMsg;
 
 	strErrFile.Format("%s\\%s", gsCurrentDir, gData.sErrFile);
@@ -208,11 +248,13 @@ void CHandler::Get_ErrorUpdate(CString sFlag, CString sErrNo)
 	gData.sAlarmTxt = INI.Get_String("ERROR", sErrNo, "");
 
 	if (nFlag == 1) {
-		g_objHost.Set_S6F11_EquipState(6, nErrNo);	//Down
+		g_objHost.Set_S6F11_EquipState(3, nErrNo, nErrCat);	//Down
+		g_objHost.Set_S6F11_UnitState(3);
 		g_objHost.Set_S5F1_Alarm(1, nErrNo);
 	} else {
 		g_objHost.Set_S5F1_Alarm(0, nErrNo);
-		g_objHost.Set_S6F11_EquipState(5, 0);		//Run
+		g_objHost.Set_S6F11_EquipState(1, 0);		//Run
+		g_objHost.Set_S6F11_UnitState(1);
 	}
 }
 
@@ -250,16 +292,22 @@ void CHandler::Get_CmEnd(CString sLotId, CString sCmId, CString sResult, CString
 	g_objHost.Set_S6F11_CmEnd(sLotId, sCmId, sResult, sNgCode, sFmMZID, sFmCarID, sFmPocket, sToCarID, sToPocket, sROSResult);
 }
 
-void CHandler::Get_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode)
+void CHandler::Get_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sText, CString sType)
 {
 	gData.sOperId = sOperId;
-// 	gIdle.nCount = nCount;	// CNS 요청으로 첫번째 1개만 전송
+	// 	gIdle.nCount = nCount;	// CNS 요청으로 첫번째 1개만 전송
 	gIdle.sStartTime = sSTime;
 	gIdle.sEndTime = sETime;
 	gIdle.sCode = sCode;
-// 	gIdle.sText = sText;
-	if (sCode.GetLength() > 1) g_objHost.Set_S6F11_IdleReportSet(FALSE);
-	else					   g_objHost.Set_S6F11_IdleReportSet(TRUE);
+	gIdle.sText = sText;
+	if (sType == "1") g_objHost.Set_S6F11_IdleReportSet(TRUE);	//Idle Start
+	else if (sType == "2")  g_objHost.Set_S6F11_IdleReportSet(FALSE);	//Idle End
+	else g_objHost.Set_S6F11_IdleReasonReport();
+}
+
+void CHandler::Get_AccessChanged(CString sAccessMode)
+{
+	g_objHost.Set_S6F11_AccessModeChanged(sAccessMode);
 }
 
 void CHandler::Get_RecipeList(CString sRecipeData)
@@ -435,6 +483,51 @@ void CHandler::Set_CarrierCancel()
 {
 	CString strSend;
 	strSend.Format("CARRIER,CANCEL,%s,%s,%s", gMes.sCancelTrayID, gMes.sCancelCode, gMes.sCancelText);
+	Send_Command(strSend);
+}
+
+
+void CHandler::Set_IdleReasonCode(map<CString, CString>& data)
+{
+	CString sCode, sText, sData, sTemp;
+
+	map<CString, CString>::iterator iter;
+
+	sData.Empty();
+
+	for (iter = data.begin(); iter != data.end(); ++iter)
+	{
+		sCode = iter->first;       
+		sText = iter->second;  
+
+		sTemp.Format("%s,%s", sCode, sText);
+		sData += sTemp;
+	}
+
+	CString strSend;
+	strSend.Format("CODE,IDLEREASON,%s", sData);
+	Send_Command(strSend);
+}
+
+void CHandler::Set_DownActionCode(map<CString, CString>& data)
+{
+	CString sCode, sText, sData, sTemp;
+
+	map<CString, CString>::iterator iter;
+
+	sData.Empty();
+
+	for (iter = data.begin(); iter != data.end(); ++iter)
+	{
+		sCode = iter->first;       
+		sText = iter->second;  
+
+		sTemp.Format("-%s-%s", sCode, sText);
+		sData += sTemp;
+	}
+
+	CString strSend;
+	strSend.Format("CODE,DOWNACTION,%s", sData);
 	Send_Command(strSend);
 }
 

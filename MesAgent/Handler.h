@@ -2,7 +2,9 @@
 //
 #pragma once
 
-// CHandler
+#include <vector>
+#include <map>
+using namespace std;
 
 #define HANDLER_PORT	10000	// Local Port for Handler
 // #define HANDLER_PORT	10001	// Local Port for Handler
@@ -30,14 +32,21 @@ private:
 private:
 	void Get_OperUpdate(CString sOperId);
 	void Get_EquipState(CString sState, CString sOperId);	// 1:Idle, 2:Run, 3:Down
-	void Get_ErrorUpdate(CString sFlag, CString sErrNo);
+	void Get_ErrorUpdate(CString sFlag, CString sErrNo, CString sErrCat);
 	void Get_ControlState(CString sFlag, CString sOperId);	// 1:Online, 2:Offline
 	void Get_LotStart(CString sLotId, CString sMGZId, CString sSlot, CString sTrayID, CString sRecipe);
 	void Get_LotEnd(CString sLotId, CString sMZId, CString sTrayId, CString sRecipe, CString sHCount, CString sOk, CString sNg);
 	void Get_LotAbort(CString sLotId);
 	void Get_CmRequest(CString sLotId, CString sCmId);
 	void Get_CmEnd(CString sLotId, CString sCmId, CString sResult, CString sNgCode, CString sFmMZID, CString sFmCarID, CString sFmPocket, CString sToCarID, CString sToPocket, CString sROSResult);
-	void Get_IdleReport(CString sOperId,/* CString sCount, */CString sSTime, CString sETime, CString sCode);
+	void Get_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sText, CString sType);
+	void Get_AccessChanged(CString sAccessMode);
+	void Get_UnitState(CString sState);
+	void Get_UnitMaterialCount(CString sMDCount, CString sPortNo, CString sInputCnt, CString sOK, CString sNG);
+	void Get_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime);
+
+	void Get_DownAction(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg);
+
 	void Get_RecipeList(CString sRecipeData);
 	void Get_TerminalOK();
 
@@ -64,6 +73,9 @@ public:
 	void Set_MGZCancel();
 	void Set_CarrierConfirm();
 	void Set_CarrierCancel();
+
+	void Set_IdleReasonCode(map<CString, CString>& data);
+	void Set_DownActionCode(map<CString, CString>& data);
 
 	void Set_RecipeListRequest(BOOL bList);
 	void Set_HostMsg(CString sMsg);

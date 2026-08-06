@@ -738,7 +738,7 @@ void CMesAgent::Set_CarrierIDReport(CString sType, CString sMGZID, CString sCarr
 void CMesAgent::Send_Command(CString sSend)
 {	
 	CString strSendSocket, strLog;
-#ifdef AJIN_BOARD_USE
+
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (!pEquipData->bUseMES) return;	
 
@@ -754,7 +754,7 @@ void CMesAgent::Send_Command(CString sSend)
 	memcpy(chSend, (LPSTR)(LPCSTR)strSendSocket, nLength);
 
 	if (!m_Client.Write_Socket((BYTE*)chSend, nLength)) return;
-#endif
+
 	// Host Log ////////////////////////////////////////////
 	strLog.Format("[->] : %s", sSend);
 	g_objLogFile.Save_MesAgentLog(strLog);

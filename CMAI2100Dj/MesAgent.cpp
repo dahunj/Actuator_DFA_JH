@@ -141,7 +141,7 @@ LRESULT CMesAgent::OnClientReceive(WPARAM wParam, LPARAM lParam)
 			if (strOp == "STATE") Get_ControlState(strArg[0]);
 
 		} else if (strCmd == "LOT") {
-			if (strOp == "START")  Get_LotStart(strArg[0], strArg[1], strArg[2]);
+			if (strOp == "START")  Get_LotStart(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4]);
 			if (strOp == "CANCEL") Get_LotCancel(strArg[0], strArg[1],  strArg[2]);
 
 		} else if (strCmd == "TIME") {
@@ -213,7 +213,7 @@ void CMesAgent::Get_ControlState(CString sFlag)
 	m_bHostOnline = (nOnline == 1 ? TRUE : FALSE);
 }
 
-void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
+void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount, CString sProcessID, CString sModel)
 {
 	int nPortNo = 99;
 	int nCmCount = atoi(sCmCount);
@@ -221,6 +221,9 @@ void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
 	gMes.sHostLotID = sLotId;
 	gMes.sHostRecipe = sRecipe;
 	gMes.nHostCmCount = nCmCount;
+	gMes.sHostProcID = sProcessID;
+	gMes.sHostModel = sModel;
+
 
 	for(int i=0; i<30; i++) {
 		if (gLot.sLotID[i] == sLotId) { nPortNo = i; break; }

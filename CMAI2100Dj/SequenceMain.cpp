@@ -1968,13 +1968,13 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 	double dRate = (gLot.nCmCount[nNo] == 0 ? 0.0 : (gLot.nGoodCount[nNo] * 100.0) / gLot.nCmCount[nNo]);
 
 	CString sProcessID, sTact, sCycle;
+	
+	sTact.Format("%0.1lf", (dwTime / 1000.0));
+	sCycle.Format("%0.1lf", (dwTime / 1000.0) - gLot.dwStopTime[nNo]);
 
-	sProcessID.Format("%d", nPortNo);
+	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], gLot.sProcID[nNo], m_pEquipData->sModelName, gLot.sRecipeName[nNo], sTact , sCycle);
 
-	sTact.Format("%0.1lf", gLot.dLLTackTime);
-	sCycle.Format("%0.1lf", (dwTime / 1000.0));
-
-	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], sProcessID, gData.sRecipeName, gLot.sRecipeName[nNo], sTact , sCycle);
+	gLot.sProcID[nNo].Empty();
 
 
 	//"Time,PortNo,LotID,Count,NG_Count,Good_Count,Rate,Skip_Count,Bar_NoRead,RosJudge,RosGood,RosNG,RosRepair,RosTimeOver,Start_Time,End_Time,Tack\r\n");
@@ -4734,6 +4734,8 @@ BOOL CSequenceMain::Run_LoadStage1()
 			gLot.sLotID[nPortNo1] = gMes.sHostLotID;
 			gLot.nCmCount[nPortNo1] = gMes.nHostCmCount;
 			gLot.sRecipeName[nPortNo1] = gMes.sHostRecipe;
+			gLot.sModelID[nPortNo1] = gMes.sHostModel;
+			gLot.sProcID[nPortNo1] = gMes.sHostProcID;
 
 			g_objMesAgent.Set_LotStart(gLot.sLotID[nPortNo1], gData.sMZID_LoadStage[nStageNo1], gData.nSlotNo_LoadStage[nStageNo1], gData.sCarID_LoadStage[nStageNo1], gLot.sRecipeName[nPortNo1]);
 			g_objLogFile.Save_RFBarData(4, gData.sCarID_LoadStage[nStageNo1], gLot.nCmCount[gLot.nJobCycle-1]);

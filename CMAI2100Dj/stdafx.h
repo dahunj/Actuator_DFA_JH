@@ -269,6 +269,8 @@ typedef struct {
 	CString sCarID_GD[30];
 	CString	sLotID[30];
 	CString	sRecipeName[30];
+	CString	sModelID[30];
+	CString sProcID[30];
 	int		nMZLastCar[30];		//1:Last Carrier
 	int		nSlotNo_LD[30];
 	int		nSlotNo_NG[30];
@@ -388,6 +390,8 @@ typedef struct {
 	CString		sHostLotID;					// Host 熱褐 LotID
 	CString		sHostRecipe;				// Host 熱褐 Recipe
 	int			nHostCmCount;				// Host 熱褐 Lot渡 CM 識偎熱
+	CString		sHostProcID;
+	CString		sHostModel;
 
 	// Cancel Data
 	CString		sHostCancelLotId;

@@ -37,7 +37,7 @@ private:
 	void Get_ControlState(CString sFlag);	// 1:Online, 2:Offline
 	void Get_TimeSync();
 
-	void Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount);
+	void Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount, CString sProcessID, CString sModel);
 	void Get_LotCancel(CString sLotId, CString sCode, CString sText);
 	
 	void Get_RecipeList(CString sFlag);		// 0:All, 1:Current Recipe

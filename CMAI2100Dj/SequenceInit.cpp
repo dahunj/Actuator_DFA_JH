@@ -215,13 +215,13 @@ BOOL CSequenceInit::Initial_MainRun()
 		break;
 
 	case 2:
-	/*	if (!m_pDX03->iTransferLTrayExist) {
+		if (!m_pDX03->iTransferLTrayExist) {
 			g_objCommon.Set_VisionVacuumOn(1);
 			g_objCommon.Set_VisionVacuumOn(2);
 			g_objCommon.Set_VisionVacuumOn(3);
 			g_objCommon.Set_VisionVacuumOn(4);
 			m_niMainCase++; m_tiMainLoop.Set_LoopTime(3000);
-		}*/
+		}
 		break;
 	case 3:
 		if (!m_pDX03->iTransferRTrayExist) {

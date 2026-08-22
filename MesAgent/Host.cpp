@@ -1413,6 +1413,9 @@ void CHost::Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetai
 	if(nErrCat == 0) sAlmCat.Format("0000000"); // 7자리 3자리(유닛번호)+2자리(긴급도)+2자리(대분류)
 	else sAlmCat.Format("00004%02d", nErrCat); // 7자리 3자리(유닛번호)+2자리(긴급도)+2자리(대분류)
 
+	int nErrNo = atoi(sErrNo);
+	if(nErrNo == 0) sErrNo.Format("0000");
+
 	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
 
 	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;

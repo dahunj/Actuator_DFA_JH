@@ -28,6 +28,7 @@
 ipch/
 obj/
 LOG/
+Backup/
 [Bb]in
 [Dd]ebug*/
 [Rr]elease*/

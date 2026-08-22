@@ -3510,10 +3510,10 @@ BOOL CSequenceMain::Run_Transfer1()
 		return TRUE;
 
 	case 3:
-		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) {
+		/*if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) {
 			g_objCommon.Save_Motion(AX_TRANSFER_X1, gData.nTransferX1Pos);
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(5000);
-		}
+		}*/
 		break;
 	case 4:
 		if (!m_pDX03->iTransferLTrayExist) {

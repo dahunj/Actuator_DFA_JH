@@ -173,7 +173,7 @@ void CMesAgentDlg::OnTimer(UINT_PTR nIDEvent)
 	Check_DeleteLog();	// 오래된 로그 삭제
 
 	DWORD dwTerm = GetTickCount() - g_objHost.Get_LastTime();
-	if (g_objHost.Is_Connected() && g_objHost.Is_HostOnline() && dwTerm > 20000) {
+	if (g_objHost.Is_Connected() && g_objHost.Is_HostOnline() && dwTerm > 70000) {
 		g_objHost.Set_S6F11_ControlState(2);	// 1:Online, 2:Offline
 		g_objHandler.Set_ControlState(2);		// 1:Online, 2:Offline
 	}

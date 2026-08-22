@@ -57,6 +57,10 @@ BOOL CDownReportDlg::OnInitDialog()
 
 	Initial_Controls();
 
+	gDown.bDownClear = FALSE;
+	gDown.bDownHappen = FALSE;
+	gDown.bPDT = FALSE;
+
 	
 	CString strErrPick, strMiddle, strMiddleMsg;
 

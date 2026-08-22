@@ -165,6 +165,11 @@ LRESULT CMesAgent::OnClientReceive(WPARAM wParam, LPARAM lParam)
 			if (strOp == "CANCEL")  Get_CarrierCancel(strArg[0], strArg[1],  strArg[2]);
 
 		}
+		else if (strCmd == "CODE")
+		{
+			if (strOp == "IDLEREASON") Get_IdleReasonCode(strArg[0]);
+			if (strOp == "DOWNACTION") Get_DownActionCode(strArg[0]);
+		}
 	}
 
 	return 0;

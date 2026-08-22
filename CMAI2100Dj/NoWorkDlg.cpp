@@ -73,7 +73,14 @@ void CNoWorkDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	CDialogEx::OnShowWindow(bShow, nStatus);
 
-	if (bShow) {
+	if (bShow)
+	{
+		if(gData.sOperID !="")
+		{
+			m_strOperId = gData.sOperID;
+			m_stcOperId.SetWindowText(m_strOperId);
+		}
+
 		if (m_bStart) {
 			SetTimer(0, 500, NULL);
 			m_stcTime[0].SetWindowText(m_strStartTime); 
@@ -83,7 +90,7 @@ void CNoWorkDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			for (int i = 0; i < 2; i++) m_lblTime[i].ShowWindow(FALSE);
 			for (int i = 0; i < 2; i++) m_stcTime[i].ShowWindow(FALSE);
 		}
-		g_objMesAgent.Set_IdleReport(gData.sOperID, "", "", "", "1");
+		if(!m_bAuto) g_objMesAgent.Set_IdleReport(gData.sOperID, "", "", "", "", "1");
 
 	} else {
 		KillTimer(0);
@@ -120,13 +127,21 @@ void CNoWorkDlg::OnStnClickedStcOperId()
 
 	m_stcOperId.SetWindowText(strKey);
 	m_strOperId = strKey;
+	gData.sOperID = strKey;
 }
 
 void CNoWorkDlg::OnBtnClickedStopLoss(UINT nID)
 {
 	int nIndex = nID - IDC_RDO_STOP_0;
+	CString sOperID;
+	m_stcOperId.GetWindowText(m_strOperId);
 
-	if (m_strOperId == "") { AfxMessageBox(" ID 입력 후 선택 하십시오."); m_rdoStopReason[nIndex].SetCheck(FALSE); return; }
+	if (m_strOperId == "") 
+	{ 
+		AfxMessageBox(" ID 입력 후 선택 하십시오."); 
+		m_rdoStopReason[nIndex].SetCheck(FALSE); 
+		return; 
+	}
 
 	CString strCode, strTxt, strTemp;
 
@@ -234,7 +249,11 @@ void CNoWorkDlg::Set_NoWorkReport()
 	strLog.Format("Idle Report %s : %s,%s,%s,%s", m_strOperId, m_strStartTime, strEndTime, m_strCode, m_strTxt);
 	g_objLogFile.Save_HandlerLog(strLog);
 
-	g_objMesAgent.Set_IdleReport(m_strOperId, m_strStartTime, strEndTime, m_strCode, "2");
+	if(m_bAuto)
+	{
+		g_objMesAgent.Set_IdleReport(m_strOperId, m_strStartTime, strEndTime, m_strCode, m_strTxt, "3");
+	}
+	else g_objMesAgent.Set_IdleReport(m_strOperId, m_strStartTime, strEndTime, m_strCode, "", "2");
 
 	m_bStart = FALSE;
 }

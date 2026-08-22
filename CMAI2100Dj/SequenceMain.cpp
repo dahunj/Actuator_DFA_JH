@@ -1967,6 +1967,13 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 	CString sLog, sGoodCarID, sGoodMZID;
 	double dRate = (gLot.nCmCount[nNo] == 0 ? 0.0 : (gLot.nGoodCount[nNo] * 100.0) / gLot.nCmCount[nNo]);
 
+	CString sProcessID, sTact, sCycle;
+
+	sTact.Format("%0.1lf", (dwTime - gLot.dwErrorTime[nNo]) / 1000.0);
+	sCycle.Format("%0.1lf", (dwTime / 1000.0));
+
+	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], gLot.sProcID[nNo], m_pEquipData->sModelName, gLot.sRecipeName[nNo], sTact , sCycle);
+
 	//"Time,PortNo,LotID,Count,NG_Count,Good_Count,Rate,Skip_Count,Bar_NoRead,RosJudge,RosGood,RosNG,RosRepair,RosTimeOver,Start_Time,End_Time,Tack\r\n");
 	sLog.Format("%d,%s,%d,%d,%d,%0.1lf,%d,%d,%d,%d,%d,%d,%d,%s,%s,%0.5lf,%d",
 				nPortNo, gLot.sLotID[nNo], gLot.nCmCount[nNo], gLot.nNgCount[nNo], gLot.nGoodCount[nNo], dRate, gLot.nRosJugCount[nNo][10], //gLot.nSkipCount[nNo],
@@ -2011,6 +2018,8 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 	if (sType == "G") { sGoodMZID = sMZID;			sGoodCarID = sCarID; }
 	else			  { sGoodMZID = m_sLastMZID;	sGoodCarID = m_sLastCarID; }
 //	g_objMesAgent.Set_LotEnd(gLot.sLotID[nNo], sGoodMZID, sGoodCarID, gLot.sRecipeName[nNo], gLot.nCmCount[nNo], gLot.nGoodCount[nNo], gLot.nNgCount[nNo]+gLot.nSkipCount[nNo]);
+	
+	g_objMesAgent.Set_UnitMaterialCount(gLot.nCmCount[nNo], nPortNo, gLot.nCmCount[nNo], gLot.nGoodCount[nNo], gLot.nNgCount[nNo]+gLot.nSkipCount[nNo]);
 	g_objMesAgent.Set_LotEnd(gLot.sLotID[nNo], gLot.sMZID_GD[nNo], gLot.sCarID_GD[nNo], gLot.sRecipeName[nNo], gLot.nCmCount[nNo], gLot.nGoodCount[nNo], gLot.nNgCount[nNo]+gLot.nSkipCount[nNo]);
 	g_objInspector.Set_LotEnd(INSPECTOR_ALL, gLot.sLotID[nNo], nPortNo);
 	g_objDispatcher.Set_LotEnd(nPortNo);
@@ -4722,6 +4731,8 @@ BOOL CSequenceMain::Run_LoadStage1()
 			gLot.sLotID[nPortNo1] = gMes.sHostLotID;
 			gLot.nCmCount[nPortNo1] = gMes.nHostCmCount;
 			gLot.sRecipeName[nPortNo1] = gMes.sHostRecipe;
+			gLot.sModelID[nPortNo1] = gMes.sHostModel;
+			gLot.sProcID[nPortNo1] = gMes.sHostProcID;
 
 			g_objMesAgent.Set_LotStart(gLot.sLotID[nPortNo1], gData.sMZID_LoadStage[nStageNo1], gData.nSlotNo_LoadStage[nStageNo1], gData.sCarID_LoadStage[nStageNo1], gLot.sRecipeName[nPortNo1]);
 			g_objLogFile.Save_RFBarData(4, gData.sCarID_LoadStage[nStageNo1], gLot.nCmCount[gLot.nJobCycle-1]);
@@ -5111,6 +5122,8 @@ BOOL CSequenceMain::Run_LoadStage2()
 			gLot.sLotID[nPortNo2] = gMes.sHostLotID;
 			gLot.nCmCount[nPortNo2] = gMes.nHostCmCount;
 			gLot.sRecipeName[nPortNo2] = gMes.sHostRecipe;
+			gLot.sModelID[nPortNo2] = gMes.sHostModel;
+			gLot.sProcID[nPortNo2] = gMes.sHostProcID;
 
 			g_objMesAgent.Set_LotStart(gLot.sLotID[nPortNo2], gData.sMZID_LoadStage[nStageNo2], gData.nSlotNo_LoadStage[nStageNo2], gData.sCarID_LoadStage[nStageNo2], gLot.sRecipeName[nPortNo2]);
 			g_objLogFile.Save_RFBarData(4, gData.sCarID_LoadStage[nStageNo2], gLot.nCmCount[gLot.nJobCycle-1]);

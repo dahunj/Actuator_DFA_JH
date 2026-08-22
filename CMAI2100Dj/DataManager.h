@@ -16,6 +16,8 @@ typedef struct tag_EQUIP_DATA {
 	BOOL	bUseMESRcpCheck;
 	BOOL	bUseLightCurtain;
 	int		nNoWorkTime;
+	int		nDownActionTime;
+
 	int		nLogDate;
 
 	BOOL	bUseAlign1;

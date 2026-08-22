@@ -152,6 +152,8 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 					m_nBackColorLoop = 0;
 					Set_StatusColor(0, 2);	// Green
 					for (int i = 1; i < 10; i++) Set_StatusColor(i, 0);	// White
+					pMainDlg->Set_MainState(STATE_RUN);
+
 
 					g_objSequenceInit.Begin_InitialThread();
 				} else {
@@ -198,6 +200,7 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (m_rdoInitStop.GetCheck()) {	
 		if (m_bInitialRunning) {	// First Stop
 			m_bInitialRunning = FALSE;
+			pMainDlg->Set_MainState(STATE_READY);
 
 			m_rdoInitStart.Set_Color(RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
 			m_rdoInitStop.Set_Color(RGB(0xFF, 0x00, 0x00), COLOR_DEFAULT);

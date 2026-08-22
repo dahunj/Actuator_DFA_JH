@@ -27,6 +27,7 @@ void CDataManager::Reset_EquipData()
 	m_EquipData.bUseDoorLock = FALSE;
 	m_EquipData.bUseTaktLog = FALSE;
 	m_EquipData.nNoWorkTime = 0;
+	m_EquipData.nDownActionTime = 5;
 
 	m_EquipData.bUseAlign1 = FALSE;
 	m_EquipData.bUseAlign2 = FALSE;
@@ -224,6 +225,7 @@ BOOL CDataManager::Read_EquipData()
 	m_EquipData.bUseDoorLock = INI.Get_Bool("EQUIPMENT", "DOOR_LOCK", FALSE);
 	m_EquipData.bUseTaktLog = INI.Get_Bool("EQUIPMENT", "TAKT_LOG", FALSE);
 	m_EquipData.nNoWorkTime = INI.Get_Integer("EQUIPMENT", "NOWORK_TIME", 0);
+	m_EquipData.nDownActionTime = INI.Get_Integer("EQUIPMENT", "DOWN_REPORT_TIME", 0);
 	m_EquipData.sPROG_VER = INI.Get_String("EQUIPMENT", "VIS_PROG_VER", "");
 	m_EquipData.sPARA_VER = INI.Get_String("EQUIPMENT", "VIS_PARA_VER", "");
 	m_EquipData.nLogDate = INI.Get_Integer("EQUIPMENT", "LOT_DELETE_DATE", 90);
@@ -360,6 +362,7 @@ BOOL CDataManager::Read_ModelEquipData(CString strPath)
 	m_EquipData.bUseDoorLock = INI.Get_Bool("EQUIPMENT", "DOOR_LOCK", FALSE);
 	m_EquipData.bUseTaktLog = INI.Get_Bool("EQUIPMENT", "TAKT_LOG", FALSE);
 	m_EquipData.nNoWorkTime = INI.Get_Integer("EQUIPMENT", "NOWORK_TIME", 0);
+	m_EquipData.nDownActionTime = INI.Get_Integer("EQUIPMENT", "DOWN_REPORT_TIME", 0);
 	m_EquipData.sPROG_VER = INI.Get_String("EQUIPMENT", "VIS_PROG_VER", "");
 	m_EquipData.sPARA_VER = INI.Get_String("EQUIPMENT", "VIS_PARA_VER", "");
 	m_EquipData.bUseLightCurtain = INI.Get_Bool("EQUIPMENT", "LIGHT_CURTAIN", FALSE);

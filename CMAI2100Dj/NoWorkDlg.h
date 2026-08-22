@@ -43,6 +43,8 @@ private:
 	CString		m_strTxt;
 	CString		m_strStopArray[4][3];
 	CString		m_strLossArray[12][3];
+
+	BOOL		m_bAuto;			// 수동 비가동인지 시간되서 자동비가동 보고 뜬건지  
 	
 public:
 	CString		m_strOperId;
@@ -56,6 +58,7 @@ private:
 
 public:
 	void Set_NoWorkReport();
+	void Set_Auto(BOOL bAuto) { m_bAuto = bAuto; } 
 };
 
 extern CNoWorkDlg g_dlgNoWork;

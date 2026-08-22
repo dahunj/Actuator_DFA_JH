@@ -160,6 +160,7 @@
     <ClInclude Include="Common.h" />
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="Dispatcher.h" />
+    <ClInclude Include="DownReportDlg.h" />
     <ClInclude Include="ErrorDlg.h" />
     <ClInclude Include="IdleReportDlg.h" />
     <ClInclude Include="InitialDlg.h" />
@@ -226,6 +227,7 @@
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="DataManager.cpp" />
     <ClCompile Include="Dispatcher.cpp" />
+    <ClCompile Include="DownReportDlg.cpp" />
     <ClCompile Include="ErrorDlg.cpp" />
     <ClCompile Include="IdleReportDlg.cpp" />
     <ClCompile Include="InitialDlg.cpp" />

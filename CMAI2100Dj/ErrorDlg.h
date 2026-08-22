@@ -71,6 +71,8 @@ private:
 public:
 	void Set_ErrorNumber(int nErrNo) { m_nErrNo = nErrNo; }
 	void Set_ErrorSubMessage(CString sErrMsg) { m_strErrSubMsg = sErrMsg; }
+
+	
 };
 
 extern CErrorDlg g_dlgError;

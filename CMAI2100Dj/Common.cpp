@@ -20,6 +20,9 @@
 #include <fstream>
 #include "Wininet.h"
 
+#include "WorkDlg.h"
+#include "DownReportDlg.h"
+
 // CCommon
 CCommon g_objCommon;
 
@@ -1185,6 +1188,13 @@ void CCommon::Display_MESRecipe(CString sRecipe)
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
 	pMainDlg->Display_EquipName();
 }
+
+
+void CCommon::Set_DownActionCboList(CString sData)
+{
+	g_dlgDownReport.Set_DownActionCboList(sData);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

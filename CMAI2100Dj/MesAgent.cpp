@@ -388,6 +388,19 @@ void CMesAgent::Get_CarrierCancel(CString sCarrierId, CString sCode, CString sTe
 	else if (gMes.nCarConfirm[2] == 1) g_objCommon.Show_Error(9017);
 }
 
+
+void CMesAgent::Get_IdleReasonCode(CString sData)
+{
+	
+}
+
+
+void CMesAgent::Get_DownActionCode(CString sData)
+{
+	g_objCommon.Set_DownActionCboList(sData);
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Set Command
 
@@ -399,10 +412,10 @@ void CMesAgent::Set_EquipState(int nFlag)
 	Send_Command(strSend);
 }
 
-void CMesAgent::Set_ErrorUpdate(int nFlag, CString sErrNo)
+void CMesAgent::Set_ErrorUpdate(int nFlag, CString sErrNo, CString sErrCat)
 {
 	CString strSend;
-	strSend.Format("ERROR,UPDATE,%d,%s", nFlag, sErrNo);
+	strSend.Format("ERROR,UPDATE,%d,%s,%s", nFlag, sErrNo, sErrCat);
 	Send_Command(strSend);
 }
 
@@ -446,12 +459,53 @@ void CMesAgent::Set_OperUpdate(CString sOperId)
 	Send_Command(strSend);
 }
 
-void CMesAgent::Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sType)
+void CMesAgent::Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sText, CString sType)
 {
 	CString strSend;
-	strSend.Format("IDLE,REPORT,%s,%s,%s,%s,%s", sOperId, sSTime, sETime, sCode, sType);
+	strSend.Format("IDLE,REPORT,%s,%s,%s,%s,%s,%s", sOperId, sSTime, sETime, sCode, sText, sType);
 	Send_Command(strSend);
 }
+
+void CMesAgent::Set_UnitState(int nState)
+{
+	// MES : Init, idle, Setup, Ready, Executing(=Run), Paused(=Down)
+	CString strSend;
+	strSend.Format("UNIT,STATE,%d", nState);	// 1:Init, 2:Idle, 3:Setup, 4:Ready, 5:Run(=Executing), 6;Pause(=Down)
+	Send_Command(strSend);
+}
+
+void CMesAgent::Set_ModeChanged(int nMode)
+{
+	CString strSend;
+	strSend.Format("ACCESS,CHANGED,%d", nMode);
+	Send_Command(strSend);
+}
+
+void CMesAgent::Set_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, int nErrNo, int nErrCat, CString sErrMsg)
+{
+	CString strSend;
+	strSend.Format("DOWN,REPORT,%s,%s,%s,%s,%d,%d,%s", sActionCode, sActionDetail, sStartTime, sEndTime, nErrNo, nErrCat, sErrMsg);
+	Send_Command(strSend);
+}
+
+
+void CMesAgent::Set_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime)
+{
+	CString strSend;
+	strSend.Format("UNIT,REPORT,%s,%s,%s,%s,%s,%s", sLotID, sProcessID, sModelID, sRecipe, sTactTime, sCycleTime);
+	Send_Command(strSend);
+}
+
+
+void CMesAgent::Set_UnitMaterialCount(int nMDCount, int nPortNo, int nInputCnt, int nOk, int nNG)
+{	
+	CString strSend;
+	strSend.Format("UNIT,COUNT,%d,%d,%d,%d,%d", nMDCount, nPortNo, nInputCnt, nOk, nNG);
+	Send_Command(strSend);
+}
+
+
+
 
 void CMesAgent::Set_RecipeList(int nFlag)						// 0:All, 1:Current Recipe
 {

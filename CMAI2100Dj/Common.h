@@ -123,6 +123,8 @@ public:
 	BOOL Read_FocusOffset();
 	void Display_MESRecipe(CString sRecipe);
 
+	void Set_DownActionCboList(CString sData);
+
 	///////////////////////////////////////////////////////////////////////////
 
 	void Wait_Time(int msec);

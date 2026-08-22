@@ -417,7 +417,8 @@ BOOL CSequenceInit::Initial_MainRun()
 		// 변수 초기화
 		g_objSequenceMain.Reset_MainRunCase();
 		g_objSequenceMain.Set_ClearRunData(0);
-		g_objMesAgent.Set_EquipState(2);	//Idle
+		g_objMesAgent.Set_EquipState(eEquipState::IDLE);
+		g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 
 		gData.nTransferXLock = 0;
 		for(int i=0; i< 5; i++) gData.nNG_MC[i][1] = 0;

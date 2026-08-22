@@ -6,6 +6,7 @@
 #include "afxdialogex.h"
 
 #include "DataManager.h"
+#include "MesAgent.h"
 
 // CPasswordDlg 대화 상자입니다.
 
@@ -97,13 +98,19 @@ void CPasswordDlg::OnBnClickedBtnOk()
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 
 	m_edtPassword.GetWindowText(strInput);
-	if (strInput == pEquipData->sPasswordPm) {
+	if (strInput == pEquipData->sPasswordPm) 
+	{
+		g_objMesAgent.Set_ModeChanged(eAccessMode::Engineer);
 		g_nLoginUser = 3;	// PM
 		EndDialog(IDOK);
-	} else if (strInput == pEquipData->sPasswordMt) {
+	} else if (strInput == pEquipData->sPasswordMt) 
+	{
+		g_objMesAgent.Set_ModeChanged(eAccessMode::Maint);
 		g_nLoginUser = 1;	// MT
 		EndDialog(IDOK);
-	} else if (strInput.MakeUpper() == pEquipData->sPasswordSi) {
+	} else if (strInput.MakeUpper() == pEquipData->sPasswordSi) 
+	{
+		g_objMesAgent.Set_ModeChanged(eAccessMode::OP);
 		g_nLoginUser = 2;	// SI
 		EndDialog(IDOK);
 	} else {

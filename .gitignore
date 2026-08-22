@@ -27,6 +27,7 @@
 *.unsuccessfulbuild
 ipch/
 obj/
+LOG/
 [Bb]in
 [Dd]ebug*/
 [Rr]elease*/

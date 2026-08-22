@@ -326,11 +326,9 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	GetLocalTime(&time);
 	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
 	
-	if(gDown.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , 0, gDown.strErrMsg);
+	if(gDown.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, 0 , 0, gDown.strErrMsg);
 	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
-
-
-	
+		
 	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
 	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 

@@ -224,9 +224,9 @@ BOOL CSequenceInit::Initial_MainRun()
 		}
 		break;
 	case 3:
-	/*	if (!m_pDX03->iTransferRTrayExist) {
+		if (!m_pDX03->iTransferRTrayExist) {
 			m_niMainCase++; m_tiMainLoop.Set_LoopTime(3000);
-		}*/
+		}
 		break;
 	case 4:
 		if (!m_pDX04->iLoadStage1TrayExist && !m_pDX04->iLoadStage2TrayExist) {

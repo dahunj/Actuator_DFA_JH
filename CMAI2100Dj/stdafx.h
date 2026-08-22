@@ -269,6 +269,11 @@ typedef struct {
 	CString sCarID_GD[30];
 	CString	sLotID[30];
 	CString	sRecipeName[30];
+
+	CString sModelID[30];
+	CString sProcID[30];
+
+
 	int		nMZLastCar[30];		//1:Last Carrier
 	int		nSlotNo_LD[30];
 	int		nSlotNo_NG[30];
@@ -348,6 +353,9 @@ typedef struct {
 	int		nAlmNo;
 	int		nPortNo;
 	CString sAlmMsg;
+	CString sAlmCatMajor;
+	CString sAlmCatMiddle;
+
 	CString sStartTime;
 	CString sEndTime;
 	CString sLotID;
@@ -384,6 +392,9 @@ typedef struct {
 	CString		sHostLotID;					// Host 熱褐 LotID
 	CString		sHostRecipe;				// Host 熱褐 Recipe
 	int			nHostCmCount;				// Host 熱褐 Lot渡 CM 識偎熱
+
+	CString     sHostProcID;
+	CString     sHostModel;
 
 	// Cancel Data
 	CString		sHostCancelLotId;
@@ -422,11 +433,27 @@ typedef struct {
 	int			nAlmCount;
 } GLOVAL_OCAP;
 
+typedef struct  
+{
+	BOOL			bDownHappen;
+	BOOL			bDownClear;
+
+	int				nErrorNo;
+	CString			strErrNo;
+	CString			strErrMsg;
+
+	BOOL			bPDT;
+
+} GLOVAL_DOWN;
+
+
+
 extern GLOVAL_DATA		gData;
 extern GLOVAL_LOT		gLot;
 extern GLOVAL_ALM		gAlm;
 extern GLOVAL_MES		gMes;
 extern GLOVAL_OCAP		gCap;
+extern GLOVAL_DOWN		gDown;
 
 typedef struct {
 	CString		sNGCode[30][1][40][5][20];	//Port[30],TrayNo[1],Module[40],Inspection[5],NG-Code[20]
@@ -445,3 +472,31 @@ typedef struct {
 extern GLOVAL_TEST* Gt;
 */
 
+
+struct eEquipState
+{
+	enum Name
+	{
+		RUN = 1,
+		IDLE = 2,
+		DOWN = 3,
+		IDLE_STARVED = 4,
+		IDLE_BLOCKED = 5, 
+
+	};
+};
+
+
+struct eAccessMode
+{
+	enum Name
+	{
+		Undefined = 0,
+		OP = 1,
+		Maint = 2,
+		Eng_Vendor = 3,
+		Eng_MI = 4,
+		Engineer = 5,
+		Admini = 6,
+	};
+};

@@ -15,7 +15,7 @@ public:
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_SETUP_EQUIP_DLG };
 	CGroupCS	m_Group[9];
-	CLabelCS	m_Label[38];
+	CLabelCS	m_Label[39];
 	CStaticCS	m_stcEquipName;
 	CStaticCS	m_stcEquipModel;
 	CComboCS	m_cboModelChange;
@@ -71,6 +71,7 @@ public:
 	CLabelCS	m_lblMESUse2;
 	CRadioCS	m_rdoMESUse2[2];
 	CStaticCS	m_stcNoWorkTime;
+	CStaticCS	m_stcDownReportTime;
 	CCheckCS	m_chkUseAuotSkip;
 	CCheckCS	m_chkUseLockChk;
 	CListCS		m_lstMdjIp;
@@ -114,6 +115,7 @@ public:
 	afx_msg void OnBnClickedButtonModelAdd();
 	afx_msg void OnCbnDropdownCboModelChange();
 	afx_msg void OnCbnSelchangeCboModelChange();
+	afx_msg void OnStnClickedStcDownactionTime();
 };
 
 ///////////////////////////////////////////////////////////////////////////////

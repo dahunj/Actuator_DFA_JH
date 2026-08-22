@@ -20,6 +20,7 @@
 #include "OperatorDlg.h"
 #include "CMAI2100Dlg.h"
 #include "NoWorkDlg.h"
+#include "DownReportDlg.h"
 
 // CWorkDlg 대화 상자입니다.
 CWorkDlg g_dlgWork;
@@ -110,6 +111,7 @@ BEGIN_MESSAGE_MAP(CWorkDlg, CDialogEx)
 	ON_STN_CLICKED(IDC_STC_OPER_ID, &CWorkDlg::OnStnClickedOperId)
 	ON_STN_CLICKED(IDC_STC_EQUIP_TYPE, &CWorkDlg::OnStnClickedCarrier)
 	ON_STN_CLICKED(IDC_STC_MZ_LOT_ID_6, &CWorkDlg::OnStnClickedStcMzLotId6)
+	ON_BN_CLICKED(IDC_BTN_PDT, &CWorkDlg::OnBnClickedBtnPdt)
 END_MESSAGE_MAP()
 
 // CWorkDlg 메시지 처리기입니다.
@@ -220,7 +222,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (pDX13->iStopSw && !m_rdoWorkStop.GetCheck()) {
 		g_objLogFile.Save_HandlerLog("[Work Mode] STOP S/W push");
 		m_rdoWorkStop.SetCheck(TRUE);
-		pMainDlg->Set_MainState(STATE_INITEND);
+		pMainDlg->Set_MainState(STATE_READY);
 	}
 
 	DX_DATA_20 *pDX20 = g_objAJinAXL.Get_pDX20();
@@ -235,7 +237,10 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 		if (!m_bAutoRunning) {		// First AutoRun
 			if (!Work_Start()) { SetTimer(0, 100, NULL); m_rdoWorkStop.SetCheck(TRUE); return; }
 
-			if (g_objSequenceInit.Get_InitComplete()) {
+			if (g_objSequenceInit.Get_InitComplete()) 
+			{
+
+				gDown.bDownClear = TRUE;
 				m_bAutoRunning = TRUE;
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
 				pMainDlg->Enable_ModeButton(FALSE);
@@ -250,7 +255,8 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				g_objSequenceMain.Begin_MainRunThread();
 
 				pMainDlg->Set_EquipRunStart();
-				g_objMesAgent.Set_EquipState(5);	//Run
+				g_objMesAgent.Set_EquipState(eEquipState::RUN);	
+				g_objMesAgent.Set_UnitState(eEquipState::RUN);
 
 			} else {
 				g_objCommon.Show_Error(40);		// 초기화 완료 에러
@@ -259,7 +265,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 		} else {				// Auto Running
 			if (!g_objSequenceMain.Is_MainThreadRun()) {
 				g_objLogFile.Save_HandlerLog("[Work Mode] Auto STOP");
-				pMainDlg->Set_MainState(STATE_INITEND);
+				pMainDlg->Set_MainState(STATE_READY);
 			}
 		}
 
@@ -267,7 +273,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 		if (m_bAutoRunning) {	// First AutoStop
 			m_bAutoRunning = FALSE;
 
-			g_objSequenceMain.End_MainRunThread();
+			g_objSequenceMain.End_MainRunThread(3000);
 			g_objCommon.Stop_Conveyor();
 
 			m_rdoWorkStart.Set_Color(RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
@@ -470,9 +476,10 @@ void CWorkDlg::OnBnClickedRdoWorkStart()
 void CWorkDlg::OnBnClickedRdoWorkStop()
 {
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
-	pMainDlg->Set_MainState(STATE_INITEND);
+	pMainDlg->Set_MainState(STATE_READY);
 	dwStopSTime = GetTickCount();
-	g_objMesAgent.Set_EquipState(6);	//Pause
+	g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
+	g_objMesAgent.Set_UnitState(eEquipState::DOWN);
 
 	g_objLogFile.Save_HandlerLog("[Work Mode] STOP button push");
 }
@@ -648,7 +655,11 @@ void CWorkDlg::OnBnClickedBtnIdleReport()
 	}
 
 	if (g_dlgNoWork.IsWindowVisible()) g_dlgNoWork.ShowWindow(SW_HIDE);
-	else g_dlgNoWork.ShowWindow(SW_SHOW);	
+	else
+	{
+		g_dlgNoWork.Set_Auto(FALSE);
+		g_dlgNoWork.ShowWindow(SW_SHOW);	
+	}
 }
 //------------------MES------------------------------------------------------------//
 
@@ -661,7 +672,7 @@ BOOL CWorkDlg::Work_Start()
 
 	g_objCommon.Locking_Slide(TRUE, 0);
 	if (gData.bAlarmShow) {
-		g_objCommon.Show_MsgBox(1, "Alaram 화면을 Close하고 Run 진행하세요.....");
+		g_objCommon.Show_MsgBox(1, "Alarm 화면을 Close하고 Run 진행하세요.....");
 		m_rdoWorkStop.SetCheck(TRUE);
 		return FALSE;
 	}
@@ -1448,7 +1459,7 @@ void CWorkDlg::Reset_AlarmLog()
 	g_objLogFile.Save_SpcErrorLog(strLog, gAlm.sLotID);
 
 	strErrNo.Format("%04d", gAlm.nAlmNo);
-	g_objMesAgent.Set_ErrorUpdate(0, strErrNo);
+	g_objMesAgent.Set_ErrorUpdate(0, strErrNo, gAlm.sAlmCatMajor);
 
 	if (gAlm.nPortNo > 0) {
 		gLot.dwErrorTime[gAlm.nPortNo-1] += gAlm.dwProcTime; gLot.nErrorCount[gAlm.nPortNo-1]++;
@@ -1677,7 +1688,8 @@ LRESULT CWorkDlg::OnJobComplete(WPARAM wParam, LPARAM lParam)
 
 	if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "Job 완료.");
 	else					  g_objCommon.Show_MsgBox(1, "Job complete.");
-	g_objMesAgent.Set_EquipState(2);	//Idle
+	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
+	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_2, 0);
 
 	CIniFileCS INI_EQP(gsCurrentDir + "\\System\\EquipData.ini");
@@ -2735,4 +2747,19 @@ void CWorkDlg::OnBnClickedBtnBuzzerOff()
 	sLog.Format("%d", (Gt[0].sData1[0].GetLength()*5*320*3));
 	AfxMessageBox(sLog);
 */
+}
+
+
+void CWorkDlg::OnBnClickedBtnPdt()
+{
+	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+	if (!pEquipData->bUseMES) return;
+
+	if (g_dlgDownReport.IsWindowVisible()) g_dlgDownReport.ShowWindow(SW_HIDE);
+	else
+	{
+		//g_dlgDownReport.Set_Auto(FALSE);
+		gDown.bPDT = TRUE;
+		g_dlgDownReport.ShowWindow(SW_SHOW);
+	}
 }

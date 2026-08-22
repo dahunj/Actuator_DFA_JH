@@ -235,7 +235,7 @@ public:
 	double	m_dBtmZ, m_dTop1Z, m_dTop2Z;
 
 	void Begin_MainRunThread();
-	void End_MainRunThread();
+	void End_MainRunThread(DWORD dwWait);
 	void Run_Replay();
 	
 	BOOL Is_MainThreadRun() { return m_bThreadMainRun; }

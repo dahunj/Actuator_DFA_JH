@@ -100,6 +100,7 @@ protected:
 	afx_msg void OnStnClickedOperId();
 	afx_msg void OnStnClickedCarrier();
 	afx_msg void OnStnClickedStcMzLotId6();
+	afx_msg void OnBnClickedBtnPdt();
 
 	BOOL		m_bThreadElevatorRun;
 	CWinThread	*m_pThreadElevatorRun;
@@ -169,6 +170,7 @@ public:
 
 	void Set_AutoRun(BOOL bAutoRun);
 	void Set_AutoRunStatus(BOOL bAutoRun) { m_bAutoRunning = bAutoRun; }
+	
 };
 
 extern CWorkDlg g_dlgWork;

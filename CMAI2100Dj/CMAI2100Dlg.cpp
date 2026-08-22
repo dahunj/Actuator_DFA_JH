@@ -809,7 +809,7 @@ void CCMAI2100Dlg::Exit_System(int nExitNo)
 	g_objLogFile.Save_HandlerLog("[Main Dialog] Program Exit");
 
 	g_dlgWork.End_ElevatorRunThread();
-	g_objSequenceMain.End_MainRunThread();
+	g_objSequenceMain.End_MainRunThread(3000);
 	g_objSequenceInit.End_InitialThread();
 	g_objCommon.Stop_Conveyor();
 	g_objCommon.BuzzerOff();

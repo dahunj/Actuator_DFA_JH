@@ -13,6 +13,7 @@
 #include "Dispatcher.h"
 #include "OperatorDlg.h"
 #include "CMAI2100Dlg.h"
+#include "DownReportDlg.h"
 
 // CInitialDlg 대화 상자입니다.
 CInitialDlg g_dlgInitial;
@@ -116,6 +117,8 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 	KillTimer(0);
 
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
+	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+
 	DX_DATA_13 *pDX13 = g_objAJinAXL.Get_pDX13();
 
 	if (pDX13->iStartSw && !m_rdoInitStart.GetCheck()) {
@@ -136,7 +139,31 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 			else					  sText.Format("Do you want to Initialize?");
 
 			if (g_objCommon.Show_MsgBox(2, sText) == IDOK) {
-				if (g_objCommon.Check_TraySlide(9)) {
+				if (g_objCommon.Check_TraySlide(9)) 
+				{
+
+					//Down Report Show 				
+					int nTerm = (int)(GetTickCount() - gDown.dwDownTime);
+					if (nTerm > pEquipData->nDownActionTime * 1000 && !g_dlgDownReport.IsWindowVisible() 
+						&& gDown.bDownHappen && !gDown.bDownClear)
+					{
+						g_dlgDownReport.m_bStart = TRUE;
+						gDown.bDownClear = TRUE;
+						gDown.bDownHappen = FALSE;
+						gDown.dwDownTime = GetTickCount();
+
+						CTime CurTime = CTime::GetCurrentTime(); 
+						CurTime -= pEquipData->nNoWorkTime;
+						g_dlgDownReport.m_dwStartTime = GetTickCount();
+						g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+
+						CString strLog;
+						strLog.Format("Down Report 시작\t%s", g_dlgDownReport.m_strStartTime);
+						g_objLogFile.Save_HandlerLog(strLog);
+
+						g_dlgDownReport.ShowWindow(TRUE);
+					}
+
 					m_bInitialRunning = TRUE;
 
 					g_objCommon.Locking_MainDoor(TRUE, TRUE);

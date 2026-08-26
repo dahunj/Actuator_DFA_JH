@@ -228,6 +228,8 @@ typedef struct {
 	int		nDoorLockTime;	//Min
 	DWORD	dwDoorStartTime;
 
+	
+
 	BOOL	bResultTest;	// 비전FOB 모드로 전체양품이 안되어 반복성을 돌릴수 없다.
 	double	dElevatorDown;
 	int		nVsNo[2];
@@ -443,6 +445,8 @@ typedef struct
 	CString			strErrMsg;
 
 	BOOL			bPDT;
+
+	DWORD			dwDownTime;
 
 } GLOVAL_DOWN;
 

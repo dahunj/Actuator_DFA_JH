@@ -1972,7 +1972,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 	sTact.Format("%0.1lf", (dwTime - gLot.dwErrorTime[nNo]) / 1000.0);
 	sCycle.Format("%0.1lf", (dwTime / 1000.0));
 
-	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], gLot.sProcID[nNo], m_pEquipData->sModelName, gLot.sRecipeName[nNo], sTact , sCycle);
+	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], gLot.sProcID[nNo], gLot.sModelID[nNo], gLot.sRecipeName[nNo], sTact , sCycle);
 
 	//"Time,PortNo,LotID,Count,NG_Count,Good_Count,Rate,Skip_Count,Bar_NoRead,RosJudge,RosGood,RosNG,RosRepair,RosTimeOver,Start_Time,End_Time,Tack\r\n");
 	sLog.Format("%d,%s,%d,%d,%d,%0.1lf,%d,%d,%d,%d,%d,%d,%d,%s,%s,%0.5lf,%d",
@@ -3510,10 +3510,10 @@ BOOL CSequenceMain::Run_Transfer1()
 		return TRUE;
 
 	case 3:
-		/*if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) {
+		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) {
 			g_objCommon.Save_Motion(AX_TRANSFER_X1, gData.nTransferX1Pos);
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(5000);
-		}*/
+		}
 		break;
 	case 4:
 		if (!m_pDX03->iTransferLTrayExist) {

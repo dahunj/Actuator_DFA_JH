@@ -189,7 +189,8 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		CString sTempCat;
 		sTempCat.Format("00004%s", gAlm.sAlmCatMajor);
 
-		m_stcAlmCatNo.SetWindowText(sTempCat);
+		if(gDown.bPDT) m_stcAlmCatNo.SetWindowText("0000000");
+		else m_stcAlmCatNo.SetWindowText(sTempCat);
 		m_edtActionDetail.SetWindowText("");
 
 		CString strErrPick, strMiddle, strMiddleMsg;
@@ -320,7 +321,9 @@ void CDownReportDlg::OnBnClickedBtnReport()
 
 	strActionDetail.Empty();
 	m_edtActionDetail.GetWindowText(strActionDetail);
-	if(strActionDetail.GetLength() < 5)
+
+	if(gDown.bPDT){}
+	else if(strActionDetail.GetLength() < 5)
 	{
 		AfxMessageBox("Please Input Action Detail more than 5 string");
 		return;
@@ -330,7 +333,7 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	GetLocalTime(&time);
 	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
 	
-	if(gDown.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, 0 , 0, "");
+	if(gDown.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, 0 , 0, "PDT");
 	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 		
 	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	

@@ -118,10 +118,7 @@ public:
 
 	void Set_NoWork();					// 비가동 집계 팝업
 	void Set_NoWorkTimer(DWORD dwTimer) {m_dwNoWorkTime = dwTimer;}		// Nowork Timer
-
-	void Set_DownAction();
-	void Set_DownActionTimer(DWORD dwTimer) {m_dwDownActionTime = dwTimer;}		// Nowork Timer
-	
+		
 	void Display_EquipName();
 	void Display_DateTime();
 	void Exit_System(int nExitNo);

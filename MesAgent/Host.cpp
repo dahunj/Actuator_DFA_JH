@@ -737,6 +737,8 @@ void CHost::Set_S6F11_EquipState(int nState, int nErrNo, int nErrCat)
 	strOldState.Format("%d", gData.nPreEquipState);
 // 	strOldState = ((nState == 2 || nState == 6) ? "5" : "6");
 
+	if(gData.nPreEquipState == gData.nCurEquipState) return;
+
 	SYSTEMTIME time;
 	GetLocalTime(&time);
 
@@ -771,6 +773,7 @@ void CHost::Set_S6F11_EquipState(int nState, int nErrNo, int nErrCat)
 		{
 			strErrNo = "0000";
 			strErrCat = "0000000";
+			gData.sAlarmTxt = "PDT";
 		}
 
 		strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"1\" />" + CRLF;

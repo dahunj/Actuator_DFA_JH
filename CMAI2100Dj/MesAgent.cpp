@@ -215,13 +215,17 @@ void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount, 
 	if (nPortNo < 90) {
 		g_objCommon.Show_Error(9009);	return;
 	}
+
+	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+
+
 	if (sRecipe.GetLength() < 1 || nCmCount < 1 || nCmCount > 40) {
 		g_objCommon.Show_Error(9001);	return;
 	}
 	if (Exist_Recipe(sRecipe) == FALSE) {
 		g_objCommon.Show_Error(9007);	return;
 	}
-	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+	
 	if (sRecipe != pEquipData->sModelName) {
 		if (pEquipData->bUseMESRcpCheck) {
 			g_objCommon.Show_Error(9008);	return;

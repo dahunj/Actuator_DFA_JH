@@ -75,7 +75,7 @@
 #endif
 
 //****************************************************************************
-//#define AJIN_BOARD_USE
+#define AJIN_BOARD_USE
 #define CARRIER_TYPE_MEM
 //****************************************************************************
 
@@ -90,7 +90,7 @@
 #define ELEVATOR_SL		0.5
 
 #ifdef CARRIER_TYPE_MEM
-	#define MAIN_VERSION	"Vd 2.8.3m"
+	#define MAIN_VERSION	"Vd 2.8.4m"
 	#define CARRIER_OFFSETX	8.0
 	#define CARRIER_OFFSETY	0.0
 #else

@@ -1034,36 +1034,36 @@ void CSequenceMain::Set_NextLot(CString sLotID, DWORD dwTime)
 	int nNextPortLot = 0;
 	for (int i=0; i<2; i++) {
 		if (gData.sLotID_GoodTray[i].GetLength() > 1 && gData.nPortNo_GoodTray[i] > 0 && sLotID != gData.sLotID_GoodTray[i]) {
-			nNextPortLot = gData.nPortNo_GoodTray[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_GoodTray[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	for (int i=0; i<2; i++) {
 		if (gData.sLotID_NGTray[i].GetLength() > 1 && gData.nPortNo_NGTray[i] > 0 && sLotID != gData.sLotID_NGTray[i]) {
-			nNextPortLot = gData.nPortNo_NGTray[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_NGTray[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	for (int i=0; i<2; i++) {
 		if (gData.sLotID_UnloadPicker[i].GetLength() > 1 && gData.nPortNo_UnloadPicker[i] > 0 && sLotID != gData.sLotID_UnloadPicker[i]) {
-			nNextPortLot = gData.nPortNo_UnloadPicker[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_UnloadPicker[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	for (int i=0; i<4; i++) {
 		if (gData.sLotID_VisionStage[i].GetLength() > 1 && gData.nPortNo_VisionStage[i] > 0 && sLotID != gData.sLotID_VisionStage[i]) {
-			nNextPortLot = gData.nPortNo_VisionStage[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_VisionStage[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	for (int i=0; i<2; i++) {
 		if (gData.sLotID_LoadPicker[i].GetLength() > 1 && gData.nPortNo_LoadPicker[i] > 0 && sLotID != gData.sLotID_LoadPicker[i]) {
-			nNextPortLot = gData.nPortNo_LoadPicker[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_LoadPicker[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	for (int i=0; i<2; i++) {
 		if (gData.sLotID_LoadStage[i].GetLength() > 1 && gData.nPortNo_LoadStage[i] > 0 && sLotID != gData.sLotID_LoadStage[i]) {
-			nNextPortLot = gData.nPortNo_LoadStage[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_LoadStage[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	if (gData.sLotID_Tansfer[0].GetLength() > 1 && gData.nPortNo_Tansfer[0] > 0 && sLotID != gData.sLotID_Tansfer[0]) {
-		nNextPortLot = gData.nPortNo_Tansfer[0]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+		nNextPortLot = gData.nPortNo_Tansfer[0];// gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 	}
 }
 

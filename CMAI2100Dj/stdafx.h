@@ -94,7 +94,7 @@
 	#define CARRIER_OFFSETX	8.0
 	#define CARRIER_OFFSETY	0.0
 #else
-	#define MAIN_VERSION	"Vd 2.8.3v"
+	#define MAIN_VERSION	"Vd 2.8.4v"
 	#define CARRIER_OFFSETX	8.0
 	#define CARRIER_OFFSETY	8.0
 #endif

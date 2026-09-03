@@ -329,6 +329,17 @@ void CSequenceMain::Begin_MainRunThread()
 	if (m_pThreadMainRun) End_MainRunThread(INFINITE);
 	m_bThreadMainRun = TRUE;
 	m_pThreadMainRun = AfxBeginThread(Thread_MainRun, NULL);
+
+	if(gLot.dwErrorStart != 0)
+	{	
+		gLot.dwErrorEnd = GetTickCount() - gLot.dwErrorStart;
+		for(int i = 0; i < 30; i++)
+		{
+			gLot.dwErrorTime[i] += gLot.dwErrorEnd;			
+		}
+		gLot.dwErrorStart = 0;
+		gLot.dwErrorEnd = 0;
+	}
 }
 
 void CSequenceMain::End_MainRunThread(DWORD dwWait)
@@ -1969,7 +1980,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 
 	CString sProcessID, sTact, sCycle;
 
-	sTact.Format("%0.1lf", (dwTime - gLot.dwErrorTime[nNo]) / 1000.0);
+	sTact.Format("%0.1lf", (dwTime - gLot.dwErrorTime[nNo] - gLot.dwStopTime[nNo]) / 1000.0);
 	sCycle.Format("%0.1lf", (dwTime / 1000.0));
 
 	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], gLot.sProcID[nNo], gLot.sModelID[nNo], gLot.sRecipeName[nNo], sTact , sCycle);
@@ -2055,6 +2066,11 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 				gLot.sCarID_GD[nNo][0], gLot.sCarID_GD[nNo][1], gLot.sCarID_GD[nNo][2], gLot.sCarID_GD[nNo][3], gLot.sCarID_GD[nNo][4], gLot.sCarID_GD[nNo][5], gLot.sCarID_GD[nNo][6], gLot.sCarID_GD[nNo][7]);
 	g_objLogFile.Save_HandlerLog(sLog);
 */
+	gLot.dwErrorTime[nNo] = 0;
+	gLot.dwStopTime[nNo] = 0;
+
+
+
 	if (gData.nRejectMaxCount > 0 && gData.nRejectLotCount >= gData.nRejectMaxCount)
 			g_dlgWork.PostMessage(UM_LOT_END_MSG, nPortNo, 9);
 //	else if (gLot.nCmCount[nNo] != gLot.nRstNgCount[nNo] + gLot.nRstGoodCount[nNo])

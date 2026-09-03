@@ -106,6 +106,10 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		gDown.bDownClear = FALSE;
 		gDown.bPDT = FALSE;
 
+		gLot.dwErrorStart = 0;
+		gLot.dwStopStart = 0;
+		gLot.dwErrorStart = GetTickCount();
+
 		BringWindowToTop();				// 화면 위로...
 		m_btnErrOK.EnableWindow(TRUE);	//2018.8.24+
 

@@ -266,9 +266,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
 				pMainDlg->Enable_ModeButton(FALSE);
 				if (gAlm.bBegin) Reset_AlarmLog();
-				else {
-					if (gLot.nRunPortNo > 0) gLot.dwStopTime[gLot.nRunPortNo-1] += (GetTickCount() - dwStopSTime);
-				}
+				
 				pMainDlg->Set_MainState(STATE_RUN);
 
 				g_objInspector.Set_StatusUpdate(INSPECTOR_ALL, 2);
@@ -491,6 +489,17 @@ void CWorkDlg::OnBnClickedRdoSlectNo(UINT nID)
 
 void CWorkDlg::OnBnClickedRdoWorkStart()
 {
+	if(gLot.dwStopStart != 0)
+	{	
+		gLot.dwStopEnd = GetTickCount() - gLot.dwStopStart;
+		for(int i = 0; i < 30; i++) 
+		{
+			gLot.dwStopTime[i] += gLot.dwStopEnd;			
+		}
+		gLot.dwStopStart = 0;
+		gLot.dwStopEnd = 0;
+	}
+
 	g_objLogFile.Save_HandlerLog("[Work Mode] START button push");
 }
 
@@ -501,6 +510,15 @@ void CWorkDlg::OnBnClickedRdoWorkStop()
 	dwStopSTime = GetTickCount();
 	g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
 	g_objMesAgent.Set_UnitState(eEquipState::DOWN);
+
+	for(int i = 0; i < 3; i++) 
+	{
+		//gLot.nStopCount[i]++;		
+	}
+
+	gLot.dwErrorStart = 0;
+	gLot.dwStopStart = 0;
+	gLot.dwStopStart = GetTickCount();
 
 	g_objLogFile.Save_HandlerLog("[Work Mode] STOP button push");
 }
@@ -1483,7 +1501,8 @@ void CWorkDlg::Reset_AlarmLog()
 	g_objMesAgent.Set_ErrorUpdate(0, strErrNo, gAlm.sAlmCatMajor);
 
 	if (gAlm.nPortNo > 0) {
-		gLot.dwErrorTime[gAlm.nPortNo-1] += gAlm.dwProcTime; gLot.nErrorCount[gAlm.nPortNo-1]++;
+		//gLot.dwErrorTime[gAlm.nPortNo-1] += gAlm.dwProcTime; 
+		gLot.nErrorCount[gAlm.nPortNo-1]++;
 	}
 }
 

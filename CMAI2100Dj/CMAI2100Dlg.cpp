@@ -300,6 +300,10 @@ void CCMAI2100Dlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		g_objCommon.Show_MsgBox(1, "OCAP Data 파일을 확인해 주세요.");
 	}
 
+	gDown.bDownClear = TRUE;
+	gDown.bDownHappen = FALSE;
+
+
 	theApp.uSleep(1000);
 
 	Clear_JobData();
@@ -307,6 +311,9 @@ void CCMAI2100Dlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	gData.nSelectNo = 1;
 	Set_MainState(STATE_NONE);
 	Set_CurrentMode(MODE_INITIAL);
+
+
+
 }
 
 void CCMAI2100Dlg::OnTimer(UINT_PTR nIDEvent)

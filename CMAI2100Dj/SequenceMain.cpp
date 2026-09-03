@@ -2069,7 +2069,8 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 	gLot.dwErrorTime[nNo] = 0;
 	gLot.dwStopTime[nNo] = 0;
 
-
+	gDown.bDownClear = TRUE;
+	gDown.bDownHappen = FALSE;
 
 	if (gData.nRejectMaxCount > 0 && gData.nRejectLotCount >= gData.nRejectMaxCount)
 			g_dlgWork.PostMessage(UM_LOT_END_MSG, nPortNo, 9);

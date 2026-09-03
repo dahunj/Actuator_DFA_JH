@@ -76,6 +76,9 @@ typedef struct {
 	int			nPreEquipState;		// 1:init, 2:idle, 3:Setup, 4:Ready, 5:Run, 6:Pause(Down)
 	int			nCurEquipState;
 
+	int			nPreUnitState;		// 1:init, 2:idle, 3:Setup, 4:Ready, 5:Run, 6:Pause(Down)
+	int			nCurUnitState;
+
 	CString		sHandlerLotID[6];
 	CString		sHandlerPortID[6];
 	CString		sHandlerCMCount[6];

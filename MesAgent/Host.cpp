@@ -799,6 +799,14 @@ void CHost::Set_S6F11_UnitState(int nState)
 	CString	strState, strErrNo, strOldState;
 	strState.Format("%d", nState);
 
+	gData.nPreUnitState = gData.nPreUnitState == 0 ? 1 : gData.nCurUnitState;
+	gData.nCurUnitState = nState;
+
+	strOldState.Format("%d", gData.nPreUnitState);
+	
+	if(gData.nPreUnitState == gData.nCurUnitState) return;
+
+
 	SYSTEMTIME time;
 	GetLocalTime(&time);
 

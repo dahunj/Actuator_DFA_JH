@@ -522,7 +522,7 @@ void CHandler::Set_DownActionCode(map<CString, CString>& data)
 		sCode = iter->first;       
 		sText = iter->second;  
 
-		sTemp.Format("-%s-%s", sCode, sText);
+		sTemp.Format("|%s|%s", sCode, sText);
 		sData += sTemp;
 	}
 

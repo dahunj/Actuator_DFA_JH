@@ -723,11 +723,16 @@ void CEquip::Set_S2F49_SETCODE_DOWN_ACTION()
 	strSend += "        </CP>" + CRLF;
 	strSend += "        <CP>" + CRLF;
 	strSend += "          <CPNAME NAME=\"CPNAME\" VALUE=\"CODE\" />" + CRLF;
-	strSend += "          <CPVAL NAME=\"CPVAL\" VALUE=\"D00001,D00002,D00003,D00004\" />" + CRLF;
+	strSend += "          <CPVAL NAME=\"CPVAL\" VALUE=\"D00000,D00001,D00002,D00003,D00004,D00005,D00006,D00007,D00008,D00099\" />" + CRLF;
 	strSend += "        </CP>" + CRLF;
 	strSend += "        <CP>" + CRLF;
 	strSend += "          <CPNAME NAME=\"CPNAME\" VALUE=\"TEXT\" />" + CRLF;
-	strSend += "          <CPVAL NAME=\"CPVAL\" VALUE=\"DOWN5,DOWN6,DOWN7,DOWN8\" />" + CRLF;
+	strSend += "          <CPVAL NAME=\"CPVAL\" VALUE=\"PDT (Planned suspension for Grease / Epoxy replacement / etc.),\
+		Safety (Safety alarms / safety doors / etc.),Equipment Failure (Motor / cylinder / stage / converter / main pneumatic system error / power / etc. in the drive section),\
+		Process Alarm (Attach Error / Load Cell Pressure Exceedance / Instrumental Alarm / etc.),\
+		Logistics / Material Transport Alarm (Material Pickup Error / Pad Vacuum Error / Missing Material),Inspection Alarm (Reading Error / Inspection Judgment Value NG / Inspection / etc.),\
+		Warning / Predictive (Equipment warning / pre-inspection alarm / when the equipment continues to operate),\
+		Communication Errors (MES / PLC communication / vision communication errors / etc.),Consumable Replacement Alarm (Filter / PAD / etc. / due to alarm),ETC\" />" + CRLF;
 	strSend += "        </CP>" + CRLF;
 	strSend += "        <CP>" + CRLF;
 	strSend += "          <CPNAME NAME=\"CPNAME\" VALUE=\"OPERATORID\" />" + CRLF;

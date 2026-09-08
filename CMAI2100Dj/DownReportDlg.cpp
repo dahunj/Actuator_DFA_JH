@@ -378,8 +378,8 @@ void CDownReportDlg::Set_DownActionCboList(CString sData)
 	m_cboDownReasonCat.ResetContent();
 	while(TRUE)
 	{
-		bCode = AfxExtractSubString(sCode, sData, i, '-');
-		bText = AfxExtractSubString(sText, sData, j, '-');
+		bCode = AfxExtractSubString(sCode, sData, i, '|');
+		bText = AfxExtractSubString(sText, sData, j, '|');
 
 		if(!bCode) break;
 

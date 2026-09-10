@@ -609,7 +609,12 @@ void CCMAI2100Dlg::Set_MainState(int nState)
 		pDY13->oBuzzerBit2 = FALSE;
 		pDY13->oBuzzerBit3 = FALSE;
 		pDY13->oBuzzerBit4 = FALSE;
-	} else {
+	} 
+	else if( nState == STATE_READY)
+	{
+		//Pass
+	}
+	else {
 		int nAlmType = 0;
 		if (bBuzzer2) nAlmType = 1;
 

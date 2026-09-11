@@ -90,11 +90,11 @@
 #define ELEVATOR_SL		0.5
 
 #ifdef CARRIER_TYPE_MEM
-	#define MAIN_VERSION	"Vd 2.8.4m"
+	#define MAIN_VERSION	"Vd 2.8.3m"
 	#define CARRIER_OFFSETX	8.0
 	#define CARRIER_OFFSETY	0.0
 #else
-	#define MAIN_VERSION	"Vd 2.8.4v"
+	#define MAIN_VERSION	"Vd 2.8.3v"
 	#define CARRIER_OFFSETX	8.0
 	#define CARRIER_OFFSETY	8.0
 #endif

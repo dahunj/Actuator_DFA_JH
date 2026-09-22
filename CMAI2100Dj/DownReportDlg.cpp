@@ -160,11 +160,11 @@ BOOL CDownReportDlg::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message == WM_SYSKEYDOWN)
 	{
-		//if (pMsg->wParam == VK_F4)
-		//{
-		//	// Alt + F4 차단
-		//	return TRUE;
-		//}
+		if (pMsg->wParam == VK_F4)
+		{
+			// Alt + F4 차단
+			return TRUE;
+		}
 	}
 
 	if (pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))

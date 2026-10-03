@@ -52,6 +52,7 @@ afx_msg LRESULT CUdpManager::OnUdpReceive(WPARAM wParam, LPARAM lParam)
 	if (fromPort == 22000) { nInspector = INSPECTOR_PC2;  }
 	if (fromPort == 23000) { nInspector = INSPECTOR_PC3;  }
 	if (fromPort == 24000) { nInspector = INSPECTOR_PC4;  }
+	if (fromPort == 25000) { nInspector = INSPECTOR_PC5; }
 
 	CString strLog;
 
@@ -142,6 +143,7 @@ void CUdpManager::Get_ConnectRequest(int nInspector)
 	if (nInspector == INSPECTOR_PC2) m_bConnectPC2 = TRUE;
 	if (nInspector == INSPECTOR_PC3) m_bConnectPC3 = TRUE;
 	if (nInspector == INSPECTOR_PC4) m_bConnectPC4 = TRUE;
+	if (nInspector == INSPECTOR_PC5) m_bConnectPC4 = TRUE;
 	Set_ConnectReply(nInspector);
 }
 
@@ -151,6 +153,7 @@ void CUdpManager::Get_ConnectReply(int nInspector)
 	if (nInspector == INSPECTOR_PC2) m_bConnectPC2 = TRUE;
 	if (nInspector == INSPECTOR_PC3) m_bConnectPC3 = TRUE;
 	if (nInspector == INSPECTOR_PC4) m_bConnectPC4 = TRUE;
+	if (nInspector == INSPECTOR_PC5) m_bConnectPC4 = TRUE;
 }
 
 void CUdpManager::Get_ConnectEnd(int nInspector)
@@ -159,6 +162,7 @@ void CUdpManager::Get_ConnectEnd(int nInspector)
 	if (nInspector == INSPECTOR_PC2) m_bConnectPC2 = FALSE;
 	if (nInspector == INSPECTOR_PC3) m_bConnectPC3 = FALSE;
 	if (nInspector == INSPECTOR_PC4) m_bConnectPC4 = FALSE;
+	if (nInspector == INSPECTOR_PC5) m_bConnectPC4 = FALSE;
 }
 
 
@@ -175,6 +179,7 @@ void CUdpManager::Get_StatusReply(int nInspector, CString sStatus)
 	if (nInspector == INSPECTOR_PC2) m_nStatusPC2 = atoi(sStatus);
 	if (nInspector == INSPECTOR_PC3) m_nStatusPC3 = atoi(sStatus);
 	if (nInspector == INSPECTOR_PC4) m_nStatusPC4 = atoi(sStatus);
+	if (nInspector == INSPECTOR_PC5) m_nStatusPC4 = atoi(sStatus);
 }
 
 void CUdpManager::Get_StatusUpdate(int nInspector, CString sStatus)
@@ -190,6 +195,7 @@ void CUdpManager::Get_LotStart(CString sLotID)
 	Set_LotReady(2, gData.sLotID[0]);
 	Set_LotReady(3, gData.sLotID[0]);
 	Set_LotReady(4, gData.sLotID[0]);
+	Set_LotReady(5, gData.sLotID[0]);
 }
 
 
@@ -215,6 +221,7 @@ void CUdpManager::Send_Command(int nInspector, CString strSend)
 	if (nInspector == INSPECTOR_ALL || nInspector == INSPECTOR_PC2) m_UdpVisionPC2.Write_Socket((BYTE*)chSend, nLength);
 	if (nInspector == INSPECTOR_ALL || nInspector == INSPECTOR_PC3) m_UdpVisionPC3.Write_Socket((BYTE*)chSend, nLength);
 	if (nInspector == INSPECTOR_ALL || nInspector == INSPECTOR_PC4) m_UdpVisionPC4.Write_Socket((BYTE*)chSend, nLength);
+	if (nInspector == INSPECTOR_ALL || nInspector == INSPECTOR_PC5) m_UdpVisionPC5.Write_Socket((BYTE*)chSend, nLength);
 
 	g_csInspector.Unlock();	// Critical Section
 }
@@ -225,7 +232,7 @@ void CUdpManager::Initialize()
 	BOOL bOpenedPC2 = m_UdpVisionPC2.Open_Socket(22001, 22000, "127.0.0.1", this);
 	BOOL bOpenedPC3 = m_UdpVisionPC3.Open_Socket(23001, 23000, "127.0.0.1", this);
 	BOOL bOpenedPC4 = m_UdpVisionPC4.Open_Socket(24001, 24000, "127.0.0.1", this);
-
+	BOOL bOpenedPC5 = m_UdpVisionPC5.Open_Socket(25001, 25000, "127.0.0.1", this);
 }
 
 void CUdpManager::Terminate()
@@ -234,6 +241,7 @@ void CUdpManager::Terminate()
 	m_UdpVisionPC2.Close_Socket();
 	m_UdpVisionPC3.Close_Socket();
 	m_UdpVisionPC4.Close_Socket();
+	m_UdpVisionPC5.Close_Socket();
 }
 
 
@@ -330,12 +338,12 @@ void CUdpManager::Set_InspectComplete(int nInspector, CString sGbn, CString sLot
 
 		if (nJudgeNo == 4)
 		{
-			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "SS";
+			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "S";
 			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "DFAI-9";
 		}
 		else if (nJudgeNo == 5)
 		{
-			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "ZS";
+			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "T";
 			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "DFAI-24B";
 		}
 		else if (nJudgeNo == 6)
@@ -375,9 +383,7 @@ void CUdpManager::Set_InspectComplete(int nInspector, CString sGbn, CString sLot
 	else if (nJudgeNo == 7)
 	{		
 		m_sCodeV[nPortNo - 1][nTNo - 1][nCNo - 1] = "FS-S-DRIVERICDA";
-	}
-
-
+	}	
 	strSendCmd.Format("INSPECT,COMPLETE,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", sGbn, sLotID, sPortNo, sTNo, sCNo, m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1], m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1],"", "", "", m_sCodeV[nPortNo - 1][nTNo - 1][nCNo - 1], "");
 	Send_Command(nInspector, strSendCmd);
 }
@@ -423,6 +429,7 @@ void CUdpManager::OnTimer(UINT_PTR nIDEvent)
 	case INSPECTOR_PC2:	m_nStatusPC2 = 0; break;
 	case INSPECTOR_PC3:	m_nStatusPC3 = 0; break;
 	case INSPECTOR_PC4:	m_nStatusPC4 = 0; break;
+	case INSPECTOR_PC5:	m_nStatusPC5 = 0; break;
 	}
 	CWnd::OnTimer(nIDEvent);
 }

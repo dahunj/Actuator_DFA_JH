@@ -8,7 +8,7 @@ const int INSPECTOR_PC1 = 1;	// Angle, Align, Btm1
 const int INSPECTOR_PC2 = 2;	// Top1
 const int INSPECTOR_PC3 = 3;	// Top2(Top2, Top3)
 const int INSPECTOR_PC4 = 4;	// Btm2(Btm2, Btm3)
-
+const int INSPECTOR_PC5 = 5;	// Btm2(Btm2, Btm3)
 
 // CUdpManager
 
@@ -31,6 +31,7 @@ private:
 	CUdpSocketCS m_UdpVisionPC2;
 	CUdpSocketCS m_UdpVisionPC3;
 	CUdpSocketCS m_UdpVisionPC4;
+	CUdpSocketCS m_UdpVisionPC5;
 
 	CString m_strRecvCmd;
 
@@ -38,19 +39,21 @@ private:
 	BOOL	m_bConnectPC2;
 	BOOL	m_bConnectPC3;
 	BOOL	m_bConnectPC4;
+	BOOL	m_bConnectPC5;
 
 	int		m_nStatusPC1;		// Vision PC1 상태 (0:Not Ready, 1:Ready)
 	int		m_nStatusPC2;		// Vision PC2 상태 (0:Not Ready, 1:Ready)
 	int		m_nStatusPC3;		// Vision PC3 상태 (0:Not Ready, 1:Ready)
 	int		m_nStatusPC4;		// Vision PC4 상태 (0:Not Ready, 1:Ready)
+	int		m_nStatusPC5;		// Vision PC4 상태 (0:Not Ready, 1:Ready)
 
 	BOOL	m_bLotReady1;
 	BOOL	m_bLotReady2;
 	BOOL	m_bLotReady3;
 	BOOL	m_bLotReady4;
+	BOOL	m_bLotReady5;
 
 	void DoEvents(int nSleep = 0);
-
 
 	void Get_ConnectRequest(int nInspector);
 	void Get_ConnectReply(int nInspector);
@@ -73,10 +76,8 @@ public:
 	CString m_sCodeV[30][10][40];
 	int Get_Random(int nStart, int nEnd);
 
-
 	void Initialize();
 	void Terminate();
-
 
 	void Set_ConnectReply(int nInspector);
 	void Set_StatusReply(int nInspector);
@@ -88,6 +89,5 @@ public:
 
 	void Set_RecipeUpdata(int nInspector);
 };
-
 
 extern CUdpManager g_objUDPManager;

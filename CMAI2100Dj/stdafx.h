@@ -312,6 +312,9 @@ typedef struct {
 
 	CString sLLStartTime[30];
 	CString sLLEndTime[30];
+
+	DWORD	dwLotStart[30];
+
 	DWORD	dwLLLotStart[30];
 	DWORD	dwLLLotEnd[30];
 	double  dLLTackTime[30];

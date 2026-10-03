@@ -1934,6 +1934,7 @@ BOOL CSequenceMain::Set_LotStart(CString sLotID, int nPortNo)
 	gLot.sLLStartTime[nNo].Format("%04d%02d%02d_%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
 	gLot.sMESStartTime[nNo].Format("%04d/%02d/%02d %02d:%02d:%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
 	gLot.sLLSHHMMSS[nNo].Format("%02d:%02d:%02d", time.wHour, time.wMinute, time.wSecond);
+	gLot.dwLotStart[nNo] = GetTickCount();
 	gLot.dwLLLotStart[nNo] = GetTickCount();
 
 	gLot.sLLEndTime[nNo] = gLot.sMESEndTime[nNo] = "";
@@ -1972,6 +1973,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 	gLot.sLLEHHMMSS[nNo].Format("%02d:%02d:%02d", time.wHour, time.wMinute, time.wSecond);
 
 	DWORD dwTime = gLot.dwLLLotEnd[nNo] - gLot.dwLLLotStart[nNo];
+	DWORD dwTime2 = gLot.dwLLLotEnd[nNo] - gLot.dwLotStart[nNo];
 	gLot.dLLTackTime[nNo] = dwTime / 1000.0 / gLot.nRstCmCount[nNo];
 	Set_NextLot(gLot.sLotID[nNo], gLot.dwLLLotEnd[nNo]);
 
@@ -1980,8 +1982,8 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 
 	CString sProcessID, sTact, sCycle;
 
-	sTact.Format("%0.1lf", (dwTime - gLot.dwErrorTime[nNo] - gLot.dwStopTime[nNo]) / 1000.0);
-	sCycle.Format("%0.1lf", (dwTime / 1000.0));
+	sTact.Format("%0.1lf", (dwTime2 - gLot.dwErrorTime[nNo] - gLot.dwStopTime[nNo]) / 1000.0);
+	sCycle.Format("%0.1lf", (dwTime2 / 1000.0));
 
 	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], gLot.sProcID[nNo], gLot.sModelID[nNo], gLot.sRecipeName[nNo], sTact , sCycle);
 
@@ -2068,7 +2070,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 */
 	gLot.dwErrorTime[nNo] = 0;
 	gLot.dwStopTime[nNo] = 0;
-
+	gLot.dwLotStart[nNo] = 0;
 	gDown.bDownClear = TRUE;
 	gDown.bDownHappen = FALSE;
 

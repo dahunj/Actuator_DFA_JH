@@ -59,6 +59,7 @@ void CSetupEquipDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHK_USE_CM_CHECK, m_chkUseCMCheck);
 	DDX_Control(pDX, IDC_CHK_USE_TRAY_SORT, m_chkUseNGSort);
 	DDX_Control(pDX, IDC_CHK_USE_NG_SIZE,   m_chkUseNGSize);
+	DDX_Control(pDX, IDC_CHK_USE_N_TO_NG,   m_chkUseOnlyNtoNG);
 	DDX_Control(pDX, IDC_CHK_USE_GOOD_SORT,   m_chkUseGoodSort);
 	DDX_Control(pDX, IDC_CHK_USE_ELEVATOR_ALIGN,	m_chkUseEleAlign);
 	DDX_Control(pDX, IDC_CHK_USE_INSPECT_BLOW,		m_chkUseAirBlow);
@@ -122,6 +123,8 @@ BEGIN_MESSAGE_MAP(CSetupEquipDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_MDJ_DELETE, &CSetupEquipDlg::OnBnClickedBtnMdjDelete)
 	ON_BN_CLICKED(IDC_BTN_MDJ_REFRESH, &CSetupEquipDlg::OnBnClickedBtnMdjRefresh)
 	ON_STN_CLICKED(IDC_STC_DOWNACTION_TIME, &CSetupEquipDlg::OnStnClickedStcDownactionTime)
+	ON_BN_CLICKED(IDC_CHK_USE_NG_SIZE, &CSetupEquipDlg::OnBnClickedChkUseNgSize)
+	ON_BN_CLICKED(IDC_CHK_USE_N_TO_NG, &CSetupEquipDlg::OnBnClickedChkUseNToNg)
 END_MESSAGE_MAP()
 
 // CSetupEquipDlg 메시지 처리기입니다.
@@ -384,6 +387,7 @@ void CSetupEquipDlg::Initial_Controls()
 	m_chkUseCMCheck.Init_Ctrl("바탕", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
 	m_chkUseNGSort.Init_Ctrl("바탕", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
 	m_chkUseNGSize.Init_Ctrl("바탕", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
+	m_chkUseOnlyNtoNG.Init_Ctrl("바탕", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
 	m_chkUseGoodSort.Init_Ctrl("바탕", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
 	m_chkUseEleAlign.Init_Ctrl("바탕", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x90, 0x90, 0xF0), CCheckCS::emRed, 0);
 	m_chkUseAirBlow.Init_Ctrl("바탕", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x90, 0x90, 0xF0), CCheckCS::emRed, 0);
@@ -463,6 +467,7 @@ void CSetupEquipDlg::Display_EquipData()
 	m_chkUseCMCheck.SetCheck(pEquipData->bUseCMCheck);
 	m_chkUseNGSort.SetCheck(pEquipData->bUseNGSort);
 	m_chkUseNGSize.SetCheck(pEquipData->bUseNGSize);
+	m_chkUseOnlyNtoNG.SetCheck(pEquipData->bUseOnlyNtoNG);
 	m_chkUseGoodSort.SetCheck(pEquipData->bUseGoodSort);
 	m_chkUseEleAlign.SetCheck(pEquipData->bElevatorAlign);
 	m_chkUseAirBlow.SetCheck(pEquipData->bUseInspectBlow);
@@ -540,6 +545,14 @@ void CSetupEquipDlg::Save_EquipData()
 			return;
 		}
 	}
+
+	if(m_chkUseNGSize.GetCheck() && m_chkUseOnlyNtoNG.GetCheck())
+	{
+		AfxMessageBox("Only SizeNG to NG 와 Only N to NG 는 동시에 사용 할 수 없습니다.");
+		return;
+	}
+
+
 	m_stcTimeOver[0].GetWindowText(strData); nData = atoi(strData);
 	if (nData < 1000) { AfxMessageBox("Inspection Time Over는 1000msec 이상 입력해야 합니다."); return; }
 	m_stcTimeOver[1].GetWindowText(strData); nData = atoi(strData);
@@ -595,6 +608,7 @@ void CSetupEquipDlg::Save_EquipData()
 	INI.Set_Bool("OPTION", "CM_CHECK", m_chkUseCMCheck.GetCheck());
 	INI.Set_Bool("OPTION", "NG_SORT",  m_chkUseNGSort.GetCheck());
 	INI.Set_Bool("OPTION", "NG_SIZE",  m_chkUseNGSize.GetCheck());
+	INI.Set_Bool("OPTION", "ONLY_N_TO_NG",  m_chkUseOnlyNtoNG.GetCheck());
 	INI.Set_Bool("OPTION", "GOOD_SORT",  m_chkUseGoodSort.GetCheck());
 	INI.Set_Bool("OPTION", "ELEVATOR_ALIGN",m_chkUseEleAlign.GetCheck());
 	INI.Set_Bool("OPTION", "INSPECT_BLOW",  m_chkUseAirBlow.GetCheck());
@@ -710,6 +724,7 @@ void CSetupEquipDlg::Save_ModelEquipData(CString sPath)
 	INI.Set_Bool("OPTION", "CM_CHECK", m_chkUseCMCheck.GetCheck());
 	INI.Set_Bool("OPTION", "NG_SORT",  m_chkUseNGSort.GetCheck());
 	INI.Set_Bool("OPTION", "NG_SIZE",  m_chkUseNGSize.GetCheck());
+	INI.Set_Bool("OPTION", "ONLY_N_TO_NG",  m_chkUseOnlyNtoNG.GetCheck());
 	INI.Set_Bool("OPTION", "GOOD_SORT",  m_chkUseGoodSort.GetCheck());
 	INI.Set_Bool("OPTION", "ELEVATOR_ALIGN",m_chkUseEleAlign.GetCheck());
 	INI.Set_Bool("OPTION", "INSPECT_BLOW",  m_chkUseAirBlow.GetCheck());
@@ -989,4 +1004,22 @@ void CSetupEquipDlg::OnStnClickedStcDownactionTime()
 	if (g_objCommon.Show_NumPad(strOld, strNew) != IDOK) return;
 
 	m_stcDownReportTime.SetWindowText(strNew);
+}
+
+
+void CSetupEquipDlg::OnBnClickedChkUseNgSize()
+{
+	if(m_chkUseNGSize.GetCheck())
+	{
+		m_chkUseOnlyNtoNG.SetCheck(FALSE);
+	}
+}
+
+
+void CSetupEquipDlg::OnBnClickedChkUseNToNg()
+{
+	if(m_chkUseOnlyNtoNG.GetCheck())
+	{
+		m_chkUseNGSize.SetCheck(FALSE);
+	}
 }

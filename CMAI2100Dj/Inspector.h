@@ -23,6 +23,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg LRESULT OnUdpReceive(WPARAM wLocalPort, LPARAM lParam);
+	afx_msg void OnDestroy();
 
 	static UINT Thread_MotionB1(LPVOID lpVoid);
 	static UINT Thread_MotionT1(LPVOID lpVoid);
@@ -30,6 +31,8 @@ protected:
 
 private:
 	CUdpSocketCS	m_UdpVisionPC1, m_UdpVisionPC2, m_UdpVisionPC3, m_UdpVisionPC4, m_UdpVisionPC5;
+
+	CString		m_sLog;
 
 	CString		m_strRecvCmd;
 
@@ -93,6 +96,28 @@ public:
 	void Set_MotionT2(int nInspector, CString sType, double dData);
 
 	void Test_Command(int nInspector, CString sType, CString sLotID, CString sPortNo, CString sTrayNo, CString sCMNo);
+
+private:
+	enum { MAX_LOG_THREADS = 256 };
+
+	struct THREAD_PARAM
+	{
+		int nThreadNo;
+		HANDLE hStopEvent;
+		CString strMsg;
+	};
+
+	CWinThread* m_pThreads[MAX_LOG_THREADS];
+	THREAD_PARAM m_threadParams[MAX_LOG_THREADS];
+
+	HANDLE m_hStopEvent;
+
+	static UINT ThreadProc(LPVOID pParam);
+
+public:
+	BOOL StartLoggingThread(const CString& strMessage);
+	void StopAllWorkerThreads();
+
 };
 
 extern CInspector g_objInspector;

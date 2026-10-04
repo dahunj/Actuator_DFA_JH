@@ -1930,8 +1930,10 @@ void CCommon::Set_UnloadPickerUp(int nPickNo, int nNo)
 void CCommon::Set_UnloadPickerDown(int nPickNo, int nNo, int nSPNo, int nSTNo, int *nCMInfo)
 {	//nPickNo(1,2) nNo(0,1~8,9) nSPNo(1~8) nSTNo(1~4)
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
-	if (nNo == 9 && nSPNo > 0 && (pEquipData->bUseNGSize || gData.bJahwa==FALSE)) {
-		if (nPickNo == 1) {
+	if (nNo == 9 && nSPNo > 0 && (pEquipData->bUseNGSize || gData.bJahwa==FALSE)) 
+	{
+		if (nPickNo == 1)
+		{
 			DY_DATA_09 *pDY09 = g_objAJinAXL.Get_pDY09();
 			if (nSPNo ==  1) { pDY09->oUnloadPicker1Up1 = FALSE; pDY09->oUnloadPicker1Down1 = TRUE; }
 			if (nSPNo ==  2) { pDY09->oUnloadPicker1Up2 = FALSE; pDY09->oUnloadPicker1Down2 = TRUE; }

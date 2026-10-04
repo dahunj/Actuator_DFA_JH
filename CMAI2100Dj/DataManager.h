@@ -31,6 +31,7 @@ typedef struct tag_EQUIP_DATA {
 	BOOL	bUseCMCheck;	// CM Check가 안되는 샘플이 있어 추가.
 	BOOL	bUseNGSort;
 	BOOL	bUseNGSize;
+	BOOL	bUseOnlyNtoNG;
 	BOOL	bUseGoodSort;
 	BOOL	bUseRFIDLoad;
 	BOOL	bUseRFIDNG;

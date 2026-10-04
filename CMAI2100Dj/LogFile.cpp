@@ -16,6 +16,7 @@ CCriticalSection g_csMesAgentLog;
 CCriticalSection g_csDispatcherLog;
 CCriticalSection g_csDailyLotLog;
 CCriticalSection g_csOperatingRatioLog;
+CCriticalSection g_csResultOverridedLog;
 
 CLogFile::CLogFile()
 {
@@ -803,6 +804,39 @@ void CLogFile::Save_OperatingRatio(CString sLog)	// 가동률 작업 중
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+void CLogFile::Save_ResultOverrided(CString sLog)
+{
+	g_csResultOverridedLog.Lock();
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strPath;
+	strPath.Format("%s\\LOG\\ResultOverrided\\%04d\\%02d", gsCurrentDir, time.wYear, time.wMonth);
+
+	Create_Folder(strPath);
+
+	CString strFile, strSave;
+	strFile.Format("%s\\%04d%02d%02d_ResultOverrided.txt", strPath, time.wYear, time.wMonth, time.wDay);
+
+
+	CFile file;
+	if (file.Open(strFile, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite)) {
+		try {
+			file.SeekToEnd();
+
+			strSave.Format("[%02d:%02d:%02d.%03d], %s\r\n", time.wHour, time.wMinute, time.wSecond, time.wMilliseconds, sLog);
+
+			file.Write(strSave, strSave.GetLength());
+			file.Close();
+
+		} catch (CFileException *pEx) {
+			pEx->Delete();
+		}
+	}
+	g_csResultOverridedLog.Unlock();
+}
+
 
 void CLogFile::Save_OutTrayGLog(int nPNo, int nTNo, int nMNo, int nGdStageNo)
 {

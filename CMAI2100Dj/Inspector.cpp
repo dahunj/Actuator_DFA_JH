@@ -45,6 +45,27 @@ CInspector::CInspector()
 	m_bConnectVisionPC1 = m_bConnectVisionPC2 = m_bConnectVisionPC3 = m_bConnectVisionPC4 = m_bConnectVisionPC5 = FALSE;
 	m_nStatusVisionPC1 = m_nStatusVisionPC2 = m_nStatusVisionPC3 = m_nStatusVisionPC4 = m_nStatusVisionPC5 = 0;
 	m_bLotReady1 = m_bLotReady2 = m_bLotReady3 = m_bLotReady4 = m_bLotReady5 = FALSE;
+
+
+	m_hStopEvent = NULL;
+
+	for (int i = 0; i < MAX_LOG_THREADS; ++i)
+	{
+		m_pThreads[i] = NULL;
+
+		m_threadParams[i].nThreadNo = i;
+		m_threadParams[i].hStopEvent = NULL;
+	}
+
+	// 수동 리셋 이벤트:
+	// SetEvent() 호출 시 모든 작업 스레드에 종료 요청
+	m_hStopEvent = ::CreateEvent(
+		NULL,
+		TRUE,
+		FALSE,
+		NULL
+		);
+
 }
 
 CInspector::~CInspector()
@@ -54,6 +75,7 @@ CInspector::~CInspector()
 BEGIN_MESSAGE_MAP(CInspector, CWnd)
 	ON_WM_TIMER()
 	ON_MESSAGE(UM_UDP_RECEIVE, OnUdpReceive)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 // CInspector 메시지 처리기입니다.
@@ -338,7 +360,21 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 
 	int nVNo = (sType == "B1" ? 1 : (sType == "AG" ? 2 : (sType == "T1" ? 3 : (sType == "TG" ? 4 : (sType == "T2" ? 5 : 0)))));
 
-	if (pEquipData->bUseNGSize) { if (sJudge == "N" || sJudge == "M" || sJudge == "X" || sJudge == "R") sJudge = "G"; }
+	if (pEquipData->bUseNGSize && !pEquipData->bUseOnlyNtoNG) 
+	{
+		m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+		StartLoggingThread(m_sLog);
+		if (sJudge == "N" || sJudge == "M" || sJudge == "X" || sJudge == "R") sJudge = "G"; 
+	}
+	if(pEquipData->bUseOnlyNtoNG && !pEquipData->bUseNGSize)
+	{
+		m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+		StartLoggingThread(m_sLog);
+		if (   sJudge == "M" || sJudge == "X" || sJudge == "R"
+			|| sJudge == "S" || sJudge == "T" || sJudge == "W") sJudge = "G"; 		
+	}
+
+
 	if ((sType == "B1" || sType == "AG") && sNGCode == "MC") sNGCode = "MCBTM";
 	if (sNGCode.Left(5) == "FDFAI") { sNGCode = sNGCode.Right(sNGCode.GetLength()-1); gLot.nFOcapExist[nPortNo-1][nTrayNo-1][nCMNo-1] = 1; }
 
@@ -394,7 +430,8 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	}
 
 	//ROS Skip Check
-	if (!pEquipData->bUseNGSize) {
+	if (!pEquipData->bUseNGSize) 
+	{
 		gAlm.sAlmLotID[0] = sLotID; gAlm.sAlmLotID[1] = sType;
 		//Barcdoe read fail(5) - ROS Skip
 		if (gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1] == "NOREAD" || gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1].GetLength() < 7) {
@@ -1034,4 +1071,138 @@ void CInspector::Test_Command(int nInspector, CString sType, CString sLotID, CSt
 	if (sType == "T1" || sType == "TG") { gData.bTop1ScanDone = TRUE; return; }
 	if (sType == "T2")					{ gData.bTop2ScanDone = TRUE; m_dwT2ScanDone[nPortNo-1][nTrayNo-1][nCMNo-1] = GetTickCount(); return; }
 	if (sType == "A1")					{ gData.bAlignScanDone = TRUE; return; }
+}
+
+
+
+
+BOOL CInspector::StartLoggingThread(const CString& strMessage)
+{
+	if (m_hStopEvent == NULL)
+		return FALSE;
+
+	
+	if (::WaitForSingleObject(m_hStopEvent, 0) != WAIT_TIMEOUT)
+		return FALSE;
+
+	for (int i = 0; i < MAX_LOG_THREADS; ++i)
+	{
+		CWinThread*& pThread = m_pThreads[i];
+
+		if (pThread != NULL)
+		{
+			DWORD dwResult =
+				::WaitForSingleObject(pThread->m_hThread, 0);
+
+			
+			if (dwResult != WAIT_OBJECT_0)
+				continue;
+
+			
+			delete pThread;
+			pThread = NULL;
+		}
+
+		
+		THREAD_PARAM& param = m_threadParams[i];
+
+		param.nThreadNo = i;
+		param.hStopEvent = m_hStopEvent;
+		param.strMsg = strMessage;
+
+		pThread = AfxBeginThread(
+			ThreadProc,
+			&param,
+			THREAD_PRIORITY_NORMAL,
+			0,
+			CREATE_SUSPENDED,
+			NULL
+			);
+
+		if (pThread == NULL)
+			return FALSE;
+
+		pThread->m_bAutoDelete = FALSE;
+		pThread->ResumeThread();
+
+		return TRUE;
+	}
+
+	
+	return FALSE;
+}
+
+
+
+UINT CInspector::ThreadProc(LPVOID pParam)
+{
+	THREAD_PARAM* pThreadParam =
+		static_cast<THREAD_PARAM*>(pParam);
+
+	const int nThreadNo = pThreadParam->nThreadNo;
+	const HANDLE hStopEvent = pThreadParam->hStopEvent;
+	CString strMessage = pThreadParam->strMsg;
+
+	TRACE(
+		_T("Thread %d started : %s\n"),
+		nThreadNo,
+		(LPCTSTR)strMessage
+		);
+
+	for (int i = 0; i < 100; ++i)
+	{
+		DWORD dwResult =
+			::WaitForSingleObject(hStopEvent, 100);
+
+		if (dwResult != WAIT_TIMEOUT)
+			break;
+
+		g_objLogFile.Save_ResultOverrided(strMessage);
+		
+			TRACE(
+			_T("Thread %d : %s / work %d\n"),
+			nThreadNo,
+			(LPCTSTR)strMessage,
+			i
+			);
+	}
+
+	return 0;
+}
+
+
+void CInspector::StopAllWorkerThreads()
+{
+	if (m_hStopEvent != NULL)
+		::SetEvent(m_hStopEvent);
+
+	for (int i = 0; i < MAX_LOG_THREADS; ++i)
+	{
+		CWinThread* pThread = m_pThreads[i];
+
+		if (pThread == NULL)
+			continue;
+
+		// 실제 종료될 때까지 대기
+		::WaitForSingleObject(
+			pThread->m_hThread,
+			INFINITE
+			);
+
+		delete pThread;
+		m_pThreads[i] = NULL;
+	}
+}
+
+void CInspector::OnDestroy()
+{
+	StopAllWorkerThreads();
+
+	if (m_hStopEvent != NULL)
+	{
+		::CloseHandle(m_hStopEvent);
+		m_hStopEvent = NULL;
+	}
+
+	CWnd::OnDestroy();
 }

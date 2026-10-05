@@ -38,6 +38,8 @@ CCriticalSection g_csInspector;	// Send_Command 문제 해결하기 위함
 
 // CInspector
 
+volatile LONG CInspector::m_nThreadCnt = 0;
+
 CInspector::CInspector()
 {
 	m_strRecvCmd = "";
@@ -45,7 +47,6 @@ CInspector::CInspector()
 	m_bConnectVisionPC1 = m_bConnectVisionPC2 = m_bConnectVisionPC3 = m_bConnectVisionPC4 = m_bConnectVisionPC5 = FALSE;
 	m_nStatusVisionPC1 = m_nStatusVisionPC2 = m_nStatusVisionPC3 = m_nStatusVisionPC4 = m_nStatusVisionPC5 = 0;
 	m_bLotReady1 = m_bLotReady2 = m_bLotReady3 = m_bLotReady4 = m_bLotReady5 = FALSE;
-
 
 	m_hStopEvent = NULL;
 
@@ -361,17 +362,24 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	int nVNo = (sType == "B1" ? 1 : (sType == "AG" ? 2 : (sType == "T1" ? 3 : (sType == "TG" ? 4 : (sType == "T2" ? 5 : 0)))));
 
 	if (pEquipData->bUseNGSize && !pEquipData->bUseOnlyNtoNG) 
-	{
-		m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
-		StartLoggingThread(m_sLog);
-		if (sJudge == "N" || sJudge == "M" || sJudge == "X" || sJudge == "R") sJudge = "G"; 
+	{		
+		if (sJudge == "N" || sJudge == "M" || sJudge == "X" || sJudge == "R") 
+		{	
+			m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+			StartLoggingThread(m_sLog);
+			sJudge = "G";
+		}
 	}
 	if(pEquipData->bUseOnlyNtoNG && !pEquipData->bUseNGSize)
 	{
-		m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
-		StartLoggingThread(m_sLog);
+		
 		if (   sJudge == "M" || sJudge == "X" || sJudge == "R"
-			|| sJudge == "S" || sJudge == "T" || sJudge == "W") sJudge = "G"; 		
+			|| sJudge == "S" || sJudge == "T" || sJudge == "W") 
+		{
+			m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+			StartLoggingThread(m_sLog);
+			sJudge = "G"; 		
+		}			
 	}
 
 
@@ -1139,35 +1147,21 @@ UINT CInspector::ThreadProc(LPVOID pParam)
 	THREAD_PARAM* pThreadParam =
 		static_cast<THREAD_PARAM*>(pParam);
 
-	const int nThreadNo = pThreadParam->nThreadNo;
 	const HANDLE hStopEvent = pThreadParam->hStopEvent;
-	CString strMessage = pThreadParam->strMsg;
-
-	TRACE(
-		_T("Thread %d started : %s\n"),
-		nThreadNo,
-		(LPCTSTR)strMessage
-		);
-
-	for (int i = 0; i < 100; ++i)
-	{
-		DWORD dwResult =
-			::WaitForSingleObject(hStopEvent, 100);
-
-		if (dwResult != WAIT_TIMEOUT)
-			break;
-
-		g_objLogFile.Save_ResultOverrided(strMessage);
+	CString strMessage;
 		
-			TRACE(
-			_T("Thread %d : %s / work %d\n"),
-			nThreadNo,
-			(LPCTSTR)strMessage,
-			i
-			);
-	}
+	if (::WaitForSingleObject(hStopEvent, 0) != WAIT_TIMEOUT)
+		return 0;
 
-	return 0;
+	LONG nCount = ::InterlockedIncrement(&m_nThreadCnt);
+
+	strMessage.Format("%s, count:%d",  pThreadParam->strMsg, m_nThreadCnt);
+	
+	g_objLogFile.Save_ResultOverrided(strMessage);
+
+	::InterlockedDecrement(&m_nThreadCnt);
+	
+	return 0;  
 }
 
 

@@ -110,11 +110,14 @@ private:
 	CWinThread* m_pThreads[MAX_LOG_THREADS];
 	THREAD_PARAM m_threadParams[MAX_LOG_THREADS];
 
+	
 	HANDLE m_hStopEvent;
 
 	static UINT ThreadProc(LPVOID pParam);
 
 public:
+	static volatile LONG m_nThreadCnt;
+
 	BOOL StartLoggingThread(const CString& strMessage);
 	void StopAllWorkerThreads();
 

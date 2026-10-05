@@ -112,8 +112,8 @@ afx_msg LRESULT CUdpManager::OnUdpReceive(WPARAM wParam, LPARAM lParam)
 		}
 		else if (strCmd == "LOAD")
 		{
-			//						Get_LoadComplete    			sGBn,    LotID,     portNo,     TrayNo1,   CmNo1,    TrayNo2,   CmNo2,     TrayNo3,    CmNo3,    TrayNo4,   CmNo4
-			if (strOp == "COMPLETE") Get_LoadComplete(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4], strArg[5], strArg[6]);
+			//						Get_LoadComplete    			sGBn,    LotID,     portNo,     TrayNo1,   CmNo1,    TrayNo2,   CmNo2
+			if (strOp == "COMPLETE") Get_LoadComplete(nInspector, strArg[0], strArg[1], strArg[2], strArg[3], strArg[4], strArg[5], strArg[6]);
 		}
 		else if (strCmd == "LOT")
 		{
@@ -246,7 +246,7 @@ void CUdpManager::Terminate()
 
 
 
-void CUdpManager::Get_LoadComplete( CString sType, CString sLotID, CString nPortNo, CString sTNo1, CString sTNo2, CString sCNo1,  CString sCNo2)
+void CUdpManager::Get_LoadComplete(int nInspector, CString sType, CString sLotID, CString nPortNo, CString sTNo1, CString sTNo2, CString sCNo1,  CString sCNo2)
 {
 	int nTNo1, nTNo2;
 	int nCNo1, nCNo2;
@@ -258,14 +258,14 @@ void CUdpManager::Get_LoadComplete( CString sType, CString sLotID, CString nPort
 	nCNo1 = atoi(sCNo1);
 	nCNo2 = atoi(sCNo2);	
 
-	if (nTNo1 != -1 && nCNo1 != -1) Set_ScanComplete(1, sType, sLotID, nPortNo, sTNo1, sCNo1);
+	if (nTNo1 != -1 && nCNo1 != -1) Set_ScanComplete(nInspector, sType, sLotID, nPortNo, sTNo1, sCNo1);
 	Sleep(10);
-	if (nTNo2 != -1 && nCNo2 != -1) Set_ScanComplete(1, sType, sLotID, nPortNo, sTNo2, sCNo2);
+	if (nTNo2 != -1 && nCNo2 != -1) Set_ScanComplete(nInspector, sType, sLotID, nPortNo, sTNo2, sCNo2);
 	Sleep(10);
 
-	if (nTNo1 != -1 && nCNo1 != -1) Set_InspectComplete(1, sType, sLotID, nPortNo, sTNo1, sCNo1);
+	if (nTNo1 != -1 && nCNo1 != -1) Set_InspectComplete(nInspector, sType, sLotID, nPortNo, sTNo1, sCNo1);
 	Sleep(10);
-	if (nTNo2 != -1 && nCNo2 != -1) Set_InspectComplete(1, sType, sLotID, nPortNo, sTNo2, sCNo2);
+	if (nTNo2 != -1 && nCNo2 != -1) Set_InspectComplete(nInspector, sType, sLotID, nPortNo, sTNo2, sCNo2);
 	Sleep(10);
 
 }

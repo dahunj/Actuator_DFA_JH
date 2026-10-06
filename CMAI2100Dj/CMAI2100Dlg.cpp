@@ -16,7 +16,7 @@
 #include "SetupDlg.h"
 #include "ProhibitDlg.h"
 #include "MonitorDlg.h"
-#include "OCAPProcess.h"
+#include "OCAPFAI.h"
 #include "ErrorDlg.h"
 #include "AlarmDlg.h"
 #include "Inspector.h"
@@ -126,7 +126,7 @@ BOOL CCMAI2100Dlg::OnInitDialog()
 	g_dlgSetup.Create(CSetupDlg::IDD, this);
 	g_dlgProhibit.Create(CProhibitDlg::IDD, this);
 	g_dlgMonitor.Create(CMonitorDlg::IDD, this);
-	g_dlgOCAP.Create(OCAPProcess::IDD, this);
+	g_dlgOCAP_FAI.Create(OCAPFAI::IDD, this);
 	g_dlgError.Create(CErrorDlg::IDD, this);
 	g_dlgAlarm.Create(CAlarmDlg::IDD, this);
 	g_dlgNoWork.Create(CNoWorkDlg::IDD, this);
@@ -195,7 +195,7 @@ void CCMAI2100Dlg::OnDestroy()
 	g_dlgAlarm.DestroyWindow();
 	g_dlgError.DestroyWindow();
 	g_dlgMonitor.DestroyWindow();
-	g_dlgOCAP.DestroyWindow();
+	g_dlgOCAP_FAI.DestroyWindow();
 	g_dlgProhibit.DestroyWindow();
 	g_dlgSetup.DestroyWindow();
 	g_dlgManual.DestroyWindow();
@@ -444,8 +444,8 @@ void CCMAI2100Dlg::OnBnClickedBtnMainMonitor()
 
 void CCMAI2100Dlg::OnBnClickedBtnMainOCAP()
 {
-	if (g_dlgOCAP.IsWindowVisible()) g_dlgOCAP.ShowWindow(SW_HIDE);
-	else g_dlgOCAP.ShowWindow(SW_SHOW);	
+	if (g_dlgOCAP_FAI.IsWindowVisible()) g_dlgOCAP_FAI.ShowWindow(SW_HIDE);
+	else g_dlgOCAP_FAI.ShowWindow(SW_SHOW);	
 }
 
 void CCMAI2100Dlg::OnBnClickedBtnMainExit()

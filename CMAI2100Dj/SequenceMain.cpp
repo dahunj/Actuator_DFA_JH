@@ -15,7 +15,7 @@
 #include "CarrierRFID_Load.h"
 #include "CarrierRFID_Good.h"
 #include "CarrierRFID_NG.h"
-#include "OCAPProcess.h"
+#include "OCAPFAI.h"
 #include <math.h>
 
 CSequenceMain g_objSequenceMain;
@@ -2036,7 +2036,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 	g_objMesAgent.Set_LotEnd(gLot.sLotID[nNo], gLot.sMZID_GD[nNo], gLot.sCarID_GD[nNo], gLot.sRecipeName[nNo], gLot.nCmCount[nNo], gLot.nGoodCount[nNo], gLot.nNgCount[nNo]+gLot.nSkipCount[nNo]);
 	g_objInspector.Set_LotEnd(INSPECTOR_ALL, gLot.sLotID[nNo], nPortNo);
 	g_objDispatcher.Set_LotEnd(nPortNo);
-	g_dlgOCAP.Set_AddMZData(nPortNo);
+	g_dlgOCAP_FAI.Set_AddMZData(nPortNo);
 
 	gData.nDay_TotalCnt += gLot.nCmCount[nNo];
 	gData.nDay_NGCnt += gLot.nNgCount[nNo];
@@ -11559,7 +11559,7 @@ BOOL CSequenceMain::Run_ULCVElevator()
 	case 28:	//MES ¿äÃ»
 		if (m_pEquipData->bUseMZIDUnload) {
 			g_objMesAgent.Set_MGZIDRemove("G", gData.sMZID[8], gData.sRecipeName);
-			g_dlgOCAP.AddMZOut(gData.sMZID[8]);
+			g_dlgOCAP_FAI.AddMZOut(gData.sMZID[8]);
 		}
 			m_nULCVElevatorCase++; m_tULCVElevatorLoop.Set_LoopTime(3000);
 		break;

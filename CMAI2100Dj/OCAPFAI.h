@@ -1,14 +1,14 @@
 #pragma once
 
-// OCAPProcess 대화 상자입니다.
+// OCAPFAI 대화 상자입니다.
 
-class OCAPProcess : public CDialogEx
+class OCAPFAI : public CDialogEx
 {
-	DECLARE_DYNAMIC(OCAPProcess)
+	DECLARE_DYNAMIC(OCAPFAI)
 
 public:
-	OCAPProcess(CWnd* pParent = NULL);   // 표준 생성자입니다.
-	virtual ~OCAPProcess();
+	OCAPFAI(CWnd* pParent = NULL);   // 표준 생성자입니다.
+	virtual ~OCAPFAI();
 
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_OCAP_DLG };
@@ -49,4 +49,4 @@ public:
 	void DelMZData(int nMZNo);
 };
 
-extern OCAPProcess g_dlgOCAP;
+extern OCAPFAI g_dlgOCAP_FAI;

@@ -517,8 +517,7 @@ void CLogFile::Save_DispatcherLog(CString sLog)
 	Create_Folder(strPath);
 
 	SYSTEMTIME time;
-	GetLocalTime(&time);
-
+	GetLocalTime(&time); 
 	CString strFile, strSave;
 	strFile.Format("%s\\%04d%02d%02d.txt", strPath, time.wYear, time.wMonth, time.wDay);
 

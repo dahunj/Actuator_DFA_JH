@@ -259,6 +259,16 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 										
 					g_dlgDownReport.ShowWindow(TRUE);
 				}
+				else if(gDown.bDownHappen)
+				{
+					CTime CurTime = CTime::GetCurrentTime(); 
+					CString sDownStartTime, sDownEndTime;
+					sDownStartTime.Format("%04d%02d%02d%s", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), gData.sAlarmTime[0]);
+					sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+					
+					g_objMesAgent.Set_DownActionReport("", "", sDownStartTime, sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+				}
+
 				gDown.bDownClear = TRUE;
 				gDown.bDownHappen = FALSE;
 
@@ -508,8 +518,9 @@ void CWorkDlg::OnBnClickedRdoWorkStop()
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
 	pMainDlg->Set_MainState(STATE_READY);
 	dwStopSTime = GetTickCount();
-	g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
-	g_objMesAgent.Set_UnitState(eEquipState::DOWN);
+	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
+	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
+	
 
 	for(int i = 0; i < 3; i++) 
 	{
@@ -2795,8 +2806,7 @@ void CWorkDlg::OnBnClickedBtnPdt()
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (!pEquipData->bUseMES) return;
 
-	if (g_dlgDownReport.IsWindowVisible()) g_dlgDownReport.ShowWindow(SW_HIDE);
-	else
+	if(!g_dlgDownReport.IsWindowVisible())
 	{
 		//g_dlgDownReport.Set_Auto(FALSE);
 		gDown.bPDT = TRUE;

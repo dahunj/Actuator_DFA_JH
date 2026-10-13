@@ -246,7 +246,7 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		else strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);
 				
 		m_stcAlmTime.SetWindowText(strTime);
-		m_strAlmStart.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+		m_strAlmStart.Format("%04d%02d%02d%s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);
 	} 
 	else
 	{

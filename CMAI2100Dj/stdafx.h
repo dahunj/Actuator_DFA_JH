@@ -75,8 +75,7 @@
 #endif
 
 //****************************************************************************
-//#define AJIN_BOARD_USE
-
+#define AJIN_BOARD_USE
 #define CARRIER_TYPE_MEM
 //****************************************************************************
 
@@ -457,7 +456,10 @@ typedef struct
 
 	BOOL			bPDT;
 
-	DWORD			dwDownTime;
+	DWORD			dwDownStartTick;
+
+	CString			sDownStartTime;
+	CString			sDownEndTime;
 
 } GLOVAL_DOWN;
 

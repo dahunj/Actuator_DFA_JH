@@ -748,6 +748,21 @@ void CCMAI2100Dlg::Set_NoWork()
 	if (gData.m_nMS == STATE_RUN) { m_nMSPre = gData.m_nMS; m_dwNoWorkTime = GetTickCount(); return; }
 	if (m_nMSPre == STATE_RUN) { m_nMSPre = gData.m_nMS; m_dwNoWorkTime = GetTickCount(); return; }
 
+	if(gData.m_nMS == STATE_ALARM || gData.m_nMS == STATE_EMER)
+	{
+		m_nMSPre = gData.m_nMS; 
+		m_dwNoWorkTime = GetTickCount();
+		return;
+	}
+	if(!g_objMesAgent.Is_Connected() || !g_objMesAgent.Is_HostOnline())
+	{
+		//AfxMessageBox("MES not Conneted or offline, Please Check");
+		m_dwNoWorkTime = GetTickCount();
+		return;
+	}
+
+
+
 	m_nMSPre = gData.m_nMS;
 	if (g_dlgNoWork.IsWindowVisible()) { m_dwNoWorkTime = GetTickCount(); return; }
 

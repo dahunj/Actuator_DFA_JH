@@ -40,15 +40,9 @@ protected:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
 private:
-	CString		m_strAlmStart;
-	CString		m_strAlmEnd;
-
 	map<CString, CString> m_mssDownAction;
-
 public:
-	
 	BOOL		m_bStart;
-
 	DWORD		m_dwStartTime;
 	CString		m_strStartTime;
 

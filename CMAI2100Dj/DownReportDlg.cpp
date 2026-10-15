@@ -344,11 +344,15 @@ void CDownReportDlg::OnBnClickedBtnReport()
 
 	gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
 	
-	if(gDown.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, 0 , 0, "PDT");
+	if(gDown.bPDT) 
+	{
+		g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, 0 , 0, "PDT");
+		g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
+		g_objMesAgent.Set_UnitState(eEquipState::IDLE);
+	}	
 	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 		
-	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
-	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
+	
 
 	gDown.bDownHappen = FALSE;
 	gDown.bDownClear = TRUE;

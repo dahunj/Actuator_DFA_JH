@@ -101,7 +101,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		if (gData.bAlarmShow) return;
 		gData.bAlarmShow = TRUE;
 
-		gDown.dwDownTime = GetTickCount();
+		gDown.dwDownStartTick = GetTickCount();
 		gDown.bDownHappen = TRUE;
 		gDown.bDownClear = FALSE;
 		gDown.bPDT = FALSE;

@@ -456,7 +456,10 @@ typedef struct
 
 	BOOL			bPDT;
 
-	DWORD			dwDownTime;
+	DWORD			dwDownStartTick;
+
+	CString			sDownStartTime;
+	CString			sDownEndTime;
 
 } GLOVAL_DOWN;
 

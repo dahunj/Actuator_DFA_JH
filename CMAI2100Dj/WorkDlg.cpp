@@ -266,12 +266,9 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				{
 					if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
 					{
-						CTime CurTime = CTime::GetCurrentTime(); 
-						CString sDownStartTime, sDownEndTime;
-						sDownStartTime.Format("%04d%02d%02d%s", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), gData.sAlarmTime[0]);
-						sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
-
-						g_objMesAgent.Set_DownActionReport("", "", sDownStartTime, sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+						CTime CurTime = CTime::GetCurrentTime();                     
+						gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+						g_objMesAgent.Set_DownActionReport("", "", gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 					}					
 				}
 

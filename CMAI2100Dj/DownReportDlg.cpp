@@ -244,13 +244,12 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		
 		if(gDown.bPDT) 
 		{
-			strTime.Format("%04d-%02d-%02d %02d:%02d:%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
-			gDown.sDownStartTime.Format("%s", strTime);
+			gDown.sDownStartTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay,time.wHour, time.wMinute, time.wSecond);
+			strTime.Format("%04d-%02d-%02d %02d:%02d:%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);            
 		}
 		else
 		{
-			strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);
-			gDown.sDownStartTime.Format("%s", strTime);
+			strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);			
 		}				
 		m_stcAlmTime.SetWindowText(strTime);
 		

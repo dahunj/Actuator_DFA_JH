@@ -283,6 +283,8 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		gData.sAlarmTime[0].Format("%02d:%02d:%02d", time.wHour, time.wMinute, time.wSecond);
 		gData.sAlarmList[0].Format("[%s] %s", strErrNo, m_strErrMsg);
 
+		gDown.sDownStartTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay,time.wHour, time.wMinute, time.wSecond);
+
 		g_objMesAgent.Set_ErrorUpdate(1, strErrNo, gAlm.sAlmCatMajor);
 		Set_SPCError(m_nErrNo, m_strErrMsg);
 		Set_AlarmLog(m_nErrNo, m_strErrMsg);

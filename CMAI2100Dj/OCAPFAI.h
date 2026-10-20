@@ -25,11 +25,35 @@ protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnBnClickedCancel();
+	afx_msg void OnClose();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnStcOptionClick(UINT nID);
 
 private:
 	BOOL m_bError;
+	BOOL m_bSetting;
+	int m_nCodePage;
+	CString m_sCode[100];
+	CString m_sName[100];
+	int m_nMZCnt[100];
+	double m_dDefect[100];
+	CStatic m_stcCodeTitle[5];
+	CStatic m_stcCodeNo[10];
+	CEdit m_edtCode[10];
+	CEdit m_edtName[10];
+	CEdit m_edtMZCnt[10];
+	CEdit m_edtDefect[10];
+	CButton m_btnCode[4];
+	CStatic m_stcCodeInfo;
+
+	void Initial_CodeControls();
+	void Display_CodePage();
+	void Show_CodeControls();
+	BOOL Read_CodePage();
+	BOOL Check_CodeData();
+	void Load_CodeData();
+	afx_msg void OnCodeButton(UINT nID);
+
 
 	void Initial_NameGrid(CGridCS *pGrid, int nRows, int nCols);
 	void Initial_DataGrid(CGridCS *pGrid, int nRows, int nCols);

@@ -1114,9 +1114,23 @@ void CLogFile::Save_OCAPDataLog(int nIdx)
 	GetLocalTime(&time);
 
 	CString strFile, strSave, sTitle, sFAIData1, sFAIData2, sData;
-	strFile.Format("%s\\%04d%02d%02d.csv", strPath, time.wYear, time.wMonth, time.wDay);
-//	sTitle.Format("Time,배출매거진ID,투입,완공,양품,RN,RR,치명,BCR,MES,MC,치수,7FAI,Tilt,Gap,FAI,5LS,FAI,9LS,FAI,10LS,FAI,24,FAI,29LS,FAI,31LS,FAI,34LS,FAI,11,FAI,13,FAI,14,FAI,26,FAI,27,FAI,32,FAI,33,FAI,30,FAI,19,FAI,20,FAI,21,FAI,22,FAI,44,ERR,5LS,ERR,9LS,ERR,10LS,ERR,24,ERR,29LS,ERR,31LS,ERR,34LS,ERR,11,ERR,13,ERR,14,ERR,26,ERR,27,ERR,32,ERR,33,ERR,30,ERR,19,ERR,20,ERR,21,ERR,22,ERR,44\r\n");
-	sTitle.Format("Time,배출매거진ID,DFA랏ID1,DFA랏ID2,DFA랏ID3,DFA랏ID4,DFA랏ID5,DFA랏ID6,DFA랏ID7,DFA랏ID8,투입,완공,양품,RN,RR,치명,BCR,MES,MC,치수,7FAI,Tilt,Gap,FAI,5LS,FAI,9LS,FAI,10LS,FAI,24,FAI,29LS,FAI,31LS,FAI,34LS,FAI,11,FAI,13,FAI,14,FAI,26,FAI,27,FAI,32,FAI,33,FAI,30,FAI,19,FAI,20,FAI,21,FAI,22,FAI,44,ERR,5LS,ERR,9LS,ERR,10LS,ERR,24,ERR,29LS,ERR,31LS,ERR,34LS,ERR,11,ERR,13,ERR,14,ERR,26,ERR,27,ERR,32,ERR,33,ERR,30,ERR,19,ERR,20,ERR,21,ERR,22,ERR,44\r\n");
+	// 코드/Name 변경 전후의 서로 다른 CSV 헤더가 한 파일에 섞이지 않도록 한다.
+	DWORD dwCodeHash = 2166136261UL;
+	for (int i=0; i<100; i++) {
+		CString strCode = gCap.sFAICode[i] + "|" + gCap.sFAIName[i] + ";";
+		for (int j=0; j<strCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)strCode[j]) * 16777619UL;
+	}
+	strFile.Format("%s\\%04d%02d%02d_OCAP100_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
+	sTitle = "Time,배출매거진ID,DFA랏ID1,DFA랏ID2,DFA랏ID3,DFA랏ID4,DFA랏ID5,DFA랏ID6,DFA랏ID7,DFA랏ID8,투입,완공,양품,RN,RR,치명,BCR,MES,MC,치수,7FAI,Tilt,Gap,";
+	for (int nType=0; nType<2; nType++) {
+		for (int i=0; i<100; i++) {
+			CString sName = gCap.sFAIName[i], sCode = gCap.sFAICode[i];
+			sName.Replace("\"", "\"\""); sCode.Replace("\"", "\"\"");
+			sData.Format("\"%s-%03d %s %s Count\",\"%s-%03d Rate\",", nType == 0 ? "FAI" : "ERR", i + 1, sCode, sName, nType == 0 ? "FAI" : "ERR", i + 1);
+			sTitle += sData;
+		}
+	}
+	sTitle += "\r\n";
 
 	sFAIData1 = sFAIData2 = "";
 	CFile file;
@@ -1129,13 +1143,15 @@ void CLogFile::Save_OCAPDataLog(int nIdx)
 			int n7FAI = gCap.nCount[nIdx][0]+gCap.nCount[nIdx][1]+gCap.nCount[nIdx][2]+gCap.nCount[nIdx][3]+gCap.nCount[nIdx][4]+gCap.nCount[nIdx][5]+gCap.nCount[nIdx][6];
 			int nTilt = gCap.nCount[nIdx][7]+gCap.nCount[nIdx][8]+gCap.nCount[nIdx][9]+gCap.nCount[nIdx][10]+gCap.nCount[nIdx][11]+gCap.nCount[nIdx][12]+gCap.nCount[nIdx][13]+gCap.nCount[nIdx][14];
 			int nGap  = gCap.nCount[nIdx][15]+gCap.nCount[nIdx][16]+gCap.nCount[nIdx][17]+gCap.nCount[nIdx][18]+gCap.nCount[nIdx][19];
-			for (int i=0; i<20; i++) {
-				double dDef = (gCap.nCount[nIdx][i] * 100.0) / gCap.nTotCount[nIdx];
+			int nTotal = n7FAI + nTilt + nGap;
+			for (int i=20; i<100; i++) nTotal += gCap.nCount[nIdx][i];
+			for (int i=0; i<100; i++) {
+				double dDef = gCap.nTotCount[nIdx] > 0 ? (gCap.nCount[nIdx][i] * 100.0) / gCap.nTotCount[nIdx] : 0.0;
 				sData.Format("%d,%01f%%,", gCap.nCount[nIdx][i], dDef);
 				sFAIData1 = sFAIData1 + sData;
 			}
-			for (int i=0; i<20; i++) {
-				double dDef = (gCap.nFCount[nIdx][i] * 100.0) / gCap.nTotCount[nIdx];
+			for (int i=0; i<100; i++) {
+				double dDef = gCap.nTotCount[nIdx] > 0 ? (gCap.nFCount[nIdx][i] * 100.0) / gCap.nTotCount[nIdx] : 0.0;
 				sData.Format("%d,%01f%%,", gCap.nFCount[nIdx][i], dDef);
 				sFAIData2 = sFAIData2 + sData;
 			}
@@ -1143,7 +1159,7 @@ void CLogFile::Save_OCAPDataLog(int nIdx)
 				gCap.sMZID[nIdx], gCap.sLotID[nIdx][0], gCap.sLotID[nIdx][1], gCap.sLotID[nIdx][2], gCap.sLotID[nIdx][3], gCap.sLotID[nIdx][4], gCap.sLotID[nIdx][5], gCap.sLotID[nIdx][6], gCap.sLotID[nIdx][7],
 				gCap.nTotCount[nIdx], (gCap.nGoodCount[nIdx]+gCap.nROSNGCount[nIdx]+gCap.nROSRfCount[nIdx]), gCap.nGoodCount[nIdx], gCap.nROSNGCount[nIdx], gCap.nROSRfCount[nIdx],
 				(gCap.nBCRCount[nIdx]+gCap.nMESCount[nIdx]+gCap.nMCCount[nIdx]), gCap.nBCRCount[nIdx], gCap.nMESCount[nIdx], gCap.nMCCount[nIdx],
-				(n7FAI+nTilt+nGap), n7FAI, nTilt, nGap, sFAIData1, sFAIData2);
+				nTotal, n7FAI, nTilt, nGap, sFAIData1, sFAIData2);
 
 			file.Write(strSave, strSave.GetLength());
 			file.Close();

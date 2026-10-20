@@ -384,7 +384,11 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 
 
 	if ((sType == "B1" || sType == "AG") && sNGCode == "MC") sNGCode = "MCBTM";
-	if (sNGCode.Left(5) == "FDFAI") { sNGCode = sNGCode.Right(sNGCode.GetLength()-1); gLot.nFOcapExist[nPortNo-1][nTrayNo-1][nCMNo-1] = 1; }
+	if (sNGCode.Left(5) == "FDFAI") 
+	{ 
+		sNGCode = sNGCode.Right(sNGCode.GetLength()-1);
+		gLot.nFOcapExist[nPortNo-1][nTrayNo-1][nCMNo-1] = 1; 
+	}
 
 	if		(sJudge == "G") gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 2;	//Good
 	else if (sJudge == "S") gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 7;	//치수불량1

@@ -1174,7 +1174,7 @@ void CCommon::Set_LotDataClear(int nPortNo)	//nPortNo:0~29;
 	}
 	for (int i = 0; i <11; i++) gLot.nRosJugCount[nNo][i] = 0;
 	for (int i = 0; i < 3; i++) gLot.nTrayPutCnt[nNo][i] = 0;
-	for (int i = 0; i <20; i++) { gLot.nOcapCount[nNo][i] = gLot.nFOcapCount[nNo][i] = 0; }
+	for (int i = 0; i <100; i++) { gLot.nOcapCount[nNo][i] = gLot.nFOcapCount[nNo][i] = 0; }
 	for (int k = 0; k < 40; k++) for (int m = 0; m < 5; m++) for (int n = 0; n < 20; n++) gNG->sNGCode[nNo][0][k][m][n] = "";
 	g_objDispatcher.Reset(nNo+1);
 }

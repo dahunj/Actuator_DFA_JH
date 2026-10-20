@@ -197,15 +197,17 @@ void CDataManager::Reset_OCAPData()
 	for(int i=0; i<50; i++) {
 		gCap.sDate[i] = gCap.sTime[i] = gCap.sMZID[i] = "";
 		gCap.nTotCount[i] = gCap.nGoodCount[i] = gCap.nROSNGCount[i] = gCap.nROSRfCount[i] = gCap.nBCRCount[i] = gCap.nMESCount[i] = gCap.nMCCount[i] = 0;
-		for(int j=0; j<20; j ++) {
+		for(int j=0; j<100; j ++) {
 			gCap.nCount[i][j] = gCap.nFCount[i][j] = 0;
 		}
 		for(int j=0; j<8; j ++) {
 			gCap.sLotID[i][j] = "";
 		}
 	}
-	for(int j=0; j<20; j ++) {
-		gCap.sFAIName[j] = "";
+	for(int j=0; j<100; j ++) {
+		gCap.sFAIName[j] = gCap.sFAICode[j] = "";
+		gCap.nCodeMZCnt[j] = 0;
+		gCap.dCodeDefect[j] = -1.0;
 	}
 }
 
@@ -779,9 +781,13 @@ void CDataManager::Save_RosData()
 
 BOOL CDataManager::Read_OCAPData()
 {
-	CIniFileCS INI(gsCurrentDir + "\\System\\OCAPData.ini");
+	CString strFile = gsCurrentDir + "\\System\\OCAP_Data.ini";
+	// 구형 파일만 있는 기존 장비는 최초 읽기 때 새 파일명으로 복사한다.
+	if (::GetFileAttributes(strFile) == INVALID_FILE_ATTRIBUTES)
+		::CopyFile(gsCurrentDir + "\\System\\OCAPData.ini", strFile, TRUE);
+	CIniFileCS INI(strFile);
 	if (!INI.Check_File()) {
-		AfxMessageBox("OCAPData.ini File Not Found!!!");
+		AfxMessageBox("OCAP_Data.ini File Not Found!!!");
 		return FALSE;
 	}
 
@@ -794,10 +800,14 @@ BOOL CDataManager::Read_OCAPData()
 	}
 	gCap.nGiMinCnt	= INI.Get_Integer("OPTION", "MZ_MIN_COUNT", 0);
 
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < 100; i++) {
 		strKey.Format("%02d", i + 1);
 		gCap.sFAIName[i] = INI.Get_String("DATA-NAME", strKey, "");
 		gCap.sFAICode[i] = INI.Get_String("DATA-CODE", strKey, "");
+		gCap.nCodeMZCnt[i] = INI.Get_Integer("DATA-MZ-COUNT", strKey, i < 20 ? -1 : 0);
+		gCap.dCodeDefect[i] = INI.Get_Double("DATA-DEFECTP", strKey, -1.0);
+		if (gCap.dCodeDefect[i] != -1.0 && !(gCap.dCodeDefect[i] > 0.0 && gCap.dCodeDefect[i] <= 100.0)) gCap.dCodeDefect[i] = -1.0;
+		if (gCap.nCodeMZCnt[i] < -1 || gCap.nCodeMZCnt[i] > 40) gCap.nCodeMZCnt[i] = 0;
 	}
 	return TRUE;
 }

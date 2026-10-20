@@ -69,6 +69,14 @@ private:
 	int			m_nBarRetry1, m_nBarRetry2, m_nBarRetry3, m_nBarRetry4;
 	CString		m_sGdMZInLot[8], m_sLastMZID, m_sLastCarID, m_sLog;
 	BOOL		m_bElvCarDown;
+	BOOL		m_bSimLotReady, m_bSimMZPrepared, m_bSimRepeatWait;
+	CString		m_sSimLotID[28];
+	int			m_nSimCmCount[28];
+	int			m_nSimLotRound;
+	int			m_nSimLotCount, m_nSimPortNo[28];
+	BOOL Is_SimulationRepeat();
+	BOOL Prepare_SimulationLot();
+	void Reset_SimulationLot();
 
 protected:
 	BOOL		m_bThreadMainRun;

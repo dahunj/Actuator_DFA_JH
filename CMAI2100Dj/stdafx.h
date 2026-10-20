@@ -75,7 +75,7 @@
 #endif
 
 //****************************************************************************
-#define AJIN_BOARD_USE
+//#define AJIN_BOARD_USE
 #define CARRIER_TYPE_MEM
 //****************************************************************************
 
@@ -295,8 +295,8 @@ typedef struct {
 	int		nRosJugCount[30][11];		//0:Count, 1:Good, 2:TOver 3:NG, 4:Repair, 5:Bar_NoRead,MES-NG,MC, 6:FAI_NG(치수불량), 7:Bar, 8:MES-NG, 9:MC, 10:Ros Skip
 	int		nHistory[30][10][40][10];
 	int		nImageCnt[30][10][40][2];	//0:외관불량수, 1:치수불량수
-	int		nOcapCount[30][20];			//MZ,FAI별 발생수
-	int		nFOcapCount[30][20];		//MZ,FAI별 발생수
+	int		nOcapCount[30][100];			//MZ,FAI별 발생수
+	int		nFOcapCount[30][100];		//MZ,FAI별 발생수
 	int		nFOcapExist[30][10][40];	//1:Exist
 	int		nSpecialNG[30][10][40];		//1:특수NG
 
@@ -430,13 +430,15 @@ typedef struct {
 	int			nBCRCount[50];		//Barcode[NG수
 	int			nMESCount[50];		//MES[NG수
 	int			nMCCount[50];		//MC[NG수
-	int			nCount[50][20];		//MZ,FAI별 발생수
-	int			nFCount[50][20];	//MZ,FAI별 발생수
+	int			nCount[50][100];		//MZ,FAI별 발생수
+	int			nFCount[50][100];	//MZ,FAI별 발생수
 
-	CString		sFAIName[20];		//FAI이름-Display
-	CString		sFAICode[20];		//FAI-NG-Code
+	CString		sFAIName[100];		//FAI이름-Display
+	CString		sFAICode[100];		//FAI-NG-Code
 	double		dGiDefect[4];		//불량율%
 	int			nGiMZCnt[4];		//MZ수량(알람발생MZ대상수)
+	double		dCodeDefect[100];	//코드별 기준 불량율(-1:공통조건, 0초과~100%)
+	int			nCodeMZCnt[100];	//코드별 연속 MZ수(-1:공통조건, 0:사용안함, 1~40:개별조건)
 	int			nGiMinCnt;			//MZ당최소 Module수량(이하면 알람발생 제외처리)
 
 	CString		sAlmMZID;

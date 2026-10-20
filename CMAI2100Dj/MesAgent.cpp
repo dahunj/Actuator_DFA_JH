@@ -665,28 +665,52 @@ CString CMesAgent::Set_NGSort(int nPno, int nTNo, int CNo)
 	}
 
 	int nNo = 999, nI, nType;
-	for (int i=0; i<5; i++) {
-		if (nNo > nSeq[i]) { nNo = nSeq[i]; nI = i; }
+	for (int i=0; i<5; i++) 
+	{
+		if (nNo > nSeq[i])
+		{ 
+			nNo = nSeq[i];
+			nI = i;
+		}
 	}
 	nType = gLot.nFOcapExist[nPno-1][nTNo-1][CNo-1];
-	if (nNo < 100) { gLot.sNGCode_I[nPno-1][nTNo-1][CNo-1][0] = sNGCode = m_sSizeNG[nNo]; Set_OcapFaiNG(nPno, nType, sNGCode); }
+
+	if (nNo < 100) 
+	{
+		gLot.sNGCode_I[nPno-1][nTNo-1][CNo-1][0] = sNGCode = m_sSizeNG[nNo];
+		Set_OcapFaiNG(nPno, nType, sNGCode); 
+	}
+
 	if (sNGCode.GetLength() < 1) sNGCode = "NG";
 	return sNGCode;
 }
 
 void CMesAgent::Set_OcapFaiNG(int nPno, int nType, CString sFaiNGCode)
 {
-	if (sFaiNGCode.GetLength() < 1) return;
+	if (nPno < 1 || nPno > 30 || sFaiNGCode.GetLength() < 1) return;
 
-	for(int i=0; i<20; i++) {
-		if (sFaiNGCode == gCap.sFAICode[i]) { gLot.nOcapCount[nPno-1][i]++; if (nType==1) gLot.nFOcapCount[nPno-1][i]++; return; }
+	for(int i=0; i<100; i++)
+	{
+		if (sFaiNGCode == gCap.sFAICode[i])
+		{ 
+			gLot.nOcapCount[nPno-1][i]++; 
+			if (nType==1) gLot.nFOcapCount[nPno-1][i]++; 
+			return; 
+		}
 	}
 
 	CString sFAING;
-	if (sFaiNGCode.GetLength() >= 7) {
+	if (sFaiNGCode.GetLength() >= 7) 
+	{
 		sFAING = sFaiNGCode.Left(7);
-		for(int i=7; i<14; i++) {
-			if (sFAING == gCap.sFAICode[i]) { gLot.nOcapCount[nPno-1][i]++; if (nType==1) gLot.nFOcapCount[nPno-1][i]++; return; }
+		for(int i=7; i<14; i++) 
+		{
+			if (sFAING == gCap.sFAICode[i])
+			{
+				gLot.nOcapCount[nPno-1][i]++; 
+				if (nType==1) gLot.nFOcapCount[nPno-1][i]++;
+				return;
+			}
 		}
 	}
 }

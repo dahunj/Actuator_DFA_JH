@@ -80,6 +80,7 @@ CSequenceMain::CSequenceMain()
 	m_bThreadMainRun = FALSE;
 	m_pThreadMainRun = NULL;
 
+	Reset_SimulationLot();
 	Reset_MainRunCase();
 }
 
@@ -523,7 +524,7 @@ UINT CSequenceMain::Thread_MainRun(LPVOID lpVoid)
 		if (!g_objSequenceMain.Run_UnloadConveyor()) break;	// 32. (Error : 2950)
 
 		if (!g_objSequenceMain.Run_Simulation()) break;		//  99.
-		if (gLot.nJobStatus == 1 && g_objSequenceMain.Get_IsAutoRun()==FALSE) {
+		if (gLot.nJobStatus == 1 && !g_objSequenceMain.Is_SimulationRepeat() && g_objSequenceMain.Get_IsAutoRun()==FALSE) {
 			gLot.nJobStatus = 2;
 		}
 		if (gLot.nJobStatus == 2 && g_objSequenceMain.LotEnd_Run()) break;
@@ -542,6 +543,7 @@ UINT CSequenceMain::Thread_MainRun(LPVOID lpVoid)
 
 BOOL CSequenceMain::LotEnd_Run()
 {
+	if (Is_SimulationRepeat()) return FALSE;
 	if (Get_IsAutoRun()) return FALSE;
 //	int nA, nB, nC;
 //	if (Check_Transfer2(nA, nB, nC)) return FALSE;
@@ -564,6 +566,7 @@ BOOL CSequenceMain::LotEnd_Run()
 
 void CSequenceMain::Set_ClearRunData(int nType)
 {
+	Reset_SimulationLot();
 	for(int i=0; i<10; i++) {
 		for(int j=0; j<4; j++) {
 			gData.InfoAlignTray[i][j] = gData.InfoLoadTray[i][j] = gData.InfoNgTray[i][j] = gData.InfoGoodTray[i][j] = 0;
@@ -615,7 +618,7 @@ void CSequenceMain::Set_ClearRunData(int nType)
 	}
 	for (int i = 0; i < 30; i++) for (int j = 0; j <11; j++) gLot.nRosJugCount[i][j] = 0;
 	for (int i = 0; i < 2; i++) for (int j = 0; j < 7; j++) gData.dElevatorZPos[i][j] = 0.0;
-	for (int i = 0; i < 30; i++) for (int j = 0; j <20; j++) { gLot.nOcapCount[i][j] = gLot.nFOcapCount[i][j] = 0; }
+	for (int i = 0; i < 30; i++) for (int j = 0; j <100; j++) { gLot.nOcapCount[i][j] = gLot.nFOcapCount[i][j] = 0; }
 
 	gData.sGoodCarrierID = gData.sMZID_Tansfer = ""; gData.nSlotNo_LDMZ = gData.nSlotNo_Tansfer = gData.nCarrierStart = gLot.nMZCountGD = gLot.nMZCountNG = gLot.nJobLog = 0;
 	for (int i = 0; i <10; i++) { if(i==5) continue; gData.sMZID[i] = ""; }
@@ -11540,13 +11543,20 @@ BOOL CSequenceMain::Run_ULCVElevator()
 		}
 		break;
 	case 26:
+#ifndef AJIN_BOARD_USE
+		m_nULCVElevatorCase = 28;
+		m_tULCVElevatorLoop.Set_LoopTime(5000);
+#else
 		if (m_pEquipData->bUseMZIDUnload) {
 			if (!m_tULCVElevatorLoop.Waiting_Time(500)) break;
-			g_objBarcodeLot_Cognex.Set_Trigger(4, TRUE);	//1F
-			m_nULCVElevatorCase++; m_tULCVElevatorLoop.Set_LoopTime(5000);
+			g_objBarcodeLot_Cognex.Set_Trigger(4, TRUE);
+			m_nULCVElevatorCase++;
+			m_tULCVElevatorLoop.Set_LoopTime(5000);
 		} else {
-			m_nULCVElevatorCase = 29; m_tULCVElevatorLoop.Set_LoopTime(5000);
+			m_nULCVElevatorCase = 29;
+			m_tULCVElevatorLoop.Set_LoopTime(5000);
 		}
+#endif
 		break;
 	case 27:
 			sULMZID = g_objBarcodeLot_Cognex.Get_BarcodeLot(4);	//U-1F
@@ -11557,11 +11567,16 @@ BOOL CSequenceMain::Run_ULCVElevator()
 			}
 		break;
 	case 28:	//MES 요청
+
+#ifndef AJIN_BOARD_USE
+		g_dlgOCAP_FAI.AddMZOut(gData.sMZID[8]);
+#else
 		if (m_pEquipData->bUseMZIDUnload) {
 			g_objMesAgent.Set_MGZIDRemove("G", gData.sMZID[8], gData.sRecipeName);
 			g_dlgOCAP_FAI.AddMZOut(gData.sMZID[8]);
 		}
-			m_nULCVElevatorCase++; m_tULCVElevatorLoop.Set_LoopTime(3000);
+#endif		
+		m_nULCVElevatorCase++; m_tULCVElevatorLoop.Set_LoopTime(3000);
 		break;
 	case 29:
 		if (!m_pDX19->iULCV1FStop) {
@@ -11683,6 +11698,19 @@ BOOL CSequenceMain::Run_LDMZElevator()
 		}
 		break;
 	case 9:
+#ifndef AJIN_BOARD_USE
+		if (!m_pEquipData->bUseMES) {
+			if (gData.bCycleStop) {
+				m_nLDMZElevatorCase = 40; m_tLDMZElevatorLoop.Set_LoopTime(5000);
+				break;
+			}
+			if (!m_bSimMZPrepared) {
+				// 시뮬레이션 Lot/매거진 준비 대기 중 Case 9 타임아웃을 방지한다.
+				m_tLDMZElevatorLoop.Set_LoopTime(5000);
+				return TRUE;
+			}
+		}
+#endif
 		if (Check_MZCarrierExit(1) > 0) {
 			gData.nMZSlotNo[3] = nLastSlotNo = 0;
 			for(int i=7; i>=0; i--) {
@@ -13121,6 +13149,7 @@ BOOL CSequenceMain::Run_Simulation()
 #ifdef AJIN_BOARD_USE
 	return TRUE;
 #endif
+	if (!Prepare_SimulationLot()) return FALSE;
 	static int nLotMZCount = 0;
 	static int nRen, nCarCount, nMZCarCount;
 	m_pDX00->iElevator2TrayExist = TRUE;
@@ -13219,24 +13248,8 @@ BOOL CSequenceMain::Run_Simulation()
 	if (m_nMZTransferCase == 47) { Sleep(SIM_WAITTIMES); m_pDX18->iGDMZElevatorExist = TRUE; }
 
 	if (m_pEquipData->bUseMES) {
-		if (m_nLDMZElevatorCase == 9) {	//MES-Test시 Carrrier수량설정
-			gLot.nCarrierExist[0][0] = 1; //gLot.nCarrierExist[0][1] = 1;
-			gData.nSimCount++;
-		}
-	} else {
-		if (m_nLDMZElevatorCase == 9) {
-			int nS, nE, nX;
-			if (gData.nSimCount == 0 || gData.nSimCount == 4) { nS =  0; nE =  8; }
-			if (gData.nSimCount == 1 || gData.nSimCount == 5) { nS =  8; nE = 16; }
-			if (gData.nSimCount == 2 || gData.nSimCount == 6) { nS = 16; nE = 24; }
-			if (gData.nSimCount == 3 || gData.nSimCount == 7) { nS = 24; nE = 32; }
-			nX = 0;
-			for(int i=nS; i<nE; i++) {
-				if (gLot.nCmCount[i] > 0) gLot.nCarrierExist[0][nX] = 1;
-				else					  gLot.nCarrierExist[0][nX] = 0;
-				nX++;
-			}
-			gData.nSimCount++;
+		if (m_nLDMZElevatorCase == 9) {	//MES-Test는 기존 1개 Carrier 설정 유지
+			for (int i=0; i<8; i++) gLot.nCarrierExist[0][i] = i == 0 ? 1 : 0;
 		}
 	}
 
@@ -13267,4 +13280,123 @@ BOOL CSequenceMain::Run_Simulation()
 	if (m_nGDMZElevatorCase == 75) { Sleep(SIM_WAITTIMES); m_pDX15->iGDRailCarrierChk1 = FALSE; m_pDX15->iGDRailCarrierChk2 = FALSE; }
 
 	return TRUE;
+}
+// 시뮬레이션 입력 원본은 완료 후 삭제되는 gLot과 별도로 보관한다.
+void CSequenceMain::Reset_SimulationLot()
+{
+	m_bSimLotReady = m_bSimMZPrepared = m_bSimRepeatWait = FALSE;
+	m_nSimLotRound = 1; m_nSimLotCount = 0;
+	for (int i=0; i<28; i++) {
+		m_sSimLotID[i] = ""; m_nSimCmCount[i] = 0; m_nSimPortNo[i] = -1;
+	}
+}
+
+BOOL CSequenceMain::Is_SimulationRepeat()
+{
+#ifdef AJIN_BOARD_USE
+	return FALSE;
+#else
+	return !m_pEquipData->bUseMES && m_bSimLotReady && m_nSimLotCount > 0 && !gData.bCycleStop;
+#endif
+}
+
+BOOL CSequenceMain::Prepare_SimulationLot()
+{
+#ifdef AJIN_BOARD_USE
+	return TRUE;
+#else
+	if (m_pEquipData->bUseMES) return TRUE;
+	if (!m_bSimLotReady) 
+	{
+		m_nSimLotCount = 0;
+		for (int i=0; i<28; i++)
+		{
+			if (gLot.nCmCount[i] == 0 && gLot.sLotID[i].IsEmpty()) continue;
+			if (gLot.sLotID[i].IsEmpty() || gLot.nCmCount[i] < 1 || gLot.nCmCount[i] > 40) {
+				g_objCommon.Show_MsgBox(1, "반복 시뮬레이션: 사용하는 항목에 Lot ID와 모듈 수량(1~40)을 함께 입력해 주세요.");
+				return FALSE;
+			}
+			m_nSimPortNo[m_nSimLotCount] = i;
+			m_nSimLotCount++;
+			m_sSimLotID[i] = gLot.sLotID[i]; m_nSimCmCount[i] = gLot.nCmCount[i];
+		}
+		if (m_nSimLotCount < 1) {
+			g_objCommon.Show_MsgBox(1, "반복 시뮬레이션: 1~28개 Carrier의 Lot ID/수량을 입력해 주세요.");
+			return FALSE;
+		}
+		gData.nSimCount = 0; gLot.nJobCycle = 0;
+		m_bSimRepeatWait = m_bSimMZPrepared = FALSE;
+		m_bSimLotReady = TRUE;
+	}
+
+	// 다음 매거진 Case9 진입 전에 전체 완료/초기화를 확인하여 다음 회차를 준비한다.
+	// 매거진 공급을 중단한 상태에서 Case9만 기다리면 다음 회차로 진행할 수 없다.
+	if (m_bSimRepeatWait && !gData.bCycleStop) 
+	{
+		BOOL bComplete = TRUE;
+		for (int i=0; i < m_nSimLotCount; i++)
+		{
+			int nPort = m_nSimPortNo[i];
+			if (gLot.nCmCount[nPort] != 0 || gLot.nLotStatus[nPort] != 0 || !gLot.sLotID[nPort].IsEmpty()) bComplete = FALSE;
+		}
+		if (!Check_LoadEmptyMZ()) bComplete = FALSE;
+		for (int i=0; i<2; i++) {
+			if (!gData.sLotID_Tansfer[i].IsEmpty() || !gData.sLotID_UnMZ[i].IsEmpty()) bComplete = FALSE;
+		}
+		if (bComplete)
+		{
+			if (m_nSimLotRound >= 2147483647) 
+			{
+				g_objCommon.Show_MsgBox(1, "시뮬레이션 Lot 회차가 최대값에 도달했습니다. Job을 초기화해 주세요.");
+				return FALSE;
+			}
+			m_nSimLotRound++;
+			for (int i=0; i<m_nSimLotCount; i++)
+			{
+				int nPort = m_nSimPortNo[i];
+				g_objCommon.Set_LotDataClear(nPort);
+				gLot.sLotID[nPort].Format("%s-R%d", (LPCTSTR)m_sSimLotID[nPort], m_nSimLotRound);
+				gLot.nCmCount[nPort] = m_nSimCmCount[nPort];
+			}
+			gLot.nJobCycle = 0; gData.nSimCount = 0;
+			m_bSimRepeatWait = FALSE;
+			g_dlgWork.PostMessage(UM_UPDATE_MODEL, 1, NULL);
+			g_objLogFile.Save_HandlerLog("[Simulation] Next round: numbered Lot IDs / original module counts prepared.");
+		}
+	}
+
+	// 1F의 투입 센서는 이전 매거진 반입 Case26에서 FALSE가 된다.
+	// 다음 매거진을 자동 공급하고, Cycle Stop/전체 완료 대기 중에는 공급하지 않는다.
+	if (m_nLD1FConveyorCase == 0)
+		m_pDX16->iLDCV1FCnt1 = !gData.bCycleStop && !m_bSimRepeatWait;
+
+	if (m_nLDMZElevatorCase != 9) 
+	{
+		m_bSimMZPrepared = FALSE;
+		return TRUE; 
+	}
+
+	if (m_bSimMZPrepared || gData.bCycleStop || m_bSimRepeatWait) return TRUE;
+	
+	int nMZCount = (m_nSimLotCount + 7) / 8;
+	
+	if (gData.nSimCount < 0 || gData.nSimCount >= nMZCount) gData.nSimCount = 0;
+	
+	int nStart = gData.nSimCount * 8;
+	
+	for (int i=0; i<8; i++) 
+	{
+		int nIndex = nStart + i;
+		gLot.nCarrierExist[0][i] = 0;
+		if (nIndex < m_nSimLotCount)
+		{
+			int nPort = m_nSimPortNo[nIndex];
+			gLot.nCarrierExist[0][i] = gLot.nCmCount[nPort] > 0 ? 1 : 0;
+		}
+	}
+	m_bSimMZPrepared = TRUE;
+	gData.nSimCount++;
+	if (gData.nSimCount >= nMZCount) { gData.nSimCount = 0; m_bSimRepeatWait = TRUE; }
+	return TRUE;
+#endif
 }

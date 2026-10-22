@@ -37,14 +37,15 @@ private:
 	CString m_sName[100];
 	int m_nMZCnt[100];
 	double m_dDefect[100];
-	CStatic m_stcCodeTitle[5];
-	CStatic m_stcCodeNo[10];
-	CEdit m_edtCode[10];
-	CEdit m_edtName[10];
-	CEdit m_edtMZCnt[10];
-	CEdit m_edtDefect[10];
+	CStatic m_stcCodeTitle[10];
+	CStatic m_stcCodeNo[20];
+	CEdit m_edtCode[20];
+	CEdit m_edtName[20];
+	CEdit m_edtMZCnt[20];
+	CEdit m_edtDefect[20];
 	CButton m_btnCode[4];
 	CStatic m_stcCodeInfo;
+	CStatic m_stcCodeLine;
 
 	void Initial_CodeControls();
 	void Display_CodePage();

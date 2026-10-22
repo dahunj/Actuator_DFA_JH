@@ -99,8 +99,8 @@ void OCAPFAI::OnBnClickedCancel()
 	for (int i=0; i<100; i++) {
 		if (m_sCode[i] != gCap.sFAICode[i] || m_sName[i] != gCap.sFAIName[i] || m_nMZCnt[i] != gCap.nCodeMZCnt[i] || m_dDefect[i] != gCap.dCodeDefect[i]) { bChanged = TRUE; break; }
 	}
-	for (int i=0; i<10 && !bChanged; i++) {
-		int nIx = m_nCodePage * 10 + i;
+	for (int i=0; i<20 && !bChanged; i++) {
+		int nIx = m_nCodePage * 20 + i;
 		m_edtCode[i].GetWindowText(str); if (str != m_sCode[nIx]) bChanged = TRUE;
 		m_edtName[i].GetWindowText(str); if (str != m_sName[nIx]) bChanged = TRUE;
 		CString strCount; strCount.Format("%d", m_nMZCnt[nIx]);
@@ -648,19 +648,25 @@ static CRect OCAP_CodeRect(CWnd* pWnd, int nX, int nY, int nW, int nH)
 void OCAPFAI::Initial_CodeControls()
 {
 	CString sTitle[5] = { "No.", "불량 Code", "불량 Name", "연속 매거진 횟수", "기준 불량율 (%)" };
-	int nX[5] = { 25, 75, 360, 690, 875 };
-	int nW[5] = { 45, 270, 315, 170, 170 };
-	for (int i=0; i<5; i++) {
-		m_stcCodeTitle[i].Create(sTitle[i], WS_CHILD | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[i], 89, nW[i], 18), this);
-		m_stcCodeTitle[i].SetFont(GetFont());
+	int nX[5] = { 25, 55, 200, 365, 455 };
+	int nW[5] = { 25, 135, 155, 80, 85 };
+	for (int j=0; j<2; j++) {
+		int nOffset = j * 530;
+		for (int i=0; i<5; i++) {
+			int nIx = j * 5 + i;
+			m_stcCodeTitle[nIx].Create(sTitle[i], WS_CHILD | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[i] + nOffset, 89, nW[i], 18), this);
+			m_stcCodeTitle[nIx].SetFont(GetFont());
+		}
 	}
-	for (int i=0; i<10; i++) {
-		int nY = 112 + i * 28;
-		m_stcCodeNo[i].Create("", WS_CHILD | SS_CENTERIMAGE, OCAP_CodeRect(this, 25, nY, 45, 21), this);
-		m_edtCode[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, 75, nY, 270, 21), this, 61100 + i * 4);
-		m_edtName[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, 360, nY, 315, 21), this, 61101 + i * 4);
-		m_edtMZCnt[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, 690, nY, 170, 21), this, 61102 + i * 4);
-		m_edtDefect[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, 875, nY, 170, 21), this, 61103 + i * 4);
+	m_stcCodeLine.Create("", WS_CHILD | SS_ETCHEDVERT, OCAP_CodeRect(this, 547, 89, 1, 303), this);
+	for (int i=0; i<20; i++) {
+		int nY = 112 + (i % 10) * 28;
+		int nOffset = (i / 10) * 530;
+		m_stcCodeNo[i].Create("", WS_CHILD | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[0] + nOffset, nY, nW[0], 21), this);
+		m_edtCode[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[1] + nOffset, nY, nW[1], 21), this, 61100 + i * 4);
+		m_edtName[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[2] + nOffset, nY, nW[2], 21), this, 61101 + i * 4);
+		m_edtMZCnt[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[3] + nOffset, nY, nW[3], 21), this, 61102 + i * 4);
+		m_edtDefect[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[4] + nOffset, nY, nW[4], 21), this, 61103 + i * 4);
 		m_stcCodeNo[i].SetFont(GetFont());
 		m_edtCode[i].SetFont(GetFont()); m_edtCode[i].LimitText(80);
 		m_edtName[i].SetFont(GetFont()); m_edtName[i].LimitText(80);
@@ -669,7 +675,7 @@ void OCAPFAI::Initial_CodeControls()
 	}
 	m_stcCodeInfo.Create("", WS_CHILD, OCAP_CodeRect(this, 25, 403, 1020, 40), this);
 	m_stcCodeInfo.SetFont(GetFont());
-	CString sButton[4] = { "이전 10개", "다음 10개", "이력 보기", "빈 코드로 이동" };
+	CString sButton[4] = { "이전 20개", "다음 20개", "이력 보기", "빈 코드로 이동" };
 	int nBtnX[4] = { 25, 135, 930, 700 };
 	int nBtnW[4] = { 100, 100, 125, 180 };
 	for (int i=0; i<4; i++) {
@@ -693,18 +699,18 @@ void OCAPFAI::Load_CodeData()
 void OCAPFAI::Display_CodePage()
 {
 	CString str;
-	for (int i=0; i<10; i++) {
-		int nIx = m_nCodePage * 10 + i;
+	for (int i=0; i<20; i++) {
+		int nIx = m_nCodePage * 20 + i;
 		str.Format("%03d", nIx + 1); m_stcCodeNo[i].SetWindowText(str);
 		m_edtCode[i].SetWindowText(m_sCode[nIx]);
 		m_edtName[i].SetWindowText(m_sName[nIx]);
 		str.Format("%d", m_nMZCnt[nIx]); m_edtMZCnt[i].SetWindowText(str);
 		str.Format("%0.3lf", m_dDefect[nIx]); m_edtDefect[i].SetWindowText(str);
 	}
-	str.Format("%d / 10 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며, [저장]으로 100개를 저장합니다.", m_nCodePage + 1, m_nCodePage * 10 + 1, m_nCodePage * 10 + 10);
+	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며, [저장]으로 100개를 저장합니다.", m_nCodePage + 1, m_nCodePage * 20 + 1, m_nCodePage * 20 + 20);
 	m_stcCodeInfo.SetWindowText(str);
 	m_btnCode[0].EnableWindow(m_nCodePage > 0);
-	m_btnCode[1].EnableWindow(m_nCodePage < 9);
+	m_btnCode[1].EnableWindow(m_nCodePage < 4);
 }
 
 static BOOL OCAP_ReadMZCount(CString str, int& nValue)
@@ -736,10 +742,10 @@ static BOOL OCAP_ReadDefectRate(CString str, double& dValue)
 
 BOOL OCAPFAI::Read_CodePage()
 {
-	CString sCode[10], sName[10], str;
-	int nCount[10];
-	double dDefect[10];
-	for (int i=0; i<10; i++) {
+	CString sCode[20], sName[20], str;
+	int nCount[20];
+	double dDefect[20];
+	for (int i=0; i<20; i++) {
 		m_edtCode[i].GetWindowText(sCode[i]); sCode[i].TrimLeft(); sCode[i].TrimRight();
 		m_edtName[i].GetWindowText(sName[i]); sName[i].TrimLeft(); sName[i].TrimRight();
 		m_edtMZCnt[i].GetWindowText(str);
@@ -757,8 +763,8 @@ BOOL OCAPFAI::Read_CodePage()
 			m_edtCode[i].SetFocus(); return FALSE;
 		}
 	}
-	for (int i=0; i<10; i++) {
-		int nIx = m_nCodePage * 10 + i;
+	for (int i=0; i<20; i++) {
+		int nIx = m_nCodePage * 20 + i;
 		m_sCode[nIx] = sCode[i]; m_sName[nIx] = sName[i]; m_nMZCnt[nIx] = nCount[i]; m_dDefect[nIx] = dDefect[i];
 	}
 	return TRUE;
@@ -771,12 +777,12 @@ BOOL OCAPFAI::Check_CodeData()
 		if (m_sCode[i].IsEmpty()) continue;
 		if (m_sName[i].IsEmpty()) {
 			str.Format("%03d번 불량 Name을 입력하세요.", i + 1);
-			AfxMessageBox(str); m_nCodePage = i / 10; Display_CodePage(); return FALSE;
+			AfxMessageBox(str); m_nCodePage = i / 20; Display_CodePage(); return FALSE;
 		}
 		for (int j=i+1; j<100; j++) {
 			if (m_sCode[i] != m_sCode[j]) continue;
 			str.Format("%03d번과 %03d번 불량 Code가 중복됩니다.", i + 1, j + 1);
-			AfxMessageBox(str); m_nCodePage = j / 10; Display_CodePage(); return FALSE;
+			AfxMessageBox(str); m_nCodePage = j / 20; Display_CodePage(); return FALSE;
 		}
 	}
 	return TRUE;
@@ -785,8 +791,9 @@ BOOL OCAPFAI::Check_CodeData()
 void OCAPFAI::Show_CodeControls()
 {
 	int nShow = m_bSetting ? SW_SHOW : SW_HIDE;
-	for (int i=0; i<5; i++) m_stcCodeTitle[i].ShowWindow(nShow);
-	for (int i=0; i<10; i++) {
+	for (int i=0; i<10; i++) m_stcCodeTitle[i].ShowWindow(nShow);
+	m_stcCodeLine.ShowWindow(nShow);
+	for (int i=0; i<20; i++) {
 		m_stcCodeNo[i].ShowWindow(nShow);
 		m_edtCode[i].ShowWindow(nShow); m_edtName[i].ShowWindow(nShow); m_edtMZCnt[i].ShowWindow(nShow); m_edtDefect[i].ShowWindow(nShow);
 	}
@@ -800,9 +807,9 @@ void OCAPFAI::OnCodeButton(UINT nID)
 {
 	if (!Read_CodePage()) return;
 	if (nID == IDC_OCAP_CODE_PREV && m_nCodePage > 0) m_nCodePage--;
-	if (nID == IDC_OCAP_CODE_NEXT && m_nCodePage < 9) m_nCodePage++;
+	if (nID == IDC_OCAP_CODE_NEXT && m_nCodePage < 4) m_nCodePage++;
 	if (nID == IDC_OCAP_CODE_FIND) {
-		for (int i=0; i<100; i++) if (m_sCode[i].IsEmpty()) { m_nCodePage = i / 10; break; }
+		for (int i=0; i<100; i++) if (m_sCode[i].IsEmpty()) { m_nCodePage = i / 20; break; }
 	}
 	if (nID == IDC_OCAP_CODE_VIEW) {
 		m_bSetting = !m_bSetting;

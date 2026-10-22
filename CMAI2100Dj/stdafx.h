@@ -441,10 +441,11 @@ typedef struct {
 	int			nCodeMZCnt[100];	//코드별 연속 MZ수(-1:공통조건, 0:사용안함, 1~40:개별조건)
 	int			nGiMinCnt;			//MZ당최소 Module수량(이하면 알람발생 제외처리)
 
-	CString		sAlmMZID;
-	CString		sAlmFAIName;
-	double		dAlmDefect;
-	int			nAlmCount;
+	CString		sAlmMZID[100];
+	CString		sAlmFAIName[100];
+	double		dAlmDefect[100];
+	int			nAlmCount[100];
+	int			nAlmIdx;
 } GLOVAL_OCAP;
 
 typedef struct  

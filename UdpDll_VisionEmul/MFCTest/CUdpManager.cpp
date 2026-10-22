@@ -295,8 +295,8 @@ void CUdpManager::Set_InspectComplete(int nInspector, CString sGbn, CString sLot
 	nCNo = atoi(sCNo);
 
 	int nRand = Get_Random(0, 99);
-	int nNGPercent1 = 50;
-	int nNGPercent2 = nNGPercent1 +0;
+	int nNGPercent1 = 40;
+	int nNGPercent2 = nNGPercent1 + 40;
 	int nNGPercent3 = nNGPercent2 + 0;
 	int nNGPercent4 = nNGPercent3 + 0;
 
@@ -344,7 +344,7 @@ void CUdpManager::Set_InspectComplete(int nInspector, CString sGbn, CString sLot
 		else if (nJudgeNo == 5)
 		{
 			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "T";
-			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "DFAI-24B";
+			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "DFAI-24";
 		}
 		else if (nJudgeNo == 6)
 		{

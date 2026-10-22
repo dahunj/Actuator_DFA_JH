@@ -542,7 +542,8 @@ void OCAPFAI::Check_DEFECT(int nNo)
 	double dPer = 0.0;
 	CString sDefect = "";
 
-	for (int i=0; i<100; i++) {
+	for (int i=0; i<100; i++) 
+	{
 		if (gCap.sFAICode[i].GetLength() < 1) continue;
 		int nMZCnt = gCap.nCodeMZCnt[i] < 0 ? gCap.nGiMZCnt[nX] : gCap.nCodeMZCnt[i];
 		if (nMZCnt <= 0 || nMZCnt > 40) continue;
@@ -550,28 +551,34 @@ void OCAPFAI::Check_DEFECT(int nNo)
 
 		nDefCount = 0;
 		int nMZno = gCap.nMZCycle - 1;	if (nMZno < 0) nMZno = 49;
-		for (int j=0; j<nMZCnt; j++) {
+		for (int j=0; j<nMZCnt; j++) 
+		{
 			if (gCap.sDate[nMZno].IsEmpty() || gCap.nTotCount[nMZno] <= 0 || gCap.nTotCount[nMZno] < gCap.nGiMinCnt) break;
 
 			dPer = (gCap.nCount[nMZno][i] * 100.0) / gCap.nTotCount[nMZno];
 			if (dPer <= 0.0 || dPer < dDefect) break;
 
 			nDefCount++;
-			if (nDefCount == 1) {
-				gCap.sAlmMZID = gCap.sMZID[nMZno];
-				gCap.sAlmFAIName.Format("FAI-%s", gCap.sFAIName[i]);
-				gCap.dAlmDefect  = dPer;
-				gCap.nAlmCount   = nMZCnt;
+			if (nDefCount == 1) 
+			{
+				gCap.sAlmMZID[i] = gCap.sMZID[nMZno];
+				gCap.sAlmFAIName[i].Format("FAI-%s", gCap.sFAIName[i]);
+				gCap.dAlmDefect[i]  = dPer;
+				gCap.nAlmCount[i]   = nMZCnt;
+				gCap.nAlmIdx = i;
 			}
 			nMZno--;
 			if (nMZno < 0) nMZno = 49;
 		}
-		if (nDefCount >= nMZCnt) {
-			sDefect = sDefect + gCap.sAlmFAIName + ". ";
+		if (nDefCount >= nMZCnt) 
+		{
+			sDefect = sDefect + gCap.sAlmFAIName[i] + ". ";
+			break;
 		}
 	}
 
-	if (sDefect.GetLength() > 1) {
+	if (sDefect.GetLength() > 1) 
+	{
 		m_bError = TRUE;
 		gAlm.sAlmLotID[0] = sDefect;
 		g_objCommon.Show_Error(9180 + nX+1);
@@ -604,16 +611,19 @@ void OCAPFAI::Check_DEFECTF(int nNo)
 
 			nDefCount++;
 			if (nDefCount == 1) {
-				gCap.sAlmMZID = gCap.sMZID[nMZno];
-				gCap.sAlmFAIName.Format("ERR-%s", gCap.sFAIName[i]);
-				gCap.dAlmDefect  = dPer;
-				gCap.nAlmCount   = nMZCnt;
+				gCap.sAlmMZID[i] = gCap.sMZID[nMZno];
+				gCap.sAlmFAIName[i].Format("ERR-%s", gCap.sFAIName[i]);
+				gCap.dAlmDefect[i]  = dPer;
+				gCap.nAlmCount[i]   = nMZCnt;
+				gCap.nAlmIdx = i;
 			}
 			nMZno--;
 			if (nMZno < 0) nMZno = 49;
 		}
-		if (nDefCount >= nMZCnt) {
-			sDefect = sDefect + gCap.sAlmFAIName + ". ";
+		if (nDefCount >= nMZCnt) 
+		{
+			sDefect = sDefect + gCap.sAlmFAIName[i] + ". ";
+			break;
 		}
 	}
 

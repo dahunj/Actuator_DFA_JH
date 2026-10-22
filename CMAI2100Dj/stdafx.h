@@ -444,6 +444,7 @@ typedef struct {
 	CString		sAlmMZID[100];
 	CString		sAlmFAIName[100];
 	double		dAlmDefect[100];
+	double		dAlmThreshold[100];
 	int			nAlmCount[100];
 	int			nAlmIdx;
 } GLOVAL_OCAP;

@@ -564,6 +564,7 @@ void OCAPFAI::Check_DEFECT(int nNo)
 				gCap.sAlmMZID[i] = gCap.sMZID[nMZno];
 				gCap.sAlmFAIName[i].Format("FAI-%s", gCap.sFAIName[i]);
 				gCap.dAlmDefect[i]  = dPer;
+				gCap.dAlmThreshold[i] = dDefect;
 				gCap.nAlmCount[i]   = nMZCnt;
 				gCap.nAlmIdx = i;
 			}

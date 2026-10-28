@@ -344,7 +344,7 @@ void CUdpManager::Set_InspectComplete(int nInspector, CString sGbn, CString sLot
 		else if (nJudgeNo == 5)
 		{
 			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "T";
-			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "DFAI-61";
+			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "DFAI-66";
 		}
 		else if (nJudgeNo == 6)
 		{

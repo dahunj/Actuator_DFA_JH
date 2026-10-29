@@ -161,6 +161,7 @@
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="Dispatcher.h" />
     <ClInclude Include="DownReportDlg.h" />
+    <ClInclude Include="EnumData.h" />
     <ClInclude Include="ErrorDlg.h" />
     <ClInclude Include="IdleReportDlg.h" />
     <ClInclude Include="InitialDlg.h" />
@@ -190,6 +191,8 @@
     <ClInclude Include="NoWorkDlg.h" />
     <ClInclude Include="NumPadDlg.h" />
     <ClInclude Include="OCAPFAI.h" />
+    <ClInclude Include="OCAPCosmetic.h" />
+    <ClInclude Include="OCAPSelect.h" />
     <ClInclude Include="OperatorDlg.h" />
     <ClInclude Include="PasswordDlg.h" />
     <ClInclude Include="ProhibitDlg.h" />
@@ -257,6 +260,8 @@
     <ClCompile Include="NoWorkDlg.cpp" />
     <ClCompile Include="NumPadDlg.cpp" />
     <ClCompile Include="OCAPFAI.cpp" />
+    <ClCompile Include="OCAPCosmetic.cpp" />
+    <ClCompile Include="OCAPSelect.cpp" />
     <ClCompile Include="OperatorDlg.cpp" />
     <ClCompile Include="PasswordDlg.cpp" />
     <ClCompile Include="ProhibitDlg.cpp" />

@@ -127,15 +127,15 @@ void OCAPFAI::OnBnClickedOk()
 		return;
 	}
 
-	m_stcOption[0].GetWindowText(strData); nData1 = atoi(strData); INI.Set_Integer("OPTION", "MZ_COUNT_01", nData1);
-	m_stcOption[1].GetWindowText(strData); dData1 = atof(strData); INI.Set_Double("OPTION", "DEFECTP_01", dData1, "%0.3lf");
-	m_stcOption[3].GetWindowText(strData); nData2 = atoi(strData); INI.Set_Integer("OPTION", "MZ_COUNT_02", nData2);
-	m_stcOption[4].GetWindowText(strData); dData2 = atof(strData); INI.Set_Double("OPTION", "DEFECTP_02", dData2, "%0.3lf");
-	m_stcOption[5].GetWindowText(strData); nData3 = atoi(strData); INI.Set_Integer("OPTION", "MZ_COUNT_03", nData3);
-	m_stcOption[6].GetWindowText(strData); dData3 = atof(strData); INI.Set_Double("OPTION", "DEFECTP_03", dData3, "%0.3lf");
-	m_stcOption[7].GetWindowText(strData); nData4 = atoi(strData); INI.Set_Integer("OPTION", "MZ_COUNT_04", nData4);
-	m_stcOption[8].GetWindowText(strData); dData4 = atof(strData); INI.Set_Double("OPTION", "DEFECTP_04", dData4, "%0.3lf");
-	m_stcOption[2].GetWindowText(strData); nData5 = atoi(strData); INI.Set_Integer("OPTION", "MZ_MIN_COUNT", nData5);
+	m_stcOption[0].GetWindowText(strData); nData1 = atoi(strData); INI.Set_Integer("OPTION-FAI", "MZ_COUNT_01", nData1);
+	m_stcOption[1].GetWindowText(strData); dData1 = atof(strData); INI.Set_Double("OPTION-FAI", "DEFECTP_01", dData1, "%0.3lf");
+	m_stcOption[3].GetWindowText(strData); nData2 = atoi(strData); INI.Set_Integer("OPTION-FAI", "MZ_COUNT_02", nData2);
+	m_stcOption[4].GetWindowText(strData); dData2 = atof(strData); INI.Set_Double("OPTION-FAI", "DEFECTP_02", dData2, "%0.3lf");
+	m_stcOption[5].GetWindowText(strData); nData3 = atoi(strData); INI.Set_Integer("OPTION-FAI", "MZ_COUNT_03", nData3);
+	m_stcOption[6].GetWindowText(strData); dData3 = atof(strData); INI.Set_Double("OPTION-FAI", "DEFECTP_03", dData3, "%0.3lf");
+	m_stcOption[7].GetWindowText(strData); nData4 = atoi(strData); INI.Set_Integer("OPTION-FAI", "MZ_COUNT_04", nData4);
+	m_stcOption[8].GetWindowText(strData); dData4 = atof(strData); INI.Set_Double("OPTION-FAI", "DEFECTP_04", dData4, "%0.3lf");
+	m_stcOption[2].GetWindowText(strData); nData5 = atoi(strData); INI.Set_Integer("OPTION-FAI", "MZ_MIN_COUNT", nData5);
 
 	strLog.Format("[OCAP Option] OnBnClickedOk - Data1(%d,%0.3lf) Data2(%d,%0.3lf) Data3(%d,%0.3lf)  Data4(%d,%0.3lf) Skip(%d)", nData1, dData1, nData2, dData2, nData3, dData3, nData4, dData4, nData5);
 	g_objLogFile.Save_HandlerLog(strLog);
@@ -144,10 +144,10 @@ void OCAPFAI::OnBnClickedOk()
 	CString strKey;
 	for (int i=0; i<100; i++) {
 		strKey.Format("%02d", i + 1);
-		INI.Set_String("DATA-CODE", strKey, m_sCode[i]);
-		INI.Set_String("DATA-NAME", strKey, m_sName[i]);
-		INI.Set_Integer("DATA-MZ-COUNT", strKey, m_nMZCnt[i]);
-		INI.Set_Double("DATA-DEFECTP", strKey, m_dDefect[i], "%0.3lf");
+		INI.Set_String("FAI-CODE", strKey, m_sCode[i]);
+		INI.Set_String("FAI-NAME", strKey, m_sName[i]);
+		INI.Set_Integer("FAI-MZ-COUNT", strKey, m_nMZCnt[i]);
+		INI.Set_Double("FAI-DEFECTP", strKey, m_dDefect[i], "%0.3lf");
 		strLog.Format("[OCAP Code] No(%03d) Code(%s) Name(%s) MZ(%d) Defect(%0.3lf)", i + 1, m_sCode[i], m_sName[i], m_nMZCnt[i], m_dDefect[i]);
 		g_objLogFile.Save_HandlerLog(strLog);
 	}
@@ -156,20 +156,20 @@ void OCAPFAI::OnBnClickedOk()
 	BOOL bSaved = TRUE;
 	for (int i=0; i<100 && bSaved; i++) {
 		strKey.Format("%02d", i + 1);
-		if (INI.Get_String("DATA-CODE", strKey, "#READ_ERROR#") != m_sCode[i] ||
-			INI.Get_String("DATA-NAME", strKey, "#READ_ERROR#") != m_sName[i] ||
-			INI.Get_Integer("DATA-MZ-COUNT", strKey, -9999) != m_nMZCnt[i] ||
-			fabs(INI.Get_Double("DATA-DEFECTP", strKey, -9999.0) - m_dDefect[i]) > 0.0000001) bSaved = FALSE;
+		if (INI.Get_String("FAI-CODE", strKey, "#READ_ERROR#") != m_sCode[i] ||
+			INI.Get_String("FAI-NAME", strKey, "#READ_ERROR#") != m_sName[i] ||
+			INI.Get_Integer("FAI-MZ-COUNT", strKey, -9999) != m_nMZCnt[i] ||
+			fabs(INI.Get_Double("FAI-DEFECTP", strKey, -9999.0) - m_dDefect[i]) > 0.0000001) bSaved = FALSE;
 	}
 	int nMZ[4] = { nData1, nData2, nData3, nData4 };
 	double dDefect[4] = { dData1, dData2, dData3, dData4 };
 	for (int i=0; i<4 && bSaved; i++) {
 		strKey.Format("MZ_COUNT_%02d", i + 1);
-		if (INI.Get_Integer("OPTION", strKey, -9999) != nMZ[i]) bSaved = FALSE;
+		if (INI.Get_Integer("OPTION-FAI", strKey, -9999) != nMZ[i]) bSaved = FALSE;
 		strKey.Format("DEFECTP_%02d", i + 1);
-		if (fabs(INI.Get_Double("OPTION", strKey, -9999.0) - dDefect[i]) > 0.0000001) bSaved = FALSE;
+		if (fabs(INI.Get_Double("OPTION-FAI", strKey, -9999.0) - dDefect[i]) > 0.0000001) bSaved = FALSE;
 	}
-	if (INI.Get_Integer("OPTION", "MZ_MIN_COUNT", -9999) != nData5) bSaved = FALSE;
+	if (INI.Get_Integer("OPTION-FAI", "MZ_MIN_COUNT", -9999) != nData5) bSaved = FALSE;
 	if (!bSaved) { AfxMessageBox("OCAP_Data.ini 저장/읽기 검증에 실패했습니다. 파일 쓰기 권한을 확인하세요."); return; }
 	for (int i=0; i<100; i++) {
 		if (m_sCode[i] != gCap.sFAICode[i]) {
@@ -223,7 +223,7 @@ void OCAPFAI::OnStcOptionClick(UINT nID)
 	if (g_objCommon.Show_NumPad(strOld, strNew) != IDOK) return;
 
 	if (ID == 0 || ID == 3 || ID == 5 || ID == 7) { nData = atoi(strNew); if (nData < 0 || nData > 40) { AfxMessageBox("연속 매거진 수량 Error.."); return; } }
-	if (ID == 1 || ID == 4 || ID == 6 || ID == 8) { dData  = atof(strNew); if (dData <= 0.0 || dData >= 100.0) { AfxMessageBox("기준 불량율 Error.."); return; } }
+	if (ID == 1 || ID == 4 || ID == 6 || ID == 8) { dData  = atof(strNew); if (dData <= 0.0 || dData > 100.0) { AfxMessageBox("기준 불량율 Error.."); return; } }
 	if (ID == 2) { nData = atoi(strNew); if (nData <= 0 || nData > 300) { AfxMessageBox("매거진 최소수량 Error.."); return; } }
 
 	m_stcOption[ID].SetWindowText(strNew);
@@ -435,7 +435,9 @@ void OCAPFAI::Display_Grid(int nDp, int nIx)
 
 void OCAPFAI::Set_AddMZData(int nPortNo)
 {
+	if (nPortNo < 1 || nPortNo > 30) return;
 	int nNo = nPortNo - 1;
+	if (gLot.sMZID_GD[nNo].IsEmpty()) return;
 	for (int i=0; i<50; i++) {
 		if (gLot.sMZID_GD[nNo] == gCap.sMZID[i]) 
 		{
@@ -487,6 +489,7 @@ void OCAPFAI::DelMZData(int nMZNo)
 
 void OCAPFAI::AddMZOut(CString sMZid)
 {
+	if (gCap.nMZCycle < 0 || gCap.nMZCycle >= 50) return;
 	if (gCap.sMZID[gCap.nMZCycle].GetLength() < 1) return;
 
 	SYSTEMTIME time;
@@ -505,6 +508,7 @@ void OCAPFAI::AddMZOut(CString sMZid)
 	gCap.nMZCycle++;
 	if (gCap.nMZCycle >= 50) gCap.nMZCycle = 0;
 
+	if (gCap.nPendingAlarm != 0) return;
 	m_bError = FALSE;
 	Check_DEFECT(3); if (m_bError) return;
 	Check_DEFECT(2); if (m_bError) return;
@@ -565,6 +569,7 @@ void OCAPFAI::Check_DEFECT(int nNo)
 				gCap.sAlmFAIName[i].Format("FAI-%s", gCap.sFAIName[i]);
 				gCap.dAlmDefect[i]  = dPer;
 				gCap.dAlmThreshold[i] = dDefect;
+				gCap.dAlmThreshold[i] = dDefect;
 				gCap.nAlmCount[i]   = nMZCnt;
 				gCap.nAlmIdx = i;
 			}
@@ -581,8 +586,8 @@ void OCAPFAI::Check_DEFECT(int nNo)
 	if (sDefect.GetLength() > 1) 
 	{
 		m_bError = TRUE;
-		gAlm.sAlmLotID[0] = sDefect;
-		g_objCommon.Show_Error(9180 + nX+1);
+		gCap.sPendingDefect = sDefect;
+		gCap.nPendingAlarm = 9180 + nX+1;
 		return;
 	}
 }
@@ -615,6 +620,7 @@ void OCAPFAI::Check_DEFECTF(int nNo)
 				gCap.sAlmMZID[i] = gCap.sMZID[nMZno];
 				gCap.sAlmFAIName[i].Format("ERR-%s", gCap.sFAIName[i]);
 				gCap.dAlmDefect[i]  = dPer;
+				gCap.dAlmThreshold[i] = dDefect;
 				gCap.nAlmCount[i]   = nMZCnt;
 				gCap.nAlmIdx = i;
 			}
@@ -630,8 +636,8 @@ void OCAPFAI::Check_DEFECTF(int nNo)
 
 	if (sDefect.GetLength() > 1) {
 		m_bError = TRUE;
-		gAlm.sAlmLotID[0] = sDefect;
-		g_objCommon.Show_Error(9184);
+		gCap.sPendingDefect = sDefect;
+		gCap.nPendingAlarm = 9184;
 		return;
 	}
 }

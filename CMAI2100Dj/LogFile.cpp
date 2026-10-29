@@ -1170,6 +1170,71 @@ void CLogFile::Save_OCAPDataLog(int nIdx)
 	}
 }
 
+void CLogFile::Save_OCAPDataLog_Cosmetic(int nIdx)
+{
+	CString strPath = gsCurrentDir + "\\LOG\\OCAPData_Cosmetic";
+	Create_Folder(strPath);
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strFile, strSave, sTitle, sFAIData1, sFAIData2, sData;
+	// 코드/Name 변경 전후의 서로 다른 CSV 헤더가 한 파일에 섞이지 않도록 한다.
+	DWORD dwCodeHash = 2166136261UL;
+	for (int i=0; i<100; i++) {
+		CString strCode = gCap_Cosmetic.sCosmeticCode_Cosmetic[i] + "|" + gCap_Cosmetic.sCosmeticName_Cosmetic[i] + ";";
+		for (int j=0; j<strCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)strCode[j]) * 16777619UL;
+	}
+	strFile.Format("%s\\%04d%02d%02d_OCAPCosmetic100_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
+	sTitle = "Time,배출매거진ID,DFA랏ID1,DFA랏ID2,DFA랏ID3,DFA랏ID4,DFA랏ID5,DFA랏ID6,DFA랏ID7,DFA랏ID8,투입,완공,양품,RN,RR,치명,BCR,MES,MC,외관,001~007,008~015,016~020,";
+	for (int nType=0; nType<2; nType++) {
+		for (int i=0; i<100; i++) {
+			CString sName = gCap_Cosmetic.sCosmeticName_Cosmetic[i], sCode = gCap_Cosmetic.sCosmeticCode_Cosmetic[i];
+			sName.Replace("\"", "\"\""); sCode.Replace("\"", "\"\"");
+			sData.Format("\"%s-%03d %s %s Count\",\"%s-%03d Rate\",", nType == 0 ? "Cosmetic" : "ERR", i + 1, sCode, sName, nType == 0 ? "Cosmetic" : "ERR", i + 1);
+			sTitle += sData;
+		}
+	}
+	sTitle += "\r\n";
+
+	sFAIData1 = sFAIData2 = "";
+	CFile file;
+	if (file.Open(strFile, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite | CFile::shareDenyNone)) {
+		try {
+			file.SeekToEnd();
+
+			if (file.GetLength() < 1) file.Write(sTitle, sTitle.GetLength());
+
+			int n7FAI = gCap_Cosmetic.nCount_Cosmetic[nIdx][0]+gCap_Cosmetic.nCount_Cosmetic[nIdx][1]+gCap_Cosmetic.nCount_Cosmetic[nIdx][2]+gCap_Cosmetic.nCount_Cosmetic[nIdx][3]+gCap_Cosmetic.nCount_Cosmetic[nIdx][4]+gCap_Cosmetic.nCount_Cosmetic[nIdx][5]+gCap_Cosmetic.nCount_Cosmetic[nIdx][6];
+			int nTilt = gCap_Cosmetic.nCount_Cosmetic[nIdx][7]+gCap_Cosmetic.nCount_Cosmetic[nIdx][8]+gCap_Cosmetic.nCount_Cosmetic[nIdx][9]+gCap_Cosmetic.nCount_Cosmetic[nIdx][10]+gCap_Cosmetic.nCount_Cosmetic[nIdx][11]+gCap_Cosmetic.nCount_Cosmetic[nIdx][12]+gCap_Cosmetic.nCount_Cosmetic[nIdx][13]+gCap_Cosmetic.nCount_Cosmetic[nIdx][14];
+			int nGap  = gCap_Cosmetic.nCount_Cosmetic[nIdx][15]+gCap_Cosmetic.nCount_Cosmetic[nIdx][16]+gCap_Cosmetic.nCount_Cosmetic[nIdx][17]+gCap_Cosmetic.nCount_Cosmetic[nIdx][18]+gCap_Cosmetic.nCount_Cosmetic[nIdx][19];
+			int nTotal = n7FAI + nTilt + nGap;
+			for (int i=20; i<100; i++) nTotal += gCap_Cosmetic.nCount_Cosmetic[nIdx][i];
+			for (int i=0; i<100; i++) {
+				double dDef = gCap_Cosmetic.nTotCount_Cosmetic[nIdx] > 0 ? (gCap_Cosmetic.nCount_Cosmetic[nIdx][i] * 100.0) / gCap_Cosmetic.nTotCount_Cosmetic[nIdx] : 0.0;
+				sData.Format("%d,%01f%%,", gCap_Cosmetic.nCount_Cosmetic[nIdx][i], dDef);
+				sFAIData1 = sFAIData1 + sData;
+			}
+			for (int i=0; i<100; i++) {
+				double dDef = gCap_Cosmetic.nTotCount_Cosmetic[nIdx] > 0 ? (gCap_Cosmetic.nFCount_Cosmetic[nIdx][i] * 100.0) / gCap_Cosmetic.nTotCount_Cosmetic[nIdx] : 0.0;
+				sData.Format("%d,%01f%%,", gCap_Cosmetic.nFCount_Cosmetic[nIdx][i], dDef);
+				sFAIData2 = sFAIData2 + sData;
+			}
+			strSave.Format("%02d:%02d:%02d %03d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%s%s\r\n", time.wHour, time.wMinute, time.wSecond, time.wMilliseconds,
+				gCap_Cosmetic.sMZID_Cosmetic[nIdx], gCap_Cosmetic.sLotID_Cosmetic[nIdx][0], gCap_Cosmetic.sLotID_Cosmetic[nIdx][1], gCap_Cosmetic.sLotID_Cosmetic[nIdx][2], gCap_Cosmetic.sLotID_Cosmetic[nIdx][3], gCap_Cosmetic.sLotID_Cosmetic[nIdx][4], gCap_Cosmetic.sLotID_Cosmetic[nIdx][5], gCap_Cosmetic.sLotID_Cosmetic[nIdx][6], gCap_Cosmetic.sLotID_Cosmetic[nIdx][7],
+				gCap_Cosmetic.nTotCount_Cosmetic[nIdx], (gCap_Cosmetic.nGoodCount_Cosmetic[nIdx]+gCap_Cosmetic.nROSNGCount_Cosmetic[nIdx]+gCap_Cosmetic.nROSRfCount_Cosmetic[nIdx]), gCap_Cosmetic.nGoodCount_Cosmetic[nIdx], gCap_Cosmetic.nROSNGCount_Cosmetic[nIdx], gCap_Cosmetic.nROSRfCount_Cosmetic[nIdx],
+				(gCap_Cosmetic.nBCRCount_Cosmetic[nIdx]+gCap_Cosmetic.nMESCount_Cosmetic[nIdx]+gCap_Cosmetic.nMCCount_Cosmetic[nIdx]), gCap_Cosmetic.nBCRCount_Cosmetic[nIdx], gCap_Cosmetic.nMESCount_Cosmetic[nIdx], gCap_Cosmetic.nMCCount_Cosmetic[nIdx],
+				nTotal, n7FAI, nTilt, nGap, sFAIData1, sFAIData2);
+
+			file.Write(strSave, strSave.GetLength());
+			file.Close();
+
+		} catch (CFileException *pEx) {
+			pEx->Delete();
+		}
+	}
+}
+
 void CLogFile::Save_RFBarData(int nType, CString strDataID, int nCount)
 {
 	//0:BL1F, 1:BL2F, 2:BU1F, 3:BU2F, 4:RFL, 5:RFG, 6:RFN

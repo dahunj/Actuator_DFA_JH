@@ -178,6 +178,7 @@ public:
 	void Reset_IdleData();
 	void Reset_RosData();
 	void Reset_OCAPData();
+	void Reset_OCAPData_Cosmetic();
 
 	BOOL Read_EquipData();
 	BOOL Read_ModelEquipData(CString strPath);
@@ -189,6 +190,7 @@ public:
 	BOOL Read_RosData();
 	void Save_RosData();
 	BOOL Read_OCAPData();
+	BOOL Read_OCAPData_Cosmetic();
 
 	EQUIP_DATA *Get_pEquipData() { return &m_EquipData; }
 	MOVE_DATA *Get_pMoveData() { return &m_MoveData; }

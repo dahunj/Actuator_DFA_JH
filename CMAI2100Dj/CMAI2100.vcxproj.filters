@@ -343,6 +343,15 @@
     <ClInclude Include="OCAPFAI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="OCAPCosmetic.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="OCAPSelect.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumData.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CMAI2100.cpp">
@@ -532,6 +541,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="OCAPFAI.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="OCAPCosmetic.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="OCAPSelect.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

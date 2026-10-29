@@ -17,6 +17,8 @@
 #include "ProhibitDlg.h"
 #include "MonitorDlg.h"
 #include "OCAPFAI.h"
+#include "OCAPCosmetic.h"
+#include "OCAPSelect.h"
 #include "ErrorDlg.h"
 #include "AlarmDlg.h"
 #include "Inspector.h"
@@ -127,6 +129,7 @@ BOOL CCMAI2100Dlg::OnInitDialog()
 	g_dlgProhibit.Create(CProhibitDlg::IDD, this);
 	g_dlgMonitor.Create(CMonitorDlg::IDD, this);
 	g_dlgOCAP_FAI.Create(OCAPFAI::IDD, this);
+	g_dlgOCAP_Cosmetic.Create(OCAPCosmetic::IDD, this);
 	g_dlgError.Create(CErrorDlg::IDD, this);
 	g_dlgAlarm.Create(CAlarmDlg::IDD, this);
 	g_dlgNoWork.Create(CNoWorkDlg::IDD, this);
@@ -196,6 +199,7 @@ void CCMAI2100Dlg::OnDestroy()
 	g_dlgError.DestroyWindow();
 	g_dlgMonitor.DestroyWindow();
 	g_dlgOCAP_FAI.DestroyWindow();
+	g_dlgOCAP_Cosmetic.DestroyWindow();
 	g_dlgProhibit.DestroyWindow();
 	g_dlgSetup.DestroyWindow();
 	g_dlgManual.DestroyWindow();
@@ -296,8 +300,12 @@ void CCMAI2100Dlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	gData.nMZDoorOpen[0] = gData.nMZDoorOpen[1] = 0;
 
 	g_objDataManager.Reset_OCAPData();
+	g_objDataManager.Reset_OCAPData_Cosmetic();
 	if (g_objDataManager.Read_OCAPData() == FALSE) {
 		g_objCommon.Show_MsgBox(1, "OCAP Data 파일을 확인해 주세요.");
+	}
+	if (g_objDataManager.Read_OCAPData_Cosmetic() == FALSE) {
+		g_objCommon.Show_MsgBox(1, "OCAP Cosmetic Data 파일을 확인해 주세요.");
 	}
 
 	gDown.bDownClear = TRUE;
@@ -320,6 +328,19 @@ void CCMAI2100Dlg::OnTimer(UINT_PTR nIDEvent)
 {
 	switch (nIDEvent) {
 	case TIMER_DATE_TIME:
+		if (!gData.bAlarmShow && !g_dlgError.IsWindowVisible() && !g_dlgAlarm.IsWindowVisible()) {
+			if (gCap.nPendingAlarm != 0) {
+				int nError = gCap.nPendingAlarm;
+				gAlm.sAlmLotID[0] = gCap.sPendingDefect;
+				g_objCommon.Show_Error(nError);
+				gCap.nPendingAlarm = 0;
+			} else if (gCap_Cosmetic.nPendingAlarm_Cosmetic != 0) {
+				int nError = gCap_Cosmetic.nPendingAlarm_Cosmetic;
+				gAlm.sAlmLotID[0] = gCap_Cosmetic.sPendingDefect_Cosmetic;
+				g_objCommon.Show_Error(nError);
+				gCap_Cosmetic.nPendingAlarm_Cosmetic = 0;
+			}
+		}
 		Display_DateTime();
 		g_objCommon.Check_InsideLamp();
 		g_objCommon.Check_MainDoor();
@@ -444,8 +465,17 @@ void CCMAI2100Dlg::OnBnClickedBtnMainMonitor()
 
 void CCMAI2100Dlg::OnBnClickedBtnMainOCAP()
 {
-	if (g_dlgOCAP_FAI.IsWindowVisible()) g_dlgOCAP_FAI.ShowWindow(SW_HIDE);
-	else g_dlgOCAP_FAI.ShowWindow(SW_SHOW);	
+	OCAPSelect dlg(this);
+	int nSelect = dlg.DoModal();
+	if (nSelect == IDC_BTN_OCAP_FAI) {
+		g_dlgOCAP_Cosmetic.ShowWindow(SW_HIDE);
+		g_dlgOCAP_FAI.ShowWindow(SW_SHOW);
+		g_dlgOCAP_FAI.SetForegroundWindow();
+	} else if (nSelect == IDC_BTN_OCAP_COSMETIC) {
+		g_dlgOCAP_FAI.ShowWindow(SW_HIDE);
+		g_dlgOCAP_Cosmetic.ShowWindow(SW_SHOW);
+		g_dlgOCAP_Cosmetic.SetForegroundWindow();
+	}
 }
 
 void CCMAI2100Dlg::OnBnClickedBtnMainExit()

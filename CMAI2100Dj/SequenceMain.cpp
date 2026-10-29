@@ -16,6 +16,7 @@
 #include "CarrierRFID_Good.h"
 #include "CarrierRFID_NG.h"
 #include "OCAPFAI.h"
+#include "OCAPCosmetic.h"
 #include <math.h>
 
 CSequenceMain g_objSequenceMain;
@@ -618,7 +619,7 @@ void CSequenceMain::Set_ClearRunData(int nType)
 	}
 	for (int i = 0; i < 30; i++) for (int j = 0; j <11; j++) gLot.nRosJugCount[i][j] = 0;
 	for (int i = 0; i < 2; i++) for (int j = 0; j < 7; j++) gData.dElevatorZPos[i][j] = 0.0;
-	for (int i = 0; i < 30; i++) for (int j = 0; j <100; j++) { gLot.nOcapCount[i][j] = gLot.nFOcapCount[i][j] = 0; }
+	for (int i = 0; i < 30; i++) for (int j = 0; j <100; j++) { gLot.nOcapCount[i][j] = gLot.nFOcapCount[i][j] = 0; gLot.nOcapCount_Cosmetic[i][j] = gLot.nFOcapCount_Cosmetic[i][j] = 0; }
 
 	gData.sGoodCarrierID = gData.sMZID_Tansfer = ""; gData.nSlotNo_LDMZ = gData.nSlotNo_Tansfer = gData.nCarrierStart = gLot.nMZCountGD = gLot.nMZCountNG = gLot.nJobLog = 0;
 	for (int i = 0; i <10; i++) { if(i==5) continue; gData.sMZID[i] = ""; }
@@ -2040,6 +2041,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 	g_objInspector.Set_LotEnd(INSPECTOR_ALL, gLot.sLotID[nNo], nPortNo);
 	g_objDispatcher.Set_LotEnd(nPortNo);
 	g_dlgOCAP_FAI.Set_AddMZData(nPortNo);
+	g_dlgOCAP_Cosmetic.Set_AddMZData_Cosmetic(nPortNo);
 
 	gData.nDay_TotalCnt += gLot.nCmCount[nNo];
 	gData.nDay_NGCnt += gLot.nNgCount[nNo];
@@ -11570,10 +11572,12 @@ BOOL CSequenceMain::Run_ULCVElevator()
 
 #ifndef AJIN_BOARD_USE
 		g_dlgOCAP_FAI.AddMZOut(gData.sMZID[8]);
+		g_dlgOCAP_Cosmetic.AddMZOut_Cosmetic(gData.sMZID[8]);
 #else
 		if (m_pEquipData->bUseMZIDUnload) {
 			g_objMesAgent.Set_MGZIDRemove("G", gData.sMZID[8], gData.sRecipeName);
 			g_dlgOCAP_FAI.AddMZOut(gData.sMZID[8]);
+			g_dlgOCAP_Cosmetic.AddMZOut_Cosmetic(gData.sMZID[8]);
 		}
 #endif		
 		m_nULCVElevatorCase++; m_tULCVElevatorLoop.Set_LoopTime(3000);

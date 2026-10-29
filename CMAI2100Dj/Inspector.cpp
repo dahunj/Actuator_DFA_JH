@@ -11,6 +11,8 @@
 #include "SequenceMain.h"
 #include "MesAgent.h"
 
+#include "EnumData.h"
+
 //#define UDP_PC1_HOST_IP		"127.0.0.1"
 #define UDP_HANDLER_IP		"192.168.0.11"
 #define UDP_PC1_HOST_IP		"192.168.0.21"
@@ -407,11 +409,11 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	}
 
 	//Module 검사완료 Check
-	if (pEquipData->bUseBottom && gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][1] < 2) return;
-	if (pEquipData->bUseBotAng && gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][2] < 2) return;
-	if (pEquipData->bUseTop1   && gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][3] < 2) return;
-	if (pEquipData->bUseTopAng && gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][4] < 2) return;
-	if (pEquipData->bUseTop2   && gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][5] < 2) return;
+	if (pEquipData->bUseBottom && gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::B1] < 2) return;
+	if (pEquipData->bUseBotAng && gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::AG] < 2) return;
+	if (pEquipData->bUseTop1   && gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::T1] < 2) return;
+	if (pEquipData->bUseTopAng && gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::TG] < 2) return;
+	if (pEquipData->bUseTop2   && gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::T2] < 2) return;
 
 	int nNGCnt = 0, nNGSize = 0, nNGSize1 = 0, nNGSize2 = 0, nNGSize3 = 0, nNGMC = 0, nNGGF = 0, nNGSkip = 0, nReSkip = 0, nMCBTM = 0, nRosCnt = 0;
 	for (int i = 1; i < 6; i++) {
@@ -436,10 +438,15 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	DWORD dwTerm = GetTickCount() - m_dwT2ScanDone[nPortNo-1][nTrayNo-1][nCMNo-1];
 	strLog.Format("[Get_InspectComplete] Inspection Complete LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Time(%d) NG(%d) Bar(%s) SNG(%d) MC(%d) GF(%d) SNG(%d) SRe(%d) MCBTM(%d) FDFAI(%d) NC(%s) ROS(%d)", sLotID, sPortNo, sTrayNo, nCMNo, dwTerm, nNGCnt, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], nNGSize, nNGMC, nNGGF, nNGSkip, nReSkip, nMCBTM, gLot.nFOcapExist[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], nRosCnt);	g_objLogFile.Save_HandlerLog(strLog);
 
-	if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] > 1) {
+	if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] > 1) {
 		strLog.Format("[Get_InspectComplete] Inspection Complete Allready Error => LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Bar(%s) Judge(%d) NC(%s) ROS(%d)", sLotID, sPortNo, sTrayNo, nCMNo, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], nRosCnt);	g_objLogFile.Save_HandlerLog(strLog);
 		return;
 	}
+
+
+#ifndef AJIN_BOARD_USE
+	gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1] = "AAAAAAAA";
+#endif
 
 	//ROS Skip Check
 	if (!pEquipData->bUseNGSize) 
@@ -448,8 +455,8 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 		//Barcdoe read fail(5) - ROS Skip
 		if (gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1] == "NOREAD" || gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1].GetLength() < 7) {
 			gLot.nSpecialNG[nPortNo-1][nTrayNo-1][nCMNo-1] = 1;
-			gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0]  = 5;	//Barcode Fail
-			gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = "BARCODE_NOREAD";
+			gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final]  = 5;	//Barcode Fail
+			gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] = "BARCODE_NOREAD";
 			gLot.nRosJugCount[nPortNo-1][5]++; gLot.nRosJugCount[nPortNo-1][7]++;
 			gData.nNG_MC[2][1]++;
 			if (gData.nNG_MC[2][0] > 0 && gData.nNG_MC[2][0] <= gData.nNG_MC[2][1]) g_objCommon.Show_Error(9203);
@@ -458,8 +465,8 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 		//MES-NG - ROS Skip
 		if (pEquipData->bUseMES && gMes.nCmResult[nPortNo-1][nTrayNo-1][nCMNo-1] == 2) {
 			gLot.nSpecialNG[nPortNo-1][nTrayNo-1][nCMNo-1] = 1;
-			gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0]  = 5;	//MES-NG
-			gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = "MES_NG";
+			gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final]  = 5;	//MES-NG
+			gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] = "MES_NG";
 			gLot.nRosJugCount[nPortNo-1][5]++; gLot.nRosJugCount[nPortNo-1][8]++;
 			gData.nNG_MC[4][1]++;
 			if (gData.nNG_MC[4][0] > 0 && gData.nNG_MC[4][0] <= gData.nNG_MC[4][1]) g_objCommon.Show_Error(9205);
@@ -468,8 +475,8 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 		//MC - ROS Skip
 		if (nNGMC > 0 || nNGGF > 0) {
 			gLot.nSpecialNG[nPortNo-1][nTrayNo-1][nCMNo-1] = 1;
-			gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0]  = 5;	//MC
-			gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = "MC";
+			gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final]  = 5;	//MC
+			gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] = "MC";
 			gLot.nRosJugCount[nPortNo-1][5]++; gLot.nRosJugCount[nPortNo-1][9]++;
 			if (nNGMC > 0) gData.nNG_MC[0][1]++;
 			if (nNGGF > 0) gData.nNG_MC[1][1]++;
@@ -484,9 +491,9 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	//치수불량(7) - ROS Skip
 	if (nNGSize > 0) {
 		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = nNGSize;	//치수불량: 7,8,9
-		if (nNGSize == 7) gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = "SIZE1_NG";
-		if (nNGSize == 8) gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = "SIZE2_NG";
-		if (nNGSize == 9) gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = "SIZE3_NG";
+		if (nNGSize == 7) gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] = "SIZE1_NG";
+		if (nNGSize == 8) gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] = "SIZE2_NG";
+		if (nNGSize == 9) gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] = "SIZE3_NG";
 		gLot.nRosJugCount[nPortNo-1][6]++;
 		return;
 	}
@@ -508,7 +515,7 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 		return;
 	}
 
-	if (nNGCnt == 0 && nRosCnt == 0) { gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = 2; return; }	//양품
+	if (nNGCnt == 0 && nRosCnt == 0) { gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] = 2; return; }	//양품
 
 	gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = 4;	//RepairSet
 //	if (nNGCnt == 0 && nRosCnt > 0) { //Ros판정

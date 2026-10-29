@@ -193,6 +193,8 @@ void CDataManager::Reset_RosData()
 
 void CDataManager::Reset_OCAPData()
 {
+	gCap.nPendingAlarm = 0;
+	gCap.sPendingDefect = "";
 	gCap.nMZCycle = 0;
 	for(int i=0; i<50; i++) {
 		gCap.sDate[i] = gCap.sTime[i] = gCap.sMZID[i] = "";
@@ -208,6 +210,28 @@ void CDataManager::Reset_OCAPData()
 		gCap.sFAIName[j] = gCap.sFAICode[j] = "";
 		gCap.nCodeMZCnt[j] = 0;
 		gCap.dCodeDefect[j] = -1.0;
+	}
+}
+
+void CDataManager::Reset_OCAPData_Cosmetic()
+{
+	gCap_Cosmetic.nPendingAlarm_Cosmetic = 0;
+	gCap_Cosmetic.sPendingDefect_Cosmetic = "";
+	gCap_Cosmetic.nMZCycle_Cosmetic = 0;
+	for(int i=0; i<50; i++) {
+		gCap_Cosmetic.sDate_Cosmetic[i] = gCap_Cosmetic.sTime_Cosmetic[i] = gCap_Cosmetic.sMZID_Cosmetic[i] = "";
+		gCap_Cosmetic.nTotCount_Cosmetic[i] = gCap_Cosmetic.nGoodCount_Cosmetic[i] = gCap_Cosmetic.nROSNGCount_Cosmetic[i] = gCap_Cosmetic.nROSRfCount_Cosmetic[i] = gCap_Cosmetic.nBCRCount_Cosmetic[i] = gCap_Cosmetic.nMESCount_Cosmetic[i] = gCap_Cosmetic.nMCCount_Cosmetic[i] = 0;
+		for(int j=0; j<100; j ++) {
+			gCap_Cosmetic.nCount_Cosmetic[i][j] = gCap_Cosmetic.nFCount_Cosmetic[i][j] = 0;
+		}
+		for(int j=0; j<8; j ++) {
+			gCap_Cosmetic.sLotID_Cosmetic[i][j] = "";
+		}
+	}
+	for(int j=0; j<100; j ++) {
+		gCap_Cosmetic.sCosmeticName_Cosmetic[j] = gCap_Cosmetic.sCosmeticCode_Cosmetic[j] = "";
+		gCap_Cosmetic.nCodeMZCnt_Cosmetic[j] = 0;
+		gCap_Cosmetic.dCodeDefect_Cosmetic[j] = -1.0;
 	}
 }
 
@@ -791,23 +815,70 @@ BOOL CDataManager::Read_OCAPData()
 		return FALSE;
 	}
 
+
+	// 기존 섹션은 새 섹션이 없을 때만 복사한다. 기존 설정을 덮어쓰지 않는다.
+	const char *sOld[5] = { "OPTION", "DATA-CODE", "DATA-NAME", "DATA-MZ-COUNT", "DATA-DEFECTP" };
+	const char *sNew[5] = { "OPTION-FAI", "FAI-CODE", "FAI-NAME", "FAI-MZ-COUNT", "FAI-DEFECTP" };
+	char sSection[32768];
+	for (int i=0; i<5; i++) {
+		if (::GetPrivateProfileSection(sNew[i], sSection, sizeof(sSection), strFile) != 0) continue;
+		DWORD dwRead = ::GetPrivateProfileSection(sOld[i], sSection, sizeof(sSection), strFile);
+		if (dwRead == 0) continue;
+		if (dwRead >= sizeof(sSection) - 2 || !::WritePrivateProfileSection(sNew[i], sSection, strFile)) {
+			AfxMessageBox("OCAP FAI 설정 섹션 변환에 실패했습니다."); return FALSE;
+		}
+	}
+
 	CString strKey;
 	for(int i=0; i<4; i++) {
 		strKey.Format("DEFECTP_%02d", i + 1);
-		gCap.dGiDefect[i] = INI.Get_Double("OPTION", strKey, 0.0);
+		gCap.dGiDefect[i] = INI.Get_Double("OPTION-FAI", strKey, 0.0);
 		strKey.Format("MZ_COUNT_%02d", i + 1);
-		gCap.nGiMZCnt[i]  = INI.Get_Integer("OPTION", strKey, 0);
+		gCap.nGiMZCnt[i]  = INI.Get_Integer("OPTION-FAI", strKey, 0);
 	}
-	gCap.nGiMinCnt	= INI.Get_Integer("OPTION", "MZ_MIN_COUNT", 0);
+	gCap.nGiMinCnt	= INI.Get_Integer("OPTION-FAI", "MZ_MIN_COUNT", 0);
 
 	for (int i = 0; i < 100; i++) {
 		strKey.Format("%02d", i + 1);
-		gCap.sFAIName[i] = INI.Get_String("DATA-NAME", strKey, "");
-		gCap.sFAICode[i] = INI.Get_String("DATA-CODE", strKey, "");
-		gCap.nCodeMZCnt[i] = INI.Get_Integer("DATA-MZ-COUNT", strKey, i < 20 ? -1 : 0);
-		gCap.dCodeDefect[i] = INI.Get_Double("DATA-DEFECTP", strKey, -1.0);
+		gCap.sFAIName[i] = INI.Get_String("FAI-NAME", strKey, "");
+		gCap.sFAICode[i] = INI.Get_String("FAI-CODE", strKey, "");
+		gCap.nCodeMZCnt[i] = INI.Get_Integer("FAI-MZ-COUNT", strKey, i < 20 ? -1 : 0);
+		gCap.dCodeDefect[i] = INI.Get_Double("FAI-DEFECTP", strKey, -1.0);
 		if (gCap.dCodeDefect[i] != -1.0 && !(gCap.dCodeDefect[i] > 0.0 && gCap.dCodeDefect[i] <= 100.0)) gCap.dCodeDefect[i] = -1.0;
 		if (gCap.nCodeMZCnt[i] < -1 || gCap.nCodeMZCnt[i] > 40) gCap.nCodeMZCnt[i] = 0;
+	}
+	return TRUE;
+}
+
+BOOL CDataManager::Read_OCAPData_Cosmetic()
+{
+	CString strFile = gsCurrentDir + "\\System\\OCAP_Data.ini";
+	// 구형 파일만 있는 기존 장비는 최초 읽기 때 새 파일명으로 복사한다.
+	if (::GetFileAttributes(strFile) == INVALID_FILE_ATTRIBUTES)
+		::CopyFile(gsCurrentDir + "\\System\\OCAPData.ini", strFile, TRUE);
+	CIniFileCS INI(strFile);
+	if (!INI.Check_File()) {
+		AfxMessageBox("OCAP_Data.ini File Not Found!!!");
+		return FALSE;
+	}
+
+	CString strKey;
+	for(int i=0; i<4; i++) {
+		strKey.Format("DEFECTP_%02d", i + 1);
+		gCap_Cosmetic.dGiDefect_Cosmetic[i] = INI.Get_Double("OPTION-COSMETIC", strKey, 0.0);
+		strKey.Format("MZ_COUNT_%02d", i + 1);
+		gCap_Cosmetic.nGiMZCnt_Cosmetic[i]  = INI.Get_Integer("OPTION-COSMETIC", strKey, 0);
+	}
+	gCap_Cosmetic.nGiMinCnt_Cosmetic	= INI.Get_Integer("OPTION-COSMETIC", "MZ_MIN_COUNT", 0);
+
+	for (int i = 0; i < 100; i++) {
+		strKey.Format("%02d", i + 1);
+		gCap_Cosmetic.sCosmeticName_Cosmetic[i] = INI.Get_String("COSMETIC-NAME", strKey, "");
+		gCap_Cosmetic.sCosmeticCode_Cosmetic[i] = INI.Get_String("COSMETIC-CODE", strKey, "");
+		gCap_Cosmetic.nCodeMZCnt_Cosmetic[i] = INI.Get_Integer("COSMETIC-MZ-COUNT", strKey, -1);
+		gCap_Cosmetic.dCodeDefect_Cosmetic[i] = INI.Get_Double("COSMETIC-DEFECTP", strKey, -1.0);
+		if (gCap_Cosmetic.dCodeDefect_Cosmetic[i] != -1.0 && !(gCap_Cosmetic.dCodeDefect_Cosmetic[i] > 0.0 && gCap_Cosmetic.dCodeDefect_Cosmetic[i] <= 100.0)) gCap_Cosmetic.dCodeDefect_Cosmetic[i] = -1.0;
+		if (gCap_Cosmetic.nCodeMZCnt_Cosmetic[i] < -1 || gCap_Cosmetic.nCodeMZCnt_Cosmetic[i] > 40) gCap_Cosmetic.nCodeMZCnt_Cosmetic[i] = 0;
 	}
 	return TRUE;
 }

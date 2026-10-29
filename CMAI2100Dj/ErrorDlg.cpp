@@ -219,7 +219,15 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		if (m_nErrNo == 9183) strErrPick.Format(" #==> [%s] 불양률이 [%0.1f%%] 발생했습니다. (설정: %0.1f%%). 연속 %d회 발생되었습니다.#      DFA공정에 내용전달 해주세요. AVI Master Sample 투입하여 Correlation 이상여부를 확인해 주세요.#      [%s]",
 														gCap.sAlmFAIName[gCap.nAlmIdx], gCap.dAlmDefect[gCap.nAlmIdx], gCap.dAlmThreshold[gCap.nAlmIdx], gCap.nAlmCount[gCap.nAlmIdx], gAlm.sAlmLotID[0]);
 		if (m_nErrNo == 9184) strErrPick.Format(" #==> [%s] 측정 Error [%0.1f%%] 발생했습니다. (설정: %0.1f%%). 연속 %d회 발생되었습니다.#      설비 문제여부를 확인해야 합니다.#      [%s]",
-														gCap.sAlmFAIName[gCap.nAlmIdx], gCap.dAlmDefect[gCap.nAlmIdx], gCap.dGiDefect[3], gCap.nGiMZCnt[3], gAlm.sAlmLotID[0]);
+														gCap.sAlmFAIName[gCap.nAlmIdx], gCap.dAlmDefect[gCap.nAlmIdx], gCap.dAlmThreshold[gCap.nAlmIdx], gCap.nAlmCount[gCap.nAlmIdx], gAlm.sAlmLotID[0]);
+		if (m_nErrNo == 9185) strErrPick.Format(" #==> [%s] 불량률이 [%0.1f%%] 발생했습니다. (설정: %0.1f%%). 연속 %d회 발생되었습니다.#      외관 공정에 내용전달 해주세요.#      [%s]",
+														gCap_Cosmetic.sAlmCosmeticName_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.dAlmDefect_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.dAlmThreshold_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.nAlmCount_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gAlm.sAlmLotID[0]);
+		if (m_nErrNo == 9186) strErrPick.Format(" #==> [%s] 불량률이 [%0.1f%%] 발생했습니다. (설정: %0.1f%%). 연속 %d회 발생되었습니다.#      외관 공정에 내용전달 해주세요. AVI Master Sample 투입하여 Correlation 이상여부를 확인해 주세요.#      [%s]",
+														gCap_Cosmetic.sAlmCosmeticName_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.dAlmDefect_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.dAlmThreshold_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.nAlmCount_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gAlm.sAlmLotID[0]);
+		if (m_nErrNo == 9187) strErrPick.Format(" #==> [%s] 불량률이 [%0.1f%%] 발생했습니다. (설정: %0.1f%%). 연속 %d회 발생되었습니다.#      외관 공정에 내용전달 해주세요. AVI Master Sample 투입하여 Correlation 이상여부를 확인해 주세요.#      [%s]",
+														gCap_Cosmetic.sAlmCosmeticName_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.dAlmDefect_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.dAlmThreshold_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.nAlmCount_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gAlm.sAlmLotID[0]);
+		if (m_nErrNo == 9188) strErrPick.Format(" #==> [%s] 측정 Error [%0.1f%%] 발생했습니다. (설정: %0.1f%%). 연속 %d회 발생되었습니다.#      설비 문제여부를 확인해야 합니다.#      [%s]",
+														gCap_Cosmetic.sAlmCosmeticName_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.dAlmDefect_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.dAlmThreshold_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gCap_Cosmetic.nAlmCount_Cosmetic[gCap_Cosmetic.nAlmIdx_Cosmetic], gAlm.sAlmLotID[0]);
 		if (m_nErrNo > 9200 && m_nErrNo < 9210) strErrPick.Format(" #==> [%s]비전에서 발생하였습니다.", gAlm.sAlmLotID[1]);
 
 		if (m_nErrNo == 7012 || m_nErrNo == 7512 || m_nErrNo == 9002 || m_nErrNo == 9011 || m_nErrNo == 9015 || m_nErrNo == 9016 || m_nErrNo == 9017) {
@@ -953,7 +961,7 @@ void CErrorDlg::Set_SPCError(int nErrNo, CString sErrMsg)
 	if (nErrNo > 8400 && nErrNo < 8600) { strLotId = gData.sLotID_GoodTray[0];		if (strLotId == "") strLotId = gData.sLotID_GoodTray[2]; }
 	if (nErrNo > 8600 && nErrNo < 8800) { strLotId = gData.sLotID_GoodTray[1];		if (strLotId == "") strLotId = gData.sLotID_GoodTray[2]; }
 	if (nErrNo == 9180 || (nErrNo > 9200 && nErrNo < 9210)) strLotId = gAlm.sAlmLotID[0];
-	if (nErrNo >= 9181 && nErrNo <= 9184) strLotId = gLot.sELotID;
+	if (nErrNo >= 9181 && nErrNo <= 9188) strLotId = gLot.sELotID;
 
 	if (gLot.nJobStatus == 0) { gAlm.sLotID = m_strLotID = ""; return; }
 

@@ -11,6 +11,7 @@ GLOVAL_LOT			gLot;
 GLOVAL_ALM			gAlm;
 GLOVAL_MES			gMes;
 GLOVAL_OCAP			gCap;
+GLOVAL_OCAP_Cosmetic gCap_Cosmetic;
 GLOVAL_NGCODE* gNG = new GLOVAL_NGCODE;
 GLOVAL_DOWN			gDown;
 /*

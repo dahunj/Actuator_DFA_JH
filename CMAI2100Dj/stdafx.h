@@ -295,6 +295,8 @@ typedef struct {
 	int		nRosJugCount[30][11];		//0:Count, 1:Good, 2:TOver 3:NG, 4:Repair, 5:Bar_NoRead,MES-NG,MC, 6:FAI_NG(치수불량), 7:Bar, 8:MES-NG, 9:MC, 10:Ros Skip
 	int		nHistory[30][10][40][10];
 	int		nImageCnt[30][10][40][2];	//0:외관불량수, 1:치수불량수
+	int		nOcapCount_Cosmetic[30][100];	//MZ,Cosmetic별 발생수
+	int		nFOcapCount_Cosmetic[30][100];	//Cosmetic F+Code 측정 Error 발생수
 	int		nOcapCount[30][100];			//MZ,FAI별 발생수
 	int		nFOcapCount[30][100];		//MZ,FAI별 발생수
 	int		nFOcapExist[30][10][40];	//1:Exist
@@ -447,7 +449,43 @@ typedef struct {
 	double		dAlmThreshold[100];
 	int			nAlmCount[100];
 	int			nAlmIdx;
+	int			nPendingAlarm;
+	CString		sPendingDefect;
 } GLOVAL_OCAP;
+
+typedef struct {
+	int			nMZCycle_Cosmetic;
+	CString		sDate_Cosmetic[50];			//날자(07/31)
+	CString		sTime_Cosmetic[50];			//시간(07:31)
+	CString		sMZID_Cosmetic[50];			//양품MZ
+	CString		sLotID_Cosmetic[50][8];		//LotID
+	int			nTotCount_Cosmetic[50];		//투입-Module수
+	int			nGoodCount_Cosmetic[50];		//양품수
+	int			nROSNGCount_Cosmetic[50];	//ROS-NG수
+	int			nROSRfCount_Cosmetic[50];	//ROS-Repaier수
+	int			nBCRCount_Cosmetic[50];		//Barcode[NG수
+	int			nMESCount_Cosmetic[50];		//MES[NG수
+	int			nMCCount_Cosmetic[50];		//MC[NG수
+	int			nCount_Cosmetic[50][100];		//MZ,Cosmetic별 발생수
+	int			nFCount_Cosmetic[50][100];	//MZ,Cosmetic별 발생수
+
+	CString		sCosmeticName_Cosmetic[100];		//Cosmetic이름-Display
+	CString		sCosmeticCode_Cosmetic[100];		//Cosmetic-NG-Code
+	double		dGiDefect_Cosmetic[4];		//불량율%
+	int			nGiMZCnt_Cosmetic[4];		//MZ수량(알람발생MZ대상수)
+	double		dCodeDefect_Cosmetic[100];	//코드별 기준 불량율(-1:공통조건, 0초과~100%)
+	int			nCodeMZCnt_Cosmetic[100];	//코드별 연속 MZ수(-1:공통조건, 0:사용안함, 1~40:개별조건)
+	int			nGiMinCnt_Cosmetic;			//MZ당최소 Module수량(이하면 알람발생 제외처리)
+
+	CString		sAlmMZID_Cosmetic[100];
+	CString		sAlmCosmeticName_Cosmetic[100];
+	double		dAlmDefect_Cosmetic[100];
+	double		dAlmThreshold_Cosmetic[100];
+	int			nAlmCount_Cosmetic[100];
+	int			nAlmIdx_Cosmetic;
+	int			nPendingAlarm_Cosmetic;
+	CString		sPendingDefect_Cosmetic;
+} GLOVAL_OCAP_Cosmetic;
 
 typedef struct  
 {
@@ -474,6 +512,7 @@ extern GLOVAL_LOT		gLot;
 extern GLOVAL_ALM		gAlm;
 extern GLOVAL_MES		gMes;
 extern GLOVAL_OCAP		gCap;
+extern GLOVAL_OCAP_Cosmetic gCap_Cosmetic;
 extern GLOVAL_DOWN		gDown;
 
 typedef struct {

@@ -68,7 +68,7 @@
 	#pragma comment(lib, "CSIniFileR.lib")
 	#pragma comment(lib, "CSComPortR.lib")
 	#pragma comment(lib, "CSUdpSocketR.lib")
-	#pragma comment(lib, "CSServerSocketR.lib")
+	#pragma comment(lib, "CSSer¿ßverSocketR.lib")
 	#pragma comment(lib, "CSClientSocketR.lib")
 	#pragma comment(lib, "CSGridR.lib")
 	#pragma comment(lib, "CSUdpClientR.lib")

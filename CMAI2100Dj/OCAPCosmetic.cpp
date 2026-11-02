@@ -760,9 +760,9 @@ void OCAPCosmetic::Display_CodePage_Cosmetic()
 		str.Format("%d", m_nMZCnt_Cosmetic[nIx]); m_edtMZCnt_Cosmetic[i].SetWindowText(str);
 		str.Format("%0.3lf", m_dDefect_Cosmetic[nIx]); m_edtDefect_Cosmetic[i].SetWindowText(str);
 	}
-	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n"
-		"불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며 [저장]으로 100개를 저장합니다.\r\n"
-		"OCAP 알람은 1회만 발생합니다. (코드 앞순위 우선)", m_nCodePage_Cosmetic + 1, m_nCodePage_Cosmetic * 20 + 1, m_nCodePage_Cosmetic * 20 + 20);
+	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n\
+		불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며 [저장]으로 100개를 저장합니다.\r\n\
+		OCAP 알람은 1회만 발생합니다. (코드 앞순위 우선)", m_nCodePage_Cosmetic + 1, m_nCodePage_Cosmetic * 20 + 1, m_nCodePage_Cosmetic * 20 + 20);
 	m_stcCodeInfo_Cosmetic.SetWindowText(str);
 	m_btnCode_Cosmetic[0].EnableWindow(m_nCodePage_Cosmetic > 0);
 	m_btnCode_Cosmetic[1].EnableWindow(m_nCodePage_Cosmetic < 4);

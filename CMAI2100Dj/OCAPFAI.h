@@ -17,6 +17,19 @@ public:
 	CStaticCS		m_stcOption[9];
 	CGridCS			m_grdData;
 
+	CButtonCS m_btnSave;
+	CButtonCS m_btnClose;
+
+	CLabelCS m_stcCodeTitle[10];
+	CLabelCS m_stcCodeNo[20];
+	CEditCS m_edtCode[20];
+	CEditCS m_edtName[20];
+	CEditCS m_edtMZCnt[20];
+	CEditCS m_edtDefect[20];
+	CButtonCS m_btnCode[4];
+	CLabelCS m_stcCodeInfo;
+	CStatic m_stcCodeLine;
+
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
@@ -30,6 +43,7 @@ protected:
 	afx_msg void OnStcOptionClick(UINT nID);
 
 private:
+	
 	BOOL m_bError;
 	BOOL m_bSetting;
 	int m_nCodePage;
@@ -37,15 +51,7 @@ private:
 	CString m_sName[100];
 	int m_nMZCnt[100];
 	double m_dDefect[100];
-	CStatic m_stcCodeTitle[10];
-	CStatic m_stcCodeNo[20];
-	CEdit m_edtCode[20];
-	CEdit m_edtName[20];
-	CEdit m_edtMZCnt[20];
-	CEdit m_edtDefect[20];
-	CButton m_btnCode[4];
-	CStatic m_stcCodeInfo;
-	CStatic m_stcCodeLine;
+
 
 	void Initial_CodeControls();
 	void Display_CodePage();

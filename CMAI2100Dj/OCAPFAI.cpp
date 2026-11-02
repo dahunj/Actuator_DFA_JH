@@ -37,6 +37,8 @@ OCAPFAI::~OCAPFAI()
 void OCAPFAI::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDOK, m_btnSave);
+	DDX_Control(pDX, IDCANCEL, m_btnClose);
 	for (int i = 0; i < 2; i++) DDX_Control(pDX, IDC_GROUP_0 + i, m_Group[i]);
 	for (int i = 0; i < 7; i++) DDX_Control(pDX, IDC_LABEL_0 + i, m_Label[i]);
 	for (int i = 0; i < 9; i++) DDX_Control(pDX, IDC_STC_OCAP_VALUE_0 + i, m_stcOption[i]);
@@ -189,6 +191,8 @@ void OCAPFAI::OnBnClickedOk()
 
 void OCAPFAI::Initial_Controls() 
 {
+	m_btnSave.Init_Ctrl("바탕", 14, TRUE, RGB(0, 0, 255), COLOR_DEFAULT, 0, 0);
+	m_btnClose.Init_Ctrl("바탕", 14, TRUE, RGB(128, 0, 128), COLOR_DEFAULT, 0, 0);
 	for (int i = 0; i < 2; i++) m_Group[i].Init_Ctrl("바탕", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT);
 	for (int i = 0; i < 6; i++) m_Label[i].Init_Ctrl("바탕", 12, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x80, 0x00, 0x80));
 	m_Label[0].Init_Ctrl("바탕", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x99, 0x99, 0x00));
@@ -660,33 +664,33 @@ void OCAPFAI::Initial_CodeControls()
 		int nOffset = j * 530;
 		for (int i=0; i<5; i++) {
 			int nIx = j * 5 + i;
-			m_stcCodeTitle[nIx].Create(sTitle[i], WS_CHILD | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[i] + nOffset, 89, nW[i], 18), this);
-			m_stcCodeTitle[nIx].SetFont(GetFont());
+			m_stcCodeTitle[nIx].Create(sTitle[i], WS_CHILD | SS_CENTER | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[i] + nOffset, 89, nW[i], 18), this);
+			m_stcCodeTitle[nIx].Init_Ctrl("바탕", 11, TRUE, RGB(255, 255, 255), RGB(128, 0, 128));
 		}
 	}
 	m_stcCodeLine.Create("", WS_CHILD | SS_ETCHEDVERT, OCAP_CodeRect(this, 547, 89, 1, 303), this);
 	for (int i=0; i<20; i++) {
 		int nY = 112 + (i % 10) * 28;
 		int nOffset = (i / 10) * 530;
-		m_stcCodeNo[i].Create("", WS_CHILD | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[0] + nOffset, nY, nW[0], 21), this);
+		m_stcCodeNo[i].Create("", WS_CHILD | SS_CENTER | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[0] + nOffset, nY, nW[0], 21), this);
 		m_edtCode[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[1] + nOffset, nY, nW[1], 21), this, 61100 + i * 4);
 		m_edtName[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[2] + nOffset, nY, nW[2], 21), this, 61101 + i * 4);
 		m_edtMZCnt[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[3] + nOffset, nY, nW[3], 21), this, 61102 + i * 4);
 		m_edtDefect[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[4] + nOffset, nY, nW[4], 21), this, 61103 + i * 4);
-		m_stcCodeNo[i].SetFont(GetFont());
-		m_edtCode[i].SetFont(GetFont()); m_edtCode[i].LimitText(80);
-		m_edtName[i].SetFont(GetFont()); m_edtName[i].LimitText(80);
-		m_edtMZCnt[i].SetFont(GetFont()); m_edtMZCnt[i].LimitText(3);
-		m_edtDefect[i].SetFont(GetFont()); m_edtDefect[i].LimitText(7);
+		m_stcCodeNo[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 0), RGB(235, 235, 210));
+		m_edtCode[i].Init_Ctrl("바탕", 11, FALSE, RGB(0, 0, 0), RGB(255, 255, 240)); m_edtCode[i].LimitText(80);
+		m_edtName[i].Init_Ctrl("바탕", 11, FALSE, RGB(0, 0, 0), RGB(255, 255, 240)); m_edtName[i].LimitText(80);
+		m_edtMZCnt[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 128), RGB(255, 255, 224)); m_edtMZCnt[i].LimitText(3);
+		m_edtDefect[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 128), RGB(255, 255, 224)); m_edtDefect[i].LimitText(7);
 	}
-	m_stcCodeInfo.Create("", WS_CHILD, OCAP_CodeRect(this, 25, 403, 1020, 40), this);
-	m_stcCodeInfo.SetFont(GetFont());
+	m_stcCodeInfo.Create("", WS_CHILD, OCAP_CodeRect(this, 25, 400, 1040, 46), this);
+	m_stcCodeInfo.Init_Ctrl("바탕", 10, FALSE, RGB(0, 0, 0), COLOR_DEFAULT);
 	CString sButton[4] = { "이전 20개", "다음 20개", "이력 보기", "빈 코드로 이동" };
 	int nBtnX[4] = { 25, 135, 930, 700 };
 	int nBtnW[4] = { 100, 100, 125, 180 };
 	for (int i=0; i<4; i++) {
 		m_btnCode[i].Create(sButton[i], WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, OCAP_CodeRect(this, nBtnX[i], 452, nBtnW[i], 26), this, IDC_OCAP_CODE_PREV + i);
-		m_btnCode[i].SetFont(GetFont());
+		m_btnCode[i].Init_Ctrl("바탕", 12, TRUE, RGB(0, 0, 255), COLOR_DEFAULT, 0, 0);
 	}
 	m_grdData.MoveWindow(OCAP_CodeRect(this, 13, 83, 1071, 360));
 	m_Label[3].SetWindowText("공통 연속 수량");
@@ -713,9 +717,9 @@ void OCAPFAI::Display_CodePage()
 		str.Format("%d", m_nMZCnt[nIx]); m_edtMZCnt[i].SetWindowText(str);
 		str.Format("%0.3lf", m_dDefect[nIx]); m_edtDefect[i].SetWindowText(str);
 	}
-	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n\
-			   불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며 [저장]으로 100개를 저장합니다.\r\n\
-			   OCAP 알람은 1회만 발생합니다. (코드 앞순위 우선)", m_nCodePage + 1, m_nCodePage * 20 + 1, m_nCodePage * 20 + 20);
+	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n"
+		"불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며 [저장]으로 100개를 저장합니다.\r\n"
+		"OCAP 알람은 1회만 발생합니다. (코드 앞순위 우선)", m_nCodePage + 1, m_nCodePage * 20 + 1, m_nCodePage * 20 + 20);
 	m_stcCodeInfo.SetWindowText(str);
 	m_btnCode[0].EnableWindow(m_nCodePage > 0);
 	m_btnCode[1].EnableWindow(m_nCodePage < 4);

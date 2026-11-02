@@ -17,6 +17,19 @@ public:
 	CStaticCS		m_stcOption_Cosmetic[9];
 	CGridCS			m_grdData_Cosmetic;
 
+	CButtonCS m_btnSave_Cosmetic;
+	CButtonCS m_btnClose_Cosmetic;
+
+	CLabelCS m_stcCodeTitle_Cosmetic[10];
+	CLabelCS m_stcCodeNo_Cosmetic[20];
+	CEditCS m_edtCode_Cosmetic[20];
+	CEditCS m_edtName_Cosmetic[20];
+	CEditCS m_edtMZCnt_Cosmetic[20];
+	CEditCS m_edtDefect_Cosmetic[20];
+	CButtonCS m_btnCode_Cosmetic[4];
+	CLabelCS m_stcCodeInfo_Cosmetic;
+	CStatic m_stcCodeLine_Cosmetic;
+
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
@@ -30,6 +43,7 @@ protected:
 	afx_msg void OnStcOptionClick(UINT nID);
 
 private:
+	
 	BOOL m_bError_Cosmetic;
 	BOOL m_bSetting_Cosmetic;
 	int m_nCodePage_Cosmetic;
@@ -37,15 +51,7 @@ private:
 	CString m_sName_Cosmetic[100];
 	int m_nMZCnt_Cosmetic[100];
 	double m_dDefect_Cosmetic[100];
-	CStatic m_stcCodeTitle_Cosmetic[10];
-	CStatic m_stcCodeNo_Cosmetic[20];
-	CEdit m_edtCode_Cosmetic[20];
-	CEdit m_edtName_Cosmetic[20];
-	CEdit m_edtMZCnt_Cosmetic[20];
-	CEdit m_edtDefect_Cosmetic[20];
-	CButton m_btnCode_Cosmetic[4];
-	CStatic m_stcCodeInfo_Cosmetic;
-	CStatic m_stcCodeLine_Cosmetic;
+	
 
 	void Initial_CodeControls_Cosmetic();
 	void Display_CodePage_Cosmetic();

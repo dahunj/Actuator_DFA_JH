@@ -37,6 +37,8 @@ OCAPCosmetic::~OCAPCosmetic()
 void OCAPCosmetic::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDOK, m_btnSave_Cosmetic);
+	DDX_Control(pDX, IDCANCEL, m_btnClose_Cosmetic);
 	for (int i = 0; i < 2; i++) DDX_Control(pDX, IDC_GROUP_0 + i, m_Group_Cosmetic[i]);
 	for (int i = 0; i < 7; i++) DDX_Control(pDX, IDC_LABEL_0 + i, m_Label_Cosmetic[i]);
 	for (int i = 0; i < 9; i++) DDX_Control(pDX, IDC_STC_OCAP_VALUE_0 + i, m_stcOption_Cosmetic[i]);
@@ -189,6 +191,8 @@ void OCAPCosmetic::OnBnClickedOk()
 
 void OCAPCosmetic::Initial_Controls_Cosmetic() 
 {
+	m_btnSave_Cosmetic.Init_Ctrl("바탕", 14, TRUE, RGB(0, 0, 255), COLOR_DEFAULT, 0, 0);
+	m_btnClose_Cosmetic.Init_Ctrl("바탕", 14, TRUE, RGB(128, 0, 128), COLOR_DEFAULT, 0, 0);
 	for (int i = 0; i < 2; i++) m_Group_Cosmetic[i].Init_Ctrl("바탕", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT);
 	for (int i = 0; i < 6; i++) m_Label_Cosmetic[i].Init_Ctrl("바탕", 12, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x80, 0x00, 0x80));
 	m_Label_Cosmetic[0].Init_Ctrl("바탕", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x99, 0x99, 0x00));
@@ -703,33 +707,33 @@ void OCAPCosmetic::Initial_CodeControls_Cosmetic()
 		int nOffset = j * 530;
 		for (int i=0; i<5; i++) {
 			int nIx = j * 5 + i;
-			m_stcCodeTitle_Cosmetic[nIx].Create(sTitle[i], WS_CHILD | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[i] + nOffset, 89, nW[i], 18), this);
-			m_stcCodeTitle_Cosmetic[nIx].SetFont(GetFont());
+			m_stcCodeTitle_Cosmetic[nIx].Create(sTitle[i], WS_CHILD | SS_CENTER | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[i] + nOffset, 89, nW[i], 18), this);
+			m_stcCodeTitle_Cosmetic[nIx].Init_Ctrl("바탕", 11, TRUE, RGB(255, 255, 255), RGB(128, 0, 128));
 		}
 	}
 	m_stcCodeLine_Cosmetic.Create("", WS_CHILD | SS_ETCHEDVERT, OCAP_CodeRect(this, 547, 89, 1, 303), this);
 	for (int i=0; i<20; i++) {
 		int nY = 112 + (i % 10) * 28;
 		int nOffset = (i / 10) * 530;
-		m_stcCodeNo_Cosmetic[i].Create("", WS_CHILD | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[0] + nOffset, nY, nW[0], 21), this);
+		m_stcCodeNo_Cosmetic[i].Create("", WS_CHILD | SS_CENTER | SS_CENTERIMAGE, OCAP_CodeRect(this, nX[0] + nOffset, nY, nW[0], 21), this);
 		m_edtCode_Cosmetic[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[1] + nOffset, nY, nW[1], 21), this, 61100 + i * 4);
 		m_edtName_Cosmetic[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[2] + nOffset, nY, nW[2], 21), this, 61101 + i * 4);
 		m_edtMZCnt_Cosmetic[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[3] + nOffset, nY, nW[3], 21), this, 61102 + i * 4);
 		m_edtDefect_Cosmetic[i].Create(WS_CHILD | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, OCAP_CodeRect(this, nX[4] + nOffset, nY, nW[4], 21), this, 61103 + i * 4);
-		m_stcCodeNo_Cosmetic[i].SetFont(GetFont());
-		m_edtCode_Cosmetic[i].SetFont(GetFont()); m_edtCode_Cosmetic[i].LimitText(80);
-		m_edtName_Cosmetic[i].SetFont(GetFont()); m_edtName_Cosmetic[i].LimitText(80);
-		m_edtMZCnt_Cosmetic[i].SetFont(GetFont()); m_edtMZCnt_Cosmetic[i].LimitText(3);
-		m_edtDefect_Cosmetic[i].SetFont(GetFont()); m_edtDefect_Cosmetic[i].LimitText(7);
+		m_stcCodeNo_Cosmetic[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 0), RGB(235, 235, 210));
+		m_edtCode_Cosmetic[i].Init_Ctrl("바탕", 11, FALSE, RGB(0, 0, 0), RGB(255, 255, 240)); m_edtCode_Cosmetic[i].LimitText(80);
+		m_edtName_Cosmetic[i].Init_Ctrl("바탕", 11, FALSE, RGB(0, 0, 0), RGB(255, 255, 240)); m_edtName_Cosmetic[i].LimitText(80);
+		m_edtMZCnt_Cosmetic[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 128), RGB(255, 255, 224)); m_edtMZCnt_Cosmetic[i].LimitText(3);
+		m_edtDefect_Cosmetic[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 128), RGB(255, 255, 224)); m_edtDefect_Cosmetic[i].LimitText(7);
 	}
-	m_stcCodeInfo_Cosmetic.Create("", WS_CHILD, OCAP_CodeRect(this, 25, 403, 1020, 40), this);
-	m_stcCodeInfo_Cosmetic.SetFont(GetFont());
+	m_stcCodeInfo_Cosmetic.Create("", WS_CHILD, OCAP_CodeRect(this, 25, 400, 1040, 46), this);
+	m_stcCodeInfo_Cosmetic.Init_Ctrl("바탕", 10, FALSE, RGB(0, 0, 0), COLOR_DEFAULT);
 	CString sButton[4] = { "이전 20개", "다음 20개", "이력 보기", "빈 코드로 이동" };
 	int nBtnX[4] = { 25, 135, 930, 700 };
 	int nBtnW[4] = { 100, 100, 125, 180 };
 	for (int i=0; i<4; i++) {
 		m_btnCode_Cosmetic[i].Create(sButton[i], WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, OCAP_CodeRect(this, nBtnX[i], 452, nBtnW[i], 26), this, IDC_OCAP_CODE_PREV + i);
-		m_btnCode_Cosmetic[i].SetFont(GetFont());
+		m_btnCode_Cosmetic[i].Init_Ctrl("바탕", 12, TRUE, RGB(0, 0, 255), COLOR_DEFAULT, 0, 0);
 	}
 	m_grdData_Cosmetic.MoveWindow(OCAP_CodeRect(this, 13, 83, 1071, 360));
 	m_Label_Cosmetic[3].SetWindowText("공통 연속 수량");
@@ -756,9 +760,9 @@ void OCAPCosmetic::Display_CodePage_Cosmetic()
 		str.Format("%d", m_nMZCnt_Cosmetic[nIx]); m_edtMZCnt_Cosmetic[i].SetWindowText(str);
 		str.Format("%0.3lf", m_dDefect_Cosmetic[nIx]); m_edtDefect_Cosmetic[i].SetWindowText(str);
 	}
-	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n\
-			   불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며 [저장]으로 100개를 저장합니다.\r\n\
-			   OCAP 알람은 1회만 발생합니다. (코드 앞순위 우선)", m_nCodePage_Cosmetic + 1, m_nCodePage_Cosmetic * 20 + 1, m_nCodePage_Cosmetic * 20 + 20);
+	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n"
+		"불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며 [저장]으로 100개를 저장합니다.\r\n"
+		"OCAP 알람은 1회만 발생합니다. (코드 앞순위 우선)", m_nCodePage_Cosmetic + 1, m_nCodePage_Cosmetic * 20 + 1, m_nCodePage_Cosmetic * 20 + 20);
 	m_stcCodeInfo_Cosmetic.SetWindowText(str);
 	m_btnCode_Cosmetic[0].EnableWindow(m_nCodePage_Cosmetic > 0);
 	m_btnCode_Cosmetic[1].EnableWindow(m_nCodePage_Cosmetic < 4);

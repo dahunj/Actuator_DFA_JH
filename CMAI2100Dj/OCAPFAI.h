@@ -27,7 +27,7 @@ public:
 	CEditCS m_edtMZCnt[20];
 	CEditCS m_edtDefect[20];
 	CButtonCS m_btnCode[4];
-	CLabelCS m_stcCodeInfo;
+	CEditCS m_stcCodeInfo;
 	CStatic m_stcCodeLine;
 
 protected:

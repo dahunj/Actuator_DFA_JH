@@ -6,6 +6,7 @@
 #include "OCAPCosmetic.h"
 #include "Common.h"
 #include "LogFile.h"
+#include "OCAPHistory.h"
 #include "DataManager.h"
 #include "afxdialogex.h"
 #include <math.h>
@@ -316,13 +317,9 @@ void OCAPCosmetic::Initial_DataGrid_Cosmetic(CGridCS *pGrid, int nRows, int nCol
 
 void OCAPCosmetic::Display_Status_Cosmetic()
 {
-	if (gCap_Cosmetic.nMZCycle_Cosmetic < 0 || gCap_Cosmetic.nMZCycle_Cosmetic > 49) return;
-	int nIx = (gCap_Cosmetic.nMZCycle_Cosmetic + 49) % 50;
-	for (int i=0; i<50; i++) {
-		if (gCap_Cosmetic.sDate_Cosmetic[nIx].GetLength() < 1) break;
-		Display_Grid_Cosmetic(i + 1, nIx);
-		nIx = (nIx + 49) % 50;
-	}
+	if (m_bSetting_Cosmetic) return;
+	// Display persisted CSV history without changing the alarm's 50-slot ring buffer.
+	OCAPHistory_Display(&m_grdData_Cosmetic, gsCurrentDir + "\\LOG\\OCAPData_Cosmetic", gCap_Cosmetic.sCosmeticCode_Cosmetic, "Cosmetic", gCap_Cosmetic.dCodeDefect_Cosmetic, gCap_Cosmetic.dGiDefect_Cosmetic, gCap_Cosmetic.nGiMinCnt_Cosmetic);
 }
 
 void OCAPCosmetic::Display_Grid_Cosmetic(int nDp, int nIx)
@@ -726,7 +723,7 @@ void OCAPCosmetic::Initial_CodeControls_Cosmetic()
 		m_edtMZCnt_Cosmetic[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 128), RGB(255, 255, 224)); m_edtMZCnt_Cosmetic[i].LimitText(3);
 		m_edtDefect_Cosmetic[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 128), RGB(255, 255, 224)); m_edtDefect_Cosmetic[i].LimitText(7);
 	}
-	m_stcCodeInfo_Cosmetic.Create("", WS_CHILD, OCAP_CodeRect(this, 25, 400, 1040, 46), this);
+	m_stcCodeInfo_Cosmetic.Create(WS_CHILD | ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL, OCAP_CodeRect(this, 25, 400, 1040, 46), this, 61200);
 	m_stcCodeInfo_Cosmetic.Init_Ctrl("바탕", 10, FALSE, RGB(0, 0, 0), COLOR_DEFAULT);
 	CString sButton[4] = { "이전 20개", "다음 20개", "이력 보기", "빈 코드로 이동" };
 	int nBtnX[4] = { 25, 135, 930, 700 };
@@ -760,9 +757,9 @@ void OCAPCosmetic::Display_CodePage_Cosmetic()
 		str.Format("%d", m_nMZCnt_Cosmetic[nIx]); m_edtMZCnt_Cosmetic[i].SetWindowText(str);
 		str.Format("%0.3lf", m_dDefect_Cosmetic[nIx]); m_edtDefect_Cosmetic[i].SetWindowText(str);
 	}
-	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n\
-		불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며 [저장]으로 100개를 저장합니다.\r\n\
-		OCAP 알람은 1회만 발생합니다. (코드 앞순위 우선)", m_nCodePage_Cosmetic + 1, m_nCodePage_Cosmetic * 20 + 1, m_nCodePage_Cosmetic * 20 + 20);
+	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n"
+		"불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며 [저장]으로 100개를 저장합니다.\r\n"
+		"OCAP 알람은 1회만 발생합니다. (코드 앞순위 우선)", m_nCodePage_Cosmetic + 1, m_nCodePage_Cosmetic * 20 + 1, m_nCodePage_Cosmetic * 20 + 20);
 	m_stcCodeInfo_Cosmetic.SetWindowText(str);
 	m_btnCode_Cosmetic[0].EnableWindow(m_nCodePage_Cosmetic > 0);
 	m_btnCode_Cosmetic[1].EnableWindow(m_nCodePage_Cosmetic < 4);

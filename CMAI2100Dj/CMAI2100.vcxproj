@@ -191,6 +191,7 @@
     <ClInclude Include="NoWorkDlg.h" />
     <ClInclude Include="NumPadDlg.h" />
     <ClInclude Include="OCAPFAI.h" />
+    <ClInclude Include="OCAPHistory.h" />
     <ClInclude Include="OCAPCosmetic.h" />
     <ClInclude Include="OCAPSelect.h" />
     <ClInclude Include="OperatorDlg.h" />

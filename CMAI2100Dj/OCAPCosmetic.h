@@ -27,7 +27,7 @@ public:
 	CEditCS m_edtMZCnt_Cosmetic[20];
 	CEditCS m_edtDefect_Cosmetic[20];
 	CButtonCS m_btnCode_Cosmetic[4];
-	CLabelCS m_stcCodeInfo_Cosmetic;
+	CEditCS m_stcCodeInfo_Cosmetic;
 	CStatic m_stcCodeLine_Cosmetic;
 
 protected:

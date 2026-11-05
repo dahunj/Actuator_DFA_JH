@@ -6,6 +6,7 @@
 #include "OCAPFAI.h"
 #include "Common.h"
 #include "LogFile.h"
+#include "OCAPHistory.h"
 #include "DataManager.h"
 #include "afxdialogex.h"
 #include <math.h>
@@ -316,13 +317,9 @@ void OCAPFAI::Initial_DataGrid(CGridCS *pGrid, int nRows, int nCols)
 
 void OCAPFAI::Display_Status()
 {
-	if (gCap.nMZCycle < 0 || gCap.nMZCycle > 49) return;
-	int nIx = (gCap.nMZCycle + 49) % 50;
-	for (int i=0; i<50; i++) {
-		if (gCap.sDate[nIx].GetLength() < 1) break;
-		Display_Grid(i + 1, nIx);
-		nIx = (nIx + 49) % 50;
-	}
+	if (m_bSetting) return;
+	// Display persisted CSV history without changing the alarm's 50-slot ring buffer.
+	OCAPHistory_Display(&m_grdData, gsCurrentDir + "\\LOG\\OCAPData", gCap.sFAICode, "FAI", gCap.dCodeDefect, gCap.dGiDefect, gCap.nGiMinCnt);
 }
 
 void OCAPFAI::Display_Grid(int nDp, int nIx)
@@ -683,7 +680,7 @@ void OCAPFAI::Initial_CodeControls()
 		m_edtMZCnt[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 128), RGB(255, 255, 224)); m_edtMZCnt[i].LimitText(3);
 		m_edtDefect[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 128), RGB(255, 255, 224)); m_edtDefect[i].LimitText(7);
 	}
-	m_stcCodeInfo.Create("", WS_CHILD, OCAP_CodeRect(this, 25, 400, 1040, 46), this);
+	m_stcCodeInfo.Create(WS_CHILD | ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL, OCAP_CodeRect(this, 25, 400, 1040, 46), this, 61200);
 	m_stcCodeInfo.Init_Ctrl("바탕", 10, FALSE, RGB(0, 0, 0), COLOR_DEFAULT);
 	CString sButton[4] = { "이전 20개", "다음 20개", "이력 보기", "빈 코드로 이동" };
 	int nBtnX[4] = { 25, 135, 930, 700 };
@@ -717,9 +714,9 @@ void OCAPFAI::Display_CodePage()
 		str.Format("%d", m_nMZCnt[nIx]); m_edtMZCnt[i].SetWindowText(str);
 		str.Format("%0.3lf", m_dDefect[nIx]); m_edtDefect[i].SetWindowText(str);
 	}
-	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n\
-		불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며 [저장]으로 100개를 저장합니다.\r\n\
-		OCAP 알람은 1회만 발생합니다. (코드 앞순위 우선)", m_nCodePage + 1, m_nCodePage * 20 + 1, m_nCodePage * 20 + 20);
+	str.Format("%d / 5 페이지  (%03d ~ %03d)    -1: 위의 공통 조건 사용 / 0: 알람 제외 / 1~40: 코드별 연속 매거진 횟수\r\n"
+		"불량율: -1은 공통 조건 / 0초과~100.000은 개별 기준(소수 3자리). 횟수와 불량율은 각각 독립 적용하며 [저장]으로 100개를 저장합니다.\r\n"
+		"OCAP 알람은 1회만 발생합니다. (코드 앞순위 우선)", m_nCodePage + 1, m_nCodePage * 20 + 1, m_nCodePage * 20 + 20);
 	m_stcCodeInfo.SetWindowText(str);
 	m_btnCode[0].EnableWindow(m_nCodePage > 0);
 	m_btnCode[1].EnableWindow(m_nCodePage < 4);

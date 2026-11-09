@@ -1959,6 +1959,8 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 
 	int nNo = nPortNo - 1;
 	if (gLot.sLotID[nNo] == "" || gLot.nLotStatus[nNo] == 3) return;
+	
+	g_dlgWork.Set_EnableSlot(nPortNo, TRUE);
 	gLot.nLotStatus[nNo] = 3;
 
 	gLot.sRstLotID[nNo]     = gLot.sLotID[nNo];
@@ -4772,6 +4774,9 @@ BOOL CSequenceMain::Run_LoadStage1()
 			gLot.nJobCount = gLot.nJobCount + gLot.nCmCount[nPortNo1];
 			g_objInspector.Set_LotReadyFalse();
 			g_objInspector.Set_LotStart(INSPECTOR_ALL, gLot.sLotID[nPortNo1], nPortNo1+1, 1, gLot.nCmCount[nPortNo1], gLot.sRecipeName[nPortNo1], m_pEquipData->sPROG_VER, m_pEquipData->sPARA_VER);
+			
+			g_dlgWork.Set_EnableSlot(gLot.nJobCycle, FALSE);
+			
 			m_nLoadStage1Case++; m_tLoadStage1Loop.Set_LoopTime(180000);
 		break;
 	case 9:
@@ -5162,6 +5167,8 @@ BOOL CSequenceMain::Run_LoadStage2()
 			gLot.nJobCount = gLot.nJobCount + gLot.nCmCount[nPortNo2];
 			g_objInspector.Set_LotReadyFalse();
 			g_objInspector.Set_LotStart(INSPECTOR_ALL, gLot.sLotID[nPortNo2], nPortNo2+1, 1, gLot.nCmCount[nPortNo2], gLot.sRecipeName[nPortNo2], m_pEquipData->sPROG_VER, m_pEquipData->sPARA_VER);
+			g_dlgWork.Set_EnableSlot(gLot.nJobCycle, FALSE);
+			
 			m_nLoadStage2Case++; m_tLoadStage2Loop.Set_LoopTime(180000);
 		break;
 	case 9:

@@ -2831,3 +2831,12 @@ void CWorkDlg::OnBnClickedBtnPdt()
 		g_dlgDownReport.ShowWindow(SW_SHOW);
 	}
 }
+
+
+void CWorkDlg::Set_EnableSlot(int nSlotNo, bool bEnable)
+{
+	m_rdoSlectNo[nSlotNo-1].EnableWindow(bEnable);
+	m_stcLotsIdS[nSlotNo-1].EnableWindow(bEnable);
+	m_stcCmsCountS[nSlotNo-1].EnableWindow(bEnable);
+
+}

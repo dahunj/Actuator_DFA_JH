@@ -171,6 +171,7 @@ public:
 	void Set_AutoRun(BOOL bAutoRun);
 	void Set_AutoRunStatus(BOOL bAutoRun) { m_bAutoRunning = bAutoRun; }
 	
+	void Set_EnableSlot(int nSlotNo, bool bEnable);
 };
 
 extern CWorkDlg g_dlgWork;

@@ -359,20 +359,30 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 
 	int nVNo = (sType == "B1" ? 1 : (sType == "AG" ? 2 : (sType == "T1" ? 3 : (sType == "TG" ? 4 : (sType == "T2" ? 5 : 0)))));
 
-	if (pEquipData->bUseNGSize && !pEquipData->bUseOnlyNtoNG) 
+	if (pEquipData->bUseNGSize && pEquipData->bUseNtoNG) 
 	{		
-		if (sJudge == "N" || sJudge == "M" || sJudge == "X" || sJudge == "R") 
+		if (sJudge == "M" || sJudge == "X" || sJudge == "R") 
 		{	
 			m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
 			StartLoggingThread(m_sLog);
 			sJudge = "G";
 		}
 	}
-	if(pEquipData->bUseOnlyNtoNG && !pEquipData->bUseNGSize)
+	else if(pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)
 	{
 		
 		if (   sJudge == "M" || sJudge == "X" || sJudge == "R"
 			|| sJudge == "S" || sJudge == "T" || sJudge == "W") 
+		{
+			m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+			StartLoggingThread(m_sLog);
+			sJudge = "G"; 		
+		}			
+	}
+	else if(!pEquipData->bUseNtoNG && pEquipData->bUseNGSize)
+	{
+
+		if (   sJudge == "M" || sJudge == "X" || sJudge == "R" || sJudge == "N") 
 		{
 			m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
 			StartLoggingThread(m_sLog);

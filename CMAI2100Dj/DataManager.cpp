@@ -40,7 +40,7 @@ void CDataManager::Reset_EquipData()
 	m_EquipData.bUseCMCheck = TRUE;
 	m_EquipData.bUseNGSort = FALSE;
 	m_EquipData.bUseNGSize = FALSE;
-	m_EquipData.bUseOnlyNtoNG = FALSE;
+	m_EquipData.bUseNtoNG = FALSE;
 
 	m_EquipData.nTrayCountX = 0;
 	m_EquipData.nTrayCountY = 0;
@@ -270,7 +270,7 @@ BOOL CDataManager::Read_EquipData()
 	m_EquipData.bUseCMCheck = INI.Get_Bool("OPTION", "CM_CHECK", TRUE);
 	m_EquipData.bUseNGSort  = INI.Get_Bool("OPTION", "NG_SORT", FALSE);
 	m_EquipData.bUseNGSize  = INI.Get_Bool("OPTION", "NG_SIZE", FALSE);
-	m_EquipData.bUseOnlyNtoNG  = INI.Get_Bool("OPTION", "ONLY_N_TO_NG", FALSE);
+	m_EquipData.bUseNtoNG  = INI.Get_Bool("OPTION", "ONLY_N_TO_NG", FALSE);
 	m_EquipData.bUseGoodSort = INI.Get_Bool("OPTION", "GOOD_SORT", FALSE);
 	m_EquipData.bUseMesNg		= INI.Get_Bool("OPTION", "MES_NG", FALSE);
 	m_EquipData.bUseMES			= INI.Get_Bool("OPTION", "MES_USE", FALSE);
@@ -407,7 +407,7 @@ BOOL CDataManager::Read_ModelEquipData(CString strPath)
 	m_EquipData.bUseCMCheck = INI.Get_Bool("OPTION", "CM_CHECK", TRUE);
 	m_EquipData.bUseNGSort  = INI.Get_Bool("OPTION", "NG_SORT", FALSE);
 	m_EquipData.bUseNGSize  = INI.Get_Bool("OPTION", "NG_SIZE", FALSE);
-	m_EquipData.bUseOnlyNtoNG  = INI.Get_Bool("OPTION", "ONLY_N_TO_NG", FALSE);
+	m_EquipData.bUseNtoNG  = INI.Get_Bool("OPTION", "ONLY_N_TO_NG", FALSE);
 	m_EquipData.bUseGoodSort = INI.Get_Bool("OPTION", "GOOD_SORT", FALSE);
 	m_EquipData.bUseMesNg		= INI.Get_Bool("OPTION", "MES_NG", FALSE);
 	m_EquipData.bUseMES			= INI.Get_Bool("OPTION", "MES_USE", FALSE);

@@ -211,6 +211,8 @@ BOOL CSequenceInit::Initial_MainRun()
 		m_pDY04->oTOPIonizerBlow = FALSE;  m_pDY04->oTOPSuctionOn = FALSE;
 		g_objAJinAXL.Write_Output(4);
 
+		for(int i = 1; i <= 28; i++) g_dlgWork.Set_EnableSlot(i, TRUE);
+
 		m_niMainCase++; m_tiMainLoop.Set_LoopTime(3000);
 		break;
 

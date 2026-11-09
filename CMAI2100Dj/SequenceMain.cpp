@@ -1950,6 +1950,8 @@ BOOL CSequenceMain::Set_LotStart(CString sLotID, int nPortNo)
 	g_objDispatcher.Set_LotStart(nPortNo);
 	gData.sLotID_Start = gLot.sLotID[nNo];
 
+	g_dlgWork.Set_EnableSlot(nPortNo, FALSE);
+
 	return TRUE;
 }
 
@@ -2084,6 +2086,8 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 //	else if (gLot.nCmCount[nNo] != gLot.nRstNgCount[nNo] + gLot.nRstGoodCount[nNo])
 //			g_dlgWork.PostMessage(UM_LOT_END_MSG, nPortNo, 2);	//입력수량과 검사수량이 안맞았을때 알람메세지 보여준다.
 	else	g_dlgWork.PostMessage(UM_LOT_END_MSG, nPortNo, 0);
+
+	g_dlgWork.Set_EnableSlot(nPortNo, TRUE);
 
 	g_dlgWork.PostMessage(UM_UPDATE_UPH, NULL, NULL);
 }
@@ -4774,6 +4778,7 @@ BOOL CSequenceMain::Run_LoadStage1()
 			gLot.nJobCount = gLot.nJobCount + gLot.nCmCount[nPortNo1];
 			g_objInspector.Set_LotReadyFalse();
 			g_objInspector.Set_LotStart(INSPECTOR_ALL, gLot.sLotID[nPortNo1], nPortNo1+1, 1, gLot.nCmCount[nPortNo1], gLot.sRecipeName[nPortNo1], m_pEquipData->sPROG_VER, m_pEquipData->sPARA_VER);
+			
 			m_nLoadStage1Case++; m_tLoadStage1Loop.Set_LoopTime(180000);
 		break;
 	case 9:

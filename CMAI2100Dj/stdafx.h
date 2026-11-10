@@ -75,7 +75,7 @@
 #endif
 
 //****************************************************************************
-//#define AJIN_BOARD_USE
+#define AJIN_BOARD_USE
 #define CARRIER_TYPE_MEM
 //****************************************************************************
 
@@ -255,6 +255,8 @@ typedef struct {
 	int		nScanRetry[3];		//0:BTM, 1:T1, 2:T2
 	double	dAlignOffset[2][2];	//0:X, 1:Y
 	int		nNG_MC[5][2];	//0:MC, 1:GF, 2:Barcode, 3:Vision-timover, 4:MES_NG
+
+	DWORD dwCVStop;
 } GLOVAL_DATA;
 
 typedef struct {

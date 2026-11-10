@@ -389,6 +389,10 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 			sJudge = "G"; 		
 		}			
 	}
+	else if(!pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)
+	{
+		//PASS
+	}
 
 
 	if ((sType == "B1" || sType == "AG") && sNGCode == "MC") sNGCode = "MCBTM";
@@ -455,7 +459,7 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 #endif
 
 	//ROS Skip Check
-	if (!pEquipData->bUseNGSize) 
+	if (pEquipData->bUseNtoNG || (!pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)) 
 	{
 		gAlm.sAlmLotID[0] = sLotID; gAlm.sAlmLotID[1] = sType;
 		//Barcdoe read fail(5) - ROS Skip

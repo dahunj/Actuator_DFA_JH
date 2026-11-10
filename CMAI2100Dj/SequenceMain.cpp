@@ -91,6 +91,11 @@ CSequenceMain::~CSequenceMain()
 		m_bThreadMainRun = FALSE;
 		WaitForSingleObject(m_pThreadMainRun->m_hThread, INFINITE);
 	}
+
+	if (m_pThreadCVRun) {
+		m_bThreadCVRun = FALSE;
+		WaitForSingleObject(m_pThreadCVRun->m_hThread, INFINITE);
+	}
 }
 
 void CSequenceMain::Reset_MainRunCase()
@@ -344,11 +349,28 @@ void CSequenceMain::Begin_MainRunThread()
 	}
 }
 
+
 void CSequenceMain::End_MainRunThread(DWORD dwWait)
 {
 	if (m_pThreadMainRun) {
 		m_bThreadMainRun = FALSE;
 		WaitForSingleObject(m_pThreadMainRun->m_hThread, dwWait);
+	}
+}
+
+void CSequenceMain::Begin_CVRunThread()
+{
+	if (m_pThreadCVRun) End_CVRunThread(1000);
+	m_bThreadCVRun = TRUE;
+	m_pThreadCVRun = AfxBeginThread(Thread_CVRun, NULL);
+}
+
+
+void CSequenceMain::End_CVRunThread(DWORD dwWait)
+{
+	if (m_pThreadCVRun) {
+		m_bThreadCVRun = FALSE;
+		WaitForSingleObject(m_pThreadCVRun->m_hThread, dwWait);
 	}
 }
 
@@ -483,6 +505,26 @@ void CSequenceMain::Run_Replay()
 
 }
 
+UINT CSequenceMain::Thread_CVRun(LPVOID lpVoid)
+{
+	DY_DATA_19* m_pDY19 = g_objAJinAXL.Get_pDY19();
+	gData.dwCVStop = GetTickCount();
+	m_pDY19->oULCV3CCW1F = TRUE;   m_pDY19->oULCV3CW1F = TRUE;
+	m_pDY19->oULCV4CCW1F = TRUE;   m_pDY19->oULCV4CW1F = TRUE;
+	g_objAJinAXL.Write_Output(19);
+	while(1)
+	{
+		if(GetTickCount() - gData.dwCVStop >15000)
+		{
+			m_pDY19->oULCV3CCW1F = FALSE;   m_pDY19->oULCV3CW1F = FALSE;
+			m_pDY19->oULCV4CCW1F = FALSE;   m_pDY19->oULCV4CW1F = FALSE;
+			g_objAJinAXL.Write_Output(19);
+			break;
+		}
+	}
+	return 0;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // Main Thread Function 
 UINT CSequenceMain::Thread_MainRun(LPVOID lpVoid)
@@ -551,6 +593,7 @@ BOOL CSequenceMain::LotEnd_Run()
 
 	gLot.nJobStatus = 0;
 	g_objSequenceMain.Set_ClearRunData(1);
+	End_CVRunThread(3000);
 
  	Beep_Post(1000);
 	g_dlgWork.PostMessage(UM_JOB_COMPELTE, NULL, NULL);
@@ -11581,8 +11624,7 @@ BOOL CSequenceMain::Run_ULCVElevator()
 #else
 		if (m_pEquipData->bUseMZIDUnload) {
 			g_objMesAgent.Set_MGZIDRemove("G", gData.sMZID[8], gData.sRecipeName);
-			g_dlgOCAP_FAI.AddMZOut(gData.sMZID[8]);
-			g_dlgOCAP_Cosmetic.AddMZOut_Cosmetic(gData.sMZID[8]);
+			
 		}
 #endif		
 		m_nULCVElevatorCase++; m_tULCVElevatorLoop.Set_LoopTime(3000);
@@ -11596,8 +11638,9 @@ BOOL CSequenceMain::Run_ULCVElevator()
 		if (m_nUnloadConveyorCase == 0) {
 			m_sLog.Format("[MZTransfer: Unload] Good-Conveyor(1F) => MZID(%s)", gData.sMZID[8]);
 			g_objLogFile.Save_HandlerLog(m_sLog);
-			gData.sMZID[8] = "";
-			m_nUnloadConveyorCase = 1;	//1F구동
+			
+			Begin_CVRunThread();//m_nUnloadConveyorCase = 1;	//1F구동
+			
 			if (Check_ModuleEmpty()) Set_JobTack(2);
 			m_nULCVElevatorCase++; m_tULCVElevatorLoop.Set_LoopTime(3000);
 		}
@@ -11610,6 +11653,10 @@ BOOL CSequenceMain::Run_ULCVElevator()
 		break;
 	case 32:
 		if (!m_pDX19->iULCV1FCnt1) {
+
+			g_dlgOCAP_FAI.AddMZOut(gData.sMZID[8]);
+			g_dlgOCAP_Cosmetic.AddMZOut_Cosmetic(gData.sMZID[8]);
+			gData.sMZID[8] = "";
 			g_objCommon.Move_Position(AX_ULCV_ELEVATOR_Z, 2);	//TransferDown
 			m_nULCVElevatorCase = 0; m_tULCVElevatorLoop.Set_LoopTime(10000);
 

@@ -937,7 +937,7 @@ void CCommon::Stop_Conveyor()
 	pDY19->oULCV2CCW2F = FALSE; pDY19->oULCV2CW2F = FALSE;
 	pDY19->oULCV3CCW1F = FALSE; pDY19->oULCV3CW1F = FALSE;
 	pDY19->oULCV4CCW1F = FALSE; pDY19->oULCV4CW1F = FALSE;
-	g_objAJinAXL.Write_Output(19);
+	//g_objAJinAXL.Write_Output(19);
 }
 
 void CCommon::BuzzerOff()

@@ -83,6 +83,17 @@ protected:
 	CWinThread	*m_pThreadMainRun;
 	static UINT	Thread_MainRun(LPVOID lpVoid);
 
+	BOOL		m_bThreadCVRun;
+	CWinThread	*m_pThreadCVRun;
+	static UINT	Thread_CVRun(LPVOID lpVoid);
+
+public:
+	void Begin_CVRunThread();
+	void End_CVRunThread(DWORD dwWait);
+
+	void Begin_MainRunThread();
+	void End_MainRunThread(DWORD dwWait);
+
 private:
 	int			m_nElevator1Case;		//  1. (Error : 2100)
 	int			m_nElevator2Case;		//  2. (Error : 2200)
@@ -242,8 +253,7 @@ private:
 public:
 	double	m_dBtmZ, m_dTop1Z, m_dTop2Z;
 
-	void Begin_MainRunThread();
-	void End_MainRunThread(DWORD dwWait);
+
 	void Run_Replay();
 	
 	BOOL Is_MainThreadRun() { return m_bThreadMainRun; }

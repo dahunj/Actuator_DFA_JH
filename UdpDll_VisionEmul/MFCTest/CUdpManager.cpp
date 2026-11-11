@@ -338,13 +338,13 @@ void CUdpManager::Set_InspectComplete(int nInspector, CString sGbn, CString sLot
 
 		if (nJudgeNo == 4)
 		{
-			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "T";
-			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "DFAI-61";
+			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "M";
+			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "FS-S-GLUECT1";
 		}
 		else if (nJudgeNo == 5)
 		{
-			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "T";
-			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "DFAI-24";
+			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "M";
+			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "FS-S-GLUECTPISMO";
 		}
 		else if (nJudgeNo == 6)
 		{
@@ -355,8 +355,7 @@ void CUdpManager::Set_InspectComplete(int nInspector, CString sGbn, CString sLot
 		{
 			m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1] = "W";
 			m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1] = "DFAI-22";
-		}
-		
+		}		
 	}			
 
 	int nRand2 = Get_Random(0, 99);

@@ -205,7 +205,7 @@ LRESULT CInspector::OnUdpReceive(WPARAM wLocalPort, LPARAM lParam)
 		/////////////////////////////////////////////////////////
 
 		CString strArg[10];
-		for (int i = 0; i < 8; i++) AfxExtractSubString(strArg[i], strRecv, i + 2, chSep);
+		for (int i = 0; i < 9; i++) AfxExtractSubString(strArg[i], strRecv, i + 2, chSep);
 
 		if (strCmd == "CONNECT") {
 			if (strOp == "REQUEST")	Get_ConnectRequest(nInspector);
@@ -343,6 +343,8 @@ void CInspector::Get_ScanComplete(int nInspector, CString sType, CString sLotID,
 
 void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLotID, CString sPortNo, CString sTrayNo, CString sCMNo, CString sJudge, CString sNGCode, CString sImageCnt, CString sRcvData)
 {
+	CString strLog;
+
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (pEquipData->bUsePassGood) return;
 
@@ -410,6 +412,15 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	else if (sJudge == "X") gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 5;	//외관불량(Ros 판정)
 	else if (sJudge == "M") gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 6;	//외관불량(Ros 판정)
 	else					gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 3;	//외관불량(ROS x)
+	
+	if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] > 1) 
+	{
+		strLog.Format("[Get_InspectComplete] Inspection Complete Allready Error => LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Bar(%s) Judge(%d) Code(%s) ", 
+			sLotID, sPortNo, sTrayNo, nCMNo, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0]);	g_objLogFile.Save_HandlerLog(strLog);
+		return;
+	}
+
+
 	if (sJudge == "G") gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = "";
 	else			   gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = sNGCode;
 	if (sJudge != "G" && sNGCode.GetLength() > 0) gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = sNGCode;
@@ -444,15 +455,11 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	else if (nNGSize2 > 0) nNGSize = 8;
 	else if (nNGSize3 > 0) nNGSize = 9;
 
-	CString strLog;
+	
 	DWORD dwTerm = GetTickCount() - m_dwT2ScanDone[nPortNo-1][nTrayNo-1][nCMNo-1];
 	strLog.Format("[Get_InspectComplete] Inspection Complete LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Time(%d) NG(%d) Bar(%s) SNG(%d) MC(%d) GF(%d) SNG(%d) SRe(%d) MCBTM(%d) FDFAI(%d) NC(%s) ROS(%d)", sLotID, sPortNo, sTrayNo, nCMNo, dwTerm, nNGCnt, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], nNGSize, nNGMC, nNGGF, nNGSkip, nReSkip, nMCBTM, gLot.nFOcapExist[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], nRosCnt);	g_objLogFile.Save_HandlerLog(strLog);
 
-	if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] > 1) {
-		strLog.Format("[Get_InspectComplete] Inspection Complete Allready Error => LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Bar(%s) Judge(%d) NC(%s) ROS(%d)", sLotID, sPortNo, sTrayNo, nCMNo, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], nRosCnt);	g_objLogFile.Save_HandlerLog(strLog);
-		return;
-	}
-
+	
 
 #ifndef AJIN_BOARD_USE
 	gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1] = "AAAAAAAA";

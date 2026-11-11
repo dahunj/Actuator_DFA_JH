@@ -52,6 +52,8 @@ static COLORREF OCAPHistory_Color(int nTotal, int nCount, int nMinimum,
 
 static void OCAPHistory_Display(CGridCS* pGrid, const CString& sFolder, CString* pCodes, const CString& sType, const double* pCodeDefect, const double* pCommon, int nMinimum)
 {
+	BOOL bCosmetic = sType == "Cosmetic";
+	int nBase = bCosmetic ? 13 : 16;
 	// Three calendar months, inclusive of the cutoff date; clamp month-end days.
 	SYSTEMTIME now;
 	GetLocalTime(&now);
@@ -82,14 +84,27 @@ static void OCAPHistory_Display(CGridCS* pGrid, const CString& sFolder, CString*
 			std::vector<CString> header, data;
 			if (!file.ReadString(sLine)) { file.Close(); continue; }
 			OCAPHistory_Split(sLine, header);
-			if (header.size() < 23 || header[0] != "Time") { file.Close(); continue; }
+			if (header.size() < 20 || header[0] != "Time") { file.Close(); continue; }
+			BOOL bCodeOnly = bCosmetic && finder.GetFileName().Find("OCAPCosmeticCodeV2_") >= 0;
+			int nHeaderBase = bCodeOnly ? 20 : 23;
 			int nMap[400];
 			for (int j=0; j<400; j++) nMap[j] = -1;
 			// Match the recorded code, not the current ordinal or editable name.
 			for (int nType=0; nType<2; nType++) {
 				CString sPrefix = nType == 0 ? sType + "-" : CString("ERR-");
-				for (size_t j=23; j+1<header.size(); j+=2) {
+				for (size_t j=nHeaderBase; j+1<header.size(); j+=2) {
 					CString sTitle = header[j];
+					if (bCodeOnly) {
+						for (int k=0; k<100; k++) {
+							if (pCodes[k].IsEmpty()) continue;
+							CString sExpected = nType == 0 ? pCodes[k] : "ERR " + pCodes[k];
+							if (sTitle == sExpected && ((j-nHeaderBase)/200) == nType) {
+								nMap[nType*200+k*2] = (int)j;
+								nMap[nType*200+k*2+1] = (int)j+1;
+							}
+						}
+						continue;
+					}
 					if (sTitle.Left(sPrefix.GetLength()) != sPrefix) continue;
 					int nSpace = sTitle.Find(' ');
 					if (nSpace < 0) continue;
@@ -112,12 +127,12 @@ static void OCAPHistory_Display(CGridCS* pGrid, const CString& sFolder, CString*
 				if (data.size() < header.size() || data[0].GetLength() < 8) continue;
 				OCAPHistory_Row row;
 				row.sKey = sDate + data[0];
-				row.cells.resize(416);
+				row.cells.resize(nBase+400);
 				row.cells[0] = sDate.Left(4) + "/" + sDate.Mid(4,2) + "/" + sDate.Mid(6,2);
 				row.cells[1] = data[0]; row.cells[2] = data[1];
-				for (int j=3; j<16; j++) row.cells[j] = data[j+7];
+				for (int j=3; j<nBase; j++) row.cells[j] = data[j+7];
 				for (int j=0; j<400; j++)
-					if (nMap[j] >= 0 && nMap[j] < (int)data.size()) row.cells[j+16] = data[nMap[j]];
+					if (nMap[j] >= 0 && nMap[j] < (int)data.size()) row.cells[j+nBase] = data[nMap[j]];
 				rows.push_back(row);
 			}
 			file.Close();
@@ -138,19 +153,19 @@ static void OCAPHistory_Display(CGridCS* pGrid, const CString& sFolder, CString*
 	pGrid->Set_ColWidth(1, 105);
 	for (int i=1; i<nRows; i++) {
 		pGrid->Set_RowHeight(i, 26);
-		for (int j=0; j<416; j++) {
+		for (int j=0; j<nBase+400; j++) {
 			CString sText;
 			if (i <= (int)rows.size()) sText = rows[i-1].cells[j];
 			pGrid->Set_CellText(i, j, sText);
-			if (j >= 16) {
+			if (j >= nBase) {
 				COLORREF crBack = RGB(255, 255, 255);
 				if (i <= (int)rows.size()) {
 					const OCAPHistory_Row& row = rows[i-1];
-					int nCode = ((j-16) % 200) / 2;
-					int nCountCol = 16 + ((j-16) / 2) * 2;
+					int nCode = ((j-nBase) % 200) / 2;
+					int nCountCol = nBase + ((j-nBase) / 2) * 2;
 					if (!row.cells[nCountCol].IsEmpty() && !pCodes[nCode].IsEmpty())
 						crBack = OCAPHistory_Color(_ttoi(row.cells[3]), _ttoi(row.cells[nCountCol]),
-							nMinimum, pCodeDefect[nCode], pCommon, (j-16) / 200);
+							nMinimum, pCodeDefect[nCode], pCommon, (j-nBase) / 200);
 				}
 				pGrid->Set_CellBackClr(i, j, crBack);
 				// White text remains legible on the original blue highlight.

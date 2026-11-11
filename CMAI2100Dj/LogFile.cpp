@@ -1185,13 +1185,13 @@ void CLogFile::Save_OCAPDataLog_Cosmetic(int nIdx)
 		CString strCode = gCap_Cosmetic.sCosmeticCode_Cosmetic[i] + "|" + gCap_Cosmetic.sCosmeticName_Cosmetic[i] + ";";
 		for (int j=0; j<strCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)strCode[j]) * 16777619UL;
 	}
-	strFile.Format("%s\\%04d%02d%02d_OCAPCosmetic100_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
-	sTitle = "Time,¹èÃâ¸Å°ÅÁøID,DFA¶ùID1,DFA¶ùID2,DFA¶ùID3,DFA¶ùID4,DFA¶ùID5,DFA¶ùID6,DFA¶ùID7,DFA¶ùID8,ÅõÀÔ,¿Ï°ø,¾çÇ°,RN,RR,Ä¡¸í,BCR,MES,MC,¿Ü°ü,001~007,008~015,016~020,";
+	strFile.Format("%s\\%04d%02d%02d_OCAPCosmeticCodeV2_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
+	sTitle = "Time,¹èÃâ¸Å°ÅÁøID,DFA¶ùID1,DFA¶ùID2,DFA¶ùID3,DFA¶ùID4,DFA¶ùID5,DFA¶ùID6,DFA¶ùID7,DFA¶ùID8,ÅõÀÔ,¿Ï°ø,¾çÇ°,RN,RR,Ä¡¸í,BCR,MES,MC,¿Ü°ü,";
 	for (int nType=0; nType<2; nType++) {
 		for (int i=0; i<100; i++) {
 			CString sName = gCap_Cosmetic.sCosmeticName_Cosmetic[i], sCode = gCap_Cosmetic.sCosmeticCode_Cosmetic[i];
 			sName.Replace("\"", "\"\""); sCode.Replace("\"", "\"\"");
-			sData.Format("\"%s-%03d %s %s Count\",\"%s-%03d Rate\",", nType == 0 ? "Cosmetic" : "ERR", i + 1, sCode, sName, nType == 0 ? "Cosmetic" : "ERR", i + 1);
+			sData.Format("\"%s%s\",\"%s%s Rate (%%)\",", nType == 0 ? "" : "ERR ", sCode, nType == 0 ? "" : "ERR ", sCode);
 			sTitle += sData;
 		}
 	}
@@ -1220,11 +1220,11 @@ void CLogFile::Save_OCAPDataLog_Cosmetic(int nIdx)
 				sData.Format("%d,%01f%%,", gCap_Cosmetic.nFCount_Cosmetic[nIdx][i], dDef);
 				sFAIData2 = sFAIData2 + sData;
 			}
-			strSave.Format("%02d:%02d:%02d %03d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%s%s\r\n", time.wHour, time.wMinute, time.wSecond, time.wMilliseconds,
+			strSave.Format("%02d:%02d:%02d %03d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%s%s\r\n", time.wHour, time.wMinute, time.wSecond, time.wMilliseconds,
 				gCap_Cosmetic.sMZID_Cosmetic[nIdx], gCap_Cosmetic.sLotID_Cosmetic[nIdx][0], gCap_Cosmetic.sLotID_Cosmetic[nIdx][1], gCap_Cosmetic.sLotID_Cosmetic[nIdx][2], gCap_Cosmetic.sLotID_Cosmetic[nIdx][3], gCap_Cosmetic.sLotID_Cosmetic[nIdx][4], gCap_Cosmetic.sLotID_Cosmetic[nIdx][5], gCap_Cosmetic.sLotID_Cosmetic[nIdx][6], gCap_Cosmetic.sLotID_Cosmetic[nIdx][7],
 				gCap_Cosmetic.nTotCount_Cosmetic[nIdx], (gCap_Cosmetic.nGoodCount_Cosmetic[nIdx]+gCap_Cosmetic.nROSNGCount_Cosmetic[nIdx]+gCap_Cosmetic.nROSRfCount_Cosmetic[nIdx]), gCap_Cosmetic.nGoodCount_Cosmetic[nIdx], gCap_Cosmetic.nROSNGCount_Cosmetic[nIdx], gCap_Cosmetic.nROSRfCount_Cosmetic[nIdx],
 				(gCap_Cosmetic.nBCRCount_Cosmetic[nIdx]+gCap_Cosmetic.nMESCount_Cosmetic[nIdx]+gCap_Cosmetic.nMCCount_Cosmetic[nIdx]), gCap_Cosmetic.nBCRCount_Cosmetic[nIdx], gCap_Cosmetic.nMESCount_Cosmetic[nIdx], gCap_Cosmetic.nMCCount_Cosmetic[nIdx],
-				nTotal, n7FAI, nTilt, nGap, sFAIData1, sFAIData2);
+				nTotal, sFAIData1, sFAIData2);
 
 			file.Write(strSave, strSave.GetLength());
 			file.Close();

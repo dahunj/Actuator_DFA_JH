@@ -102,10 +102,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		gData.bAlarmShow = TRUE;
 
 		gDown.dwDownStartTick = GetTickCount();
-		gDown.bDownHappen = TRUE;
-		gDown.bDownClear = FALSE;
-		gDown.bPDT = FALSE;
-
+		
 		gLot.dwErrorStart = 0;
 		gLot.dwStopStart = 0;
 		gLot.dwErrorStart = GetTickCount();
@@ -119,8 +116,15 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		strErrNo.Format("%04d", m_nErrNo);
 		m_stcErrNo.SetWindowText(strErrNo);
 		
-		gDown.strErrNo.Format("%04d", m_nErrNo);
-		gDown.nErrorNo = m_nErrNo;
+		if(gDown.bDownHappen && !gDown.bDownClear)
+		{
+
+		}
+		else
+		{
+			gDown.strErrNo.Format("%04d", m_nErrNo);
+			gDown.nErrorNo = m_nErrNo;
+		}		
 
 		if (gData.nLanguage == 0) strErrPick = gsCurrentDir + "\\System\\ErrorList_KOR.ini";
 		else					  strErrPick = gsCurrentDir + "\\System\\ErrorList_ENG.ini";
@@ -131,10 +135,6 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		}
 
 		strErrMsg = INI.Get_String("ERROR", strErrNo, "");
-
-		if (m_nErrNo <= 20) pMainDlg->Set_MainState(STATE_EMER);
-		else				pMainDlg->Set_MainState(STATE_ALARM);
-		if (m_nErrNo >= 1 && m_nErrNo <= 10) g_objSequenceInit.Set_InitComplete(FALSE);	// 초기화 필요
 
 		strErrPick = strNo = strCMNo = "";
 		if (m_nErrNo >= 5 && m_nErrNo <= 10) g_objCommon.Locking_MainDoor(FALSE);
@@ -263,7 +263,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		}
 
 		m_strErrMsg = strErrMsg + strErrPick + m_strErrSubMsg;
-		gDown.strErrMsg = m_strErrMsg;
+		
 
 		strShow = m_strErrMsg;
 		if (strShow.Left(1) == "#") strShow.Delete(0);
@@ -276,13 +276,23 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		gAlm.sAlmCatMiddle.Empty();
 
 		CString strCat, strTemp;
-		strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
-		AfxExtractSubString(gAlm.sAlmCatMajor, strCat, 0, '-');
-		AfxExtractSubString(gAlm.sAlmCatMiddle, strCat, 1, '-');
-
 		CString strCatMsg, strMajorNo;
-		strMajorNo.Format("CAT_TYPE_%s", gAlm.sAlmCatMajor);
-		strCatMsg = INI.Get_String(strMajorNo, gAlm.sAlmCatMiddle, "");
+
+		if(gDown.bDownHappen && !gDown.bDownClear)
+		{
+			//pass
+		}
+		else
+		{			
+			gDown.strErrMsg = m_strErrMsg;
+
+			strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
+			AfxExtractSubString(gAlm.sAlmCatMajor, strCat, 0, '-');
+			AfxExtractSubString(gAlm.sAlmCatMiddle, strCat, 1, '-');
+			
+			strMajorNo.Format("CAT_TYPE_%s", gAlm.sAlmCatMajor);
+			strCatMsg = INI.Get_String(strMajorNo, gAlm.sAlmCatMiddle, "");
+		}				
 
 		SYSTEMTIME time;
 		GetLocalTime(&time);
@@ -326,6 +336,14 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		else nErrorPos = 0;
 		m_stcErrPos[nErrorPos].Set_Color(RGB(0xFF, 0xFF, 0xFF), RGB(0xFF, 0x00, 0x00));
 		m_stcCarrierID.SetWindowText("");
+
+		if (m_nErrNo <= 20) pMainDlg->Set_MainState(STATE_EMER);
+		else				pMainDlg->Set_MainState(STATE_ALARM);
+		if (m_nErrNo >= 1 && m_nErrNo <= 10) g_objSequenceInit.Set_InitComplete(FALSE);	// 초기화 필요
+
+		gDown.bDownHappen = TRUE;
+		gDown.bDownClear = FALSE;
+		gDown.bPDT = FALSE;
 
  		g_objInspector.Set_StatusUpdate(INSPECTOR_ALL, 4);
 		g_objDispatcher.Set_StatusUpdate(2);	// 0:Stop, 1:Run, 2:Error

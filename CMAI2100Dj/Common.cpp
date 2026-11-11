@@ -650,7 +650,7 @@ BOOL CCommon::Check_MainDoor(BOOL bAuto)
 {
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (!pEquipData->bUseDoorLock) return TRUE;
-
+	Show_Error(17); return FALSE;
 #ifdef AJIN_BOARD_USE
 	DX_DATA_14 *pDX14 = g_objAJinAXL.Get_pDX14();
 	DX_DATA_20 *pDX20 = g_objAJinAXL.Get_pDX20();
@@ -665,6 +665,7 @@ BOOL CCommon::Check_MainDoor(BOOL bAuto)
 	if (!pDY20->oULMZOpenLamp) {
 		if (pDX20->iDoor05Unlock) { Show_Error(15); return FALSE; }	
 	}
+	
 // 	if (pDX14->iDoor06Unlock) { Show_Error(16); return FALSE; }
 	if (pDX14->iDoor07Unlock) { Show_Error(17); return FALSE; }
 	if (pDX14->iDoor08Unlock) { Show_Error(18); return FALSE; }

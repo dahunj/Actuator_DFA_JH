@@ -85,8 +85,9 @@ static void OCAPHistory_Display(CGridCS* pGrid, const CString& sFolder, CString*
 			if (!file.ReadString(sLine)) { file.Close(); continue; }
 			OCAPHistory_Split(sLine, header);
 			if (header.size() < 20 || header[0] != "Time") { file.Close(); continue; }
-			BOOL bCodeOnly = bCosmetic && finder.GetFileName().Find("OCAPCosmeticCodeV2_") >= 0;
-			int nHeaderBase = bCodeOnly ? 20 : 23;
+			BOOL bCodeOnly = (bCosmetic && finder.GetFileName().Find("OCAPCosmeticCodeV2_") >= 0)
+				|| (!bCosmetic && finder.GetFileName().Find("OCAPFAICodeV2_") >= 0);
+			int nHeaderBase = bCosmetic && bCodeOnly ? 20 : 23;
 			int nMap[400];
 			for (int j=0; j<400; j++) nMap[j] = -1;
 			// Match the recorded code, not the current ordinal or editable name.

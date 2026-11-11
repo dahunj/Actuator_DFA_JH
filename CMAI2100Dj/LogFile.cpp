@@ -1117,16 +1117,16 @@ void CLogFile::Save_OCAPDataLog(int nIdx)
 	// 코드/Name 변경 전후의 서로 다른 CSV 헤더가 한 파일에 섞이지 않도록 한다.
 	DWORD dwCodeHash = 2166136261UL;
 	for (int i=0; i<100; i++) {
-		CString strCode = gCap.sFAICode[i] + "|" + gCap.sFAIName[i] + ";";
+		CString strCode = gCap.sFAICode[i] + ";";
 		for (int j=0; j<strCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)strCode[j]) * 16777619UL;
 	}
-	strFile.Format("%s\\%04d%02d%02d_OCAP100_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
+	strFile.Format("%s\\%04d%02d%02d_OCAPFAICodeV2_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
 	sTitle = "Time,배출매거진ID,DFA랏ID1,DFA랏ID2,DFA랏ID3,DFA랏ID4,DFA랏ID5,DFA랏ID6,DFA랏ID7,DFA랏ID8,투입,완공,양품,RN,RR,치명,BCR,MES,MC,치수,7FAI,Tilt,Gap,";
 	for (int nType=0; nType<2; nType++) {
 		for (int i=0; i<100; i++) {
-			CString sName = gCap.sFAIName[i], sCode = gCap.sFAICode[i];
-			sName.Replace("\"", "\"\""); sCode.Replace("\"", "\"\"");
-			sData.Format("\"%s-%03d %s %s Count\",\"%s-%03d Rate\",", nType == 0 ? "FAI" : "ERR", i + 1, sCode, sName, nType == 0 ? "FAI" : "ERR", i + 1);
+			CString sCode = gCap.sFAICode[i];
+			sCode.Replace("\"", "\"\"");
+			sData.Format("\"%s%s\",\"%s%s Rate (%%)\",", nType == 0 ? "" : "ERR ", sCode, nType == 0 ? "" : "ERR ", sCode);
 			sTitle += sData;
 		}
 	}

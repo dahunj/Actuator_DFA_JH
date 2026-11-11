@@ -360,6 +360,21 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 
 	int nVNo = (sType == "B1" ? 1 : (sType == "AG" ? 2 : (sType == "T1" ? 3 : (sType == "TG" ? 4 : (sType == "T2" ? 5 : 0)))));
 
+
+	if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] > 1) {
+		strLog.Format("[Get_InspectComplete] Inspection Complete Allready Error => LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Bar(%s) Judge(%d) Code(%s) ", sLotID, sPortNo, sTrayNo, nCMNo, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0]);	
+		g_objLogFile.Save_HandlerLog(strLog);
+		return;
+	}
+
+	if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] > 2) {
+		strLog.Format("[Get_InspectComplete] Inspection Complete Allready Error => LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Bar(%s) Judge(%d) Code(%s) ", 
+			sLotID, sPortNo, sTrayNo, nCMNo, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0]);	
+		g_objLogFile.Save_HandlerLog(strLog);
+		return;
+	}
+
+
 	if (pEquipData->bUseNGSize && pEquipData->bUseNtoNG) 
 	{		
 		if (sJudge == "M" || sJudge == "X" || sJudge == "R") 
@@ -413,13 +428,7 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	else					gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 3;	//외관불량(ROS x)
 
 
-	if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][eVision::Final] > 1) {
-		strLog.Format("[Get_InspectComplete] Inspection Complete Allready Error => LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Bar(%s) Judge(%d) Code(%s) ", sLotID, sPortNo, sTrayNo, nCMNo, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0]);	
-		g_objLogFile.Save_HandlerLog(strLog);
-		return;
-	}
-
-
+	
 
 	if (sJudge == "G") gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = "";
 	else			   gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = sNGCode;

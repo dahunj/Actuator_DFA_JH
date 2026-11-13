@@ -1107,7 +1107,7 @@ void CLogFile::Save_BarcodeLog(CString sLog)
 
 void CLogFile::Save_OCAPDataLog(int nIdx)
 {
-	CString strPath = gsCurrentDir + "\\LOG\\OCAPData";
+	CString strPath = gsCurrentDir + "\\LOG\\OCAPData_FAI";
 	Create_Folder(strPath);
 
 	SYSTEMTIME time;

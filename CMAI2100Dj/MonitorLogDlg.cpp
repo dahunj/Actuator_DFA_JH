@@ -241,7 +241,7 @@ void CMonitorLogDlg::OnBnClickedBtnLogCopy()
 	sysTime.wHour = sysTime.wMinute = sysTime.wSecond = sysTime.wMilliseconds = 0;
 	sLogDate.Format("%04d%02d%02d", sysTime.wYear, sysTime.wMonth, sysTime.wDay);
 
-	CString sFolder[17] = {"Barcode", "Alarm", "DailyLot", "Dispatcher", "Handler", "Inspector", "JobList", "MESAgent", "OperatingRatio", "OCAPData", "Error", "LotData", "MCC", "Motion", "Inspector", "OutTray", "System"};
+	CString sFolder[17] = {"Barcode", "Alarm", "DailyLot", "Dispatcher", "Handler", "Inspector", "JobList", "MESAgent", "OperatingRatio", "OCAPData_FAI", "Error", "LotData", "MCC", "Motion", "Inspector", "OutTray", "System"};
 	for (int i=0; i<17; i++) {
 		strToPath.Format("D:\\Log-%s\\%s", sLogDate, sFolder[i]);			g_objLogFile.Create_Folder(strToPath);
 	}

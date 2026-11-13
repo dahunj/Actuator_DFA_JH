@@ -319,7 +319,7 @@ void OCAPFAI::Display_Status()
 {
 	if (m_bSetting) return;
 	// Display persisted CSV history without changing the alarm's 50-slot ring buffer.
-	OCAPHistory_Display(&m_grdData, gsCurrentDir + "\\LOG\\OCAPData", gCap.sFAICode, "FAI", gCap.dCodeDefect, gCap.dGiDefect, gCap.nGiMinCnt);
+	OCAPHistory_Display(&m_grdData, gsCurrentDir + "\\LOG\\OCAPData_FAI", gCap.sFAICode, "FAI", gCap.dCodeDefect, gCap.dGiDefect, gCap.nGiMinCnt);
 }
 
 void OCAPFAI::Display_Grid(int nDp, int nIx)

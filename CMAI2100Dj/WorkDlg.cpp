@@ -2622,7 +2622,7 @@ void CWorkDlg::DoEvents(int nSleep)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CWorkDlg::OnBnClickedButton2()
 {
-	DY_DATA_19* m_pDY19 = g_objAJinAXL.Get_pDY19();
+	/*DY_DATA_19* m_pDY19 = g_objAJinAXL.Get_pDY19();
 	gData.dwCVStop = GetTickCount();
 	while(1)
 	{
@@ -2633,8 +2633,9 @@ void CWorkDlg::OnBnClickedButton2()
 				g_objAJinAXL.Write_Output(19);
 				break;
 			}
-	}
+	}*/
 
+	g_objCommon.Show_Error(91);
 }
 
 void CWorkDlg::Set_EnableSlot(int nSlotNo, bool bEnable)

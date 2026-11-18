@@ -351,10 +351,14 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	}		
 	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 		
-	
-
 	gDown.bDownHappen = FALSE;
 	gDown.bDownClear = TRUE;
+
+	CString sErrorNo;
+	sErrorNo.Format("%d", gDown.nErrorNo);
+
+	g_objMesAgent.Set_ErrorUpdate(0, sErrorNo, gAlm.sAlmCatMajor);
+
 	g_objLogFile.Save_HandlerLog("[Down Report] OK button push");
 	ShowWindow(SW_HIDE);
 }

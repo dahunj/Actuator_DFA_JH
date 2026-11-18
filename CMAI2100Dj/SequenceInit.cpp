@@ -204,7 +204,6 @@ BOOL CSequenceInit::Initial_MainRun()
 
 	case 1:		// Initial Start
 		g_objLogFile.Save_HandlerLog("[Initial Sequence - Main] start");
-//		g_objMesAgent.Set_EquipState(1);	//Init
 
 		m_pDY04->oBTMIonizerOn = FALSE;    m_pDY04->oBTMIonizerBlow = FALSE;
 		m_pDY04->oBTMSuctionOn = FALSE;    m_pDY04->oTOPIonizerOn = FALSE;

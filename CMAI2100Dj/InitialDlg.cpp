@@ -179,10 +179,7 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 							g_objMesAgent.Set_DownActionReport("", "", gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 						}					
 					}
-
-					gDown.bDownClear = TRUE;
-					gDown.bDownHappen = FALSE;
-
+										
 					m_bInitialRunning = TRUE;
 
 					g_objCommon.Locking_MainDoor(TRUE, TRUE);

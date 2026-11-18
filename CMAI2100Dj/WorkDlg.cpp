@@ -270,10 +270,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 						gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
 						g_objMesAgent.Set_DownActionReport("", "", gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 					}					
-				}
-
-				gDown.bDownClear = TRUE;
-				gDown.bDownHappen = FALSE;
+				}				
 
 				m_bAutoRunning = TRUE;
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
@@ -289,6 +286,18 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				pMainDlg->Set_EquipRunStart();
 				g_objMesAgent.Set_EquipState(eEquipState::RUN);	
 				g_objMesAgent.Set_UnitState(eEquipState::RUN);
+				
+				if(gLot.dwStopStart != 0)
+				{	
+					gLot.dwStopEnd = GetTickCount() - gLot.dwStopStart;
+					for(int i = 0; i < 30; i++) 
+					{
+						gLot.dwStopTime[i] += gLot.dwStopEnd;			
+					}
+					gLot.dwStopStart = 0;
+					gLot.dwStopEnd = 0;
+				}
+
 
 			} else {
 				g_objCommon.Show_Error(40);		// 초기화 완료 에러
@@ -318,6 +327,24 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 
 			pMainDlg->Save_EquipRunTime();
 			g_objCommon.Save_MotionPos();
+
+			pMainDlg->Set_MainState(STATE_READY);
+			dwStopSTime = GetTickCount();
+
+			if(gDown.bDownClear && !gDown.bDownHappen)
+			{
+				g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
+				g_objMesAgent.Set_UnitState(eEquipState::IDLE);	
+			}			
+
+			gLot.dwErrorStart = 0;
+			gLot.dwStopStart = 0;
+			gLot.dwStopStart = GetTickCount();
+			
+			for(int i = 0; i < 3; i++) 
+			{
+				//gLot.nStopCount[i]++;		
+			}
 
 		} else {				// Stop
 			int nState = pMainDlg->Get_MainState();
@@ -502,38 +529,11 @@ void CWorkDlg::OnBnClickedRdoSlectNo(UINT nID)
 
 void CWorkDlg::OnBnClickedRdoWorkStart()
 {
-	if(gLot.dwStopStart != 0)
-	{	
-		gLot.dwStopEnd = GetTickCount() - gLot.dwStopStart;
-		for(int i = 0; i < 30; i++) 
-		{
-			gLot.dwStopTime[i] += gLot.dwStopEnd;			
-		}
-		gLot.dwStopStart = 0;
-		gLot.dwStopEnd = 0;
-	}
-
 	g_objLogFile.Save_HandlerLog("[Work Mode] START button push");
 }
 
 void CWorkDlg::OnBnClickedRdoWorkStop()
 {
-	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
-	pMainDlg->Set_MainState(STATE_READY);
-	dwStopSTime = GetTickCount();
-	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
-	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
-	
-
-	for(int i = 0; i < 3; i++) 
-	{
-		//gLot.nStopCount[i]++;		
-	}
-
-	gLot.dwErrorStart = 0;
-	gLot.dwStopStart = 0;
-	gLot.dwStopStart = GetTickCount();
-
 	g_objLogFile.Save_HandlerLog("[Work Mode] STOP button push");
 }
 
@@ -1518,8 +1518,7 @@ void CWorkDlg::Reset_AlarmLog()
 	g_objLogFile.Save_SpcErrorLog(strLog, gAlm.sLotID);
 
 	strErrNo.Format("%04d", gAlm.nAlmNo);
-	g_objMesAgent.Set_ErrorUpdate(0, strErrNo, gAlm.sAlmCatMajor);
-
+	
 	if (gAlm.nPortNo > 0) {
 		//gLot.dwErrorTime[gAlm.nPortNo-1] += gAlm.dwProcTime; 
 		gLot.nErrorCount[gAlm.nPortNo-1]++;
@@ -2622,7 +2621,13 @@ void CWorkDlg::DoEvents(int nSleep)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CWorkDlg::OnBnClickedButton2()
 {
-	DY_DATA_19* m_pDY19 = g_objAJinAXL.Get_pDY19();
+	//g_objCommon.Show_Error(91);
+
+	DX_DATA_13* m_pDX13 = g_objAJinAXL.Get_pDX13();
+	m_pDX13->iStartSw = TRUE;
+
+
+	/*DY_DATA_19* m_pDY19 = g_objAJinAXL.Get_pDY19();
 	gData.dwCVStop = GetTickCount();
 	while(1)
 	{
@@ -2633,7 +2638,7 @@ void CWorkDlg::OnBnClickedButton2()
 				g_objAJinAXL.Write_Output(19);
 				break;
 			}
-	}
+	}*/
 
 }
 

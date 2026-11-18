@@ -83,7 +83,7 @@ LRESULT CMesAgent::OnClientConnect(WPARAM wConnect, LPARAM lParam)
 	if (!m_bConnected) return 0;
 
 	Set_OperUpdate(gData.sOperID);
-	Set_EquipState(2);	//Idle
+	Set_EquipState(eEquipState::IDLE);	//Idle
 	g_objLogFile.Save_MesAgentLog("MesAgent Connected");
 	return 0;
 }

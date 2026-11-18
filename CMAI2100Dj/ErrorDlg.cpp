@@ -303,7 +303,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 		gDown.sDownStartTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay,time.wHour, time.wMinute, time.wSecond);
 
-		g_objMesAgent.Set_ErrorUpdate(1, strErrNo, gAlm.sAlmCatMajor);
+		if(!gDown.bDownHappen && gDown.bDownClear) g_objMesAgent.Set_ErrorUpdate(1, strErrNo, gAlm.sAlmCatMajor);
 		Set_SPCError(m_nErrNo, m_strErrMsg);
 		Set_AlarmLog(m_nErrNo, m_strErrMsg);
 		strLog.Format("%s,%s,%s", m_strLotID, strErrNo, m_strErrMsg);

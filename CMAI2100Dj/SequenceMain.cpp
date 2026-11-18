@@ -2120,9 +2120,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 */
 	gLot.dwErrorTime[nNo] = 0;
 	gLot.dwStopTime[nNo] = 0;
-	gLot.dwLotStart[nNo] = 0;
-	gDown.bDownClear = TRUE;
-	gDown.bDownHappen = FALSE;
+	gLot.dwLotStart[nNo] = 0;	
 
 	if (gData.nRejectMaxCount > 0 && gData.nRejectLotCount >= gData.nRejectMaxCount)
 			g_dlgWork.PostMessage(UM_LOT_END_MSG, nPortNo, 9);
@@ -3566,7 +3564,7 @@ BOOL CSequenceMain::Run_Transfer1()
 			(nFmTran1Pos == 4) ) {	//Load-MZ
 			m_tTransfer1Loop.Takt_Start();
 			g_objCommon.Move_Position(AX_TRANSFER_Z1, 0);
-			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
+			//m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
 		}
 		break;
 	case 2:

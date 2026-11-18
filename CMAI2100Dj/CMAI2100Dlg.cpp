@@ -311,7 +311,6 @@ void CCMAI2100Dlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	gDown.bDownClear = TRUE;
 	gDown.bDownHappen = FALSE;
 
-
 	theApp.uSleep(1000);
 
 	Clear_JobData();

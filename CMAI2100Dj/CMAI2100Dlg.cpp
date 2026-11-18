@@ -642,6 +642,9 @@ void CCMAI2100Dlg::Set_MainState(int nState)
 	else if( nState == STATE_READY)
 	{
 		//Pass
+		pDY13->oTowerGreen1 = pDY13->oTowerGreen2 = FALSE;
+		pDY13->oTowerYellow1 = pDY13->oTowerYellow2 = TRUE;
+		pDY13->oTowerRed1 = pDY13->oTowerRed2 = FALSE;        
 	}
 	else {
 		int nAlmType = 0;

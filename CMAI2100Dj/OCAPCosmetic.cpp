@@ -461,9 +461,9 @@ void OCAPCosmetic::Set_AddMZData_Cosmetic(int nPortNo)
 				if (nVisionJudge < 3 || nVisionJudge > 6) continue;
 				if (OCAP_MatchCode_Cosmetic(gLot.sNGCode_I[nNo][j][k][v], i, bError)) bFound = TRUE;
 				// 수신 패킷의 추가 불량 코드 20개도 확인한다. 현재 장비의 Tray는 1이다.
-				if (j == 0) for (int c=0; c<20; c++) {
-					if (OCAP_MatchCode_Cosmetic(gNG->sNGCode[nNo][0][k][v-1][c], i, bError)) bFound = TRUE;
-				}
+				/*if (j == 0) for (int c=0; c<20; c++) {
+				if (OCAP_MatchCode_Cosmetic(gNG->sNGCode[nNo][0][k][v-1][c], i, bError)) bFound = TRUE;
+				}*/
 			}
 			if (bFound) gLot.nOcapCount_Cosmetic[nNo][i]++;
 			if (bError) gLot.nFOcapCount_Cosmetic[nNo][i]++;

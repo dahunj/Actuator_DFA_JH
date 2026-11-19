@@ -466,7 +466,8 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 
 	
 	DWORD dwTerm = GetTickCount() - m_dwT2ScanDone[nPortNo-1][nTrayNo-1][nCMNo-1];
-	strLog.Format("[Get_InspectComplete] Inspection Complete LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Time(%d) NG(%d) Bar(%s) SNG(%d) MC(%d) GF(%d) SNG(%d) SRe(%d) MCBTM(%d) FDFAI(%d) NC(%s) ROS(%d)", sLotID, sPortNo, sTrayNo, nCMNo, dwTerm, nNGCnt, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], nNGSize, nNGMC, nNGGF, nNGSkip, nReSkip, nMCBTM, gLot.nFOcapExist[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], nRosCnt);	g_objLogFile.Save_HandlerLog(strLog);
+	strLog.Format("[Get_InspectComplete] Inspection Complete LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Time(%d) NG(%d) Bar(%s) SNG(%d) MC(%d) GF(%d) SNG(%d) SRe(%d) MCBTM(%d) FDFAI(%d) NC(%s) ROS(%d)", 
+		sLotID, sPortNo, sTrayNo, nCMNo, dwTerm, nNGCnt, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], nNGSize, nNGMC, nNGGF, nNGSkip, nReSkip, nMCBTM, gLot.nFOcapExist[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], nRosCnt);	g_objLogFile.Save_HandlerLog(strLog);
 
 	
 

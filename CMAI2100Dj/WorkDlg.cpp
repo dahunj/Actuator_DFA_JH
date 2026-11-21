@@ -77,6 +77,7 @@ void CWorkDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STC_OPER_ID, m_stcOperId);
 	DDX_Control(pDX, IDC_STC_MES_CONNECT, m_stcMesConnect);
 	DDX_Control(pDX, IDC_STC_MES_ONLINE, m_stcMesOnline);
+	DDX_Control(pDX, IDC_BTN_PDT, m_btnPDT);
 }
 
 BEGIN_MESSAGE_MAP(CWorkDlg, CDialogEx)
@@ -226,6 +227,16 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 		pMainDlg->Set_MainState(STATE_READY);
 	}
 
+	if(!gDown.bDownClear && gDown.bDownHappen)
+	{
+		m_btnPDT.EnableWindow(FALSE);
+	}
+	else
+	{
+		m_btnPDT.EnableWindow(TRUE);
+	}
+
+
 	DX_DATA_20 *pDX20 = g_objAJinAXL.Get_pDX20();
 	if (pDX20->iLDMZOpenSw) ConveyorOpen(1, 1);
 	if (pDX20->iLDMZRunSw)  ConveyorOpen(1, 2);
@@ -262,7 +273,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 						g_dlgDownReport.ShowWindow(TRUE);
 					}					
 				}
-				else if(gDown.bDownHappen)
+				else if(gDown.bDownHappen)  // 시간이 지나지 않아도 Report 는 할수 있게 해달라는 요청 
 				{
 					if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
 					{
@@ -297,9 +308,10 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 					gLot.dwStopStart = 0;
 					gLot.dwStopEnd = 0;
 				}
-
-
-			} else {
+				m_btnPDT.EnableWindow(FALSE);
+			} 
+			else
+			{
 				g_objCommon.Show_Error(40);		// 초기화 완료 에러
 			}
 
@@ -2621,10 +2633,10 @@ void CWorkDlg::DoEvents(int nSleep)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CWorkDlg::OnBnClickedButton2()
 {
-	//g_objCommon.Show_Error(91);
+	g_objCommon.Show_Error(91);
 
 	DX_DATA_13* m_pDX13 = g_objAJinAXL.Get_pDX13();
-	m_pDX13->iStartSw = TRUE;
+	//m_pDX13->iStartSw = FALSE;
 
 
 	/*DY_DATA_19* m_pDY19 = g_objAJinAXL.Get_pDY19();

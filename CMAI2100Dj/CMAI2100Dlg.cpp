@@ -141,6 +141,9 @@ BOOL CCMAI2100Dlg::OnInitDialog()
 	SetTimer(TIMER_SLIDE_CHECK, 900, NULL);
 	SetTimer(TIMER_DOOR_LOCK, 1000, NULL);
 
+	gDown.bDownClear = TRUE;
+	gDown.bDownHappen = FALSE;
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -306,10 +309,7 @@ void CCMAI2100Dlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	}
 	if (g_objDataManager.Read_OCAPData_Cosmetic() == FALSE) {
 		g_objCommon.Show_MsgBox(1, "OCAP Cosmetic Data 파일을 확인해 주세요.");
-	}
-
-	gDown.bDownClear = TRUE;
-	gDown.bDownHappen = FALSE;
+	}	
 
 	theApp.uSleep(1000);
 
@@ -638,15 +638,9 @@ void CCMAI2100Dlg::Set_MainState(int nState)
 		pDY13->oBuzzerBit2 = FALSE;
 		pDY13->oBuzzerBit3 = FALSE;
 		pDY13->oBuzzerBit4 = FALSE;
-	} 
-	else if( nState == STATE_READY)
+	}	
+	else
 	{
-		//Pass
-		pDY13->oTowerGreen1 = pDY13->oTowerGreen2 = FALSE;
-		pDY13->oTowerYellow1 = pDY13->oTowerYellow2 = TRUE;
-		pDY13->oTowerRed1 = pDY13->oTowerRed2 = FALSE;        
-	}
-	else {
 		int nAlmType = 0;
 		if (bBuzzer2) nAlmType = 1;
 

@@ -115,16 +115,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		CString strErrNo, strErrMsg, strErrPick, strShow, strLog, strNo, strCMNo, strInfo;
 		strErrNo.Format("%04d", m_nErrNo);
 		m_stcErrNo.SetWindowText(strErrNo);
-		
-		if(gDown.bDownHappen && !gDown.bDownClear)
-		{
-
-		}
-		else
-		{
-			gDown.strErrNo.Format("%04d", m_nErrNo);
-			gDown.nErrorNo = m_nErrNo;
-		}		
+				
 
 		if (gData.nLanguage == 0) strErrPick = gsCurrentDir + "\\System\\ErrorList_KOR.ini";
 		else					  strErrPick = gsCurrentDir + "\\System\\ErrorList_ENG.ini";
@@ -302,8 +293,14 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		gData.sAlarmList[0].Format("[%s] %s", strErrNo, m_strErrMsg);
 
 		gDown.sDownStartTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay,time.wHour, time.wMinute, time.wSecond);
-
-		if(!gDown.bDownHappen && gDown.bDownClear) g_objMesAgent.Set_ErrorUpdate(1, strErrNo, gAlm.sAlmCatMajor);
+			
+		if(!gDown.bDownHappen && gDown.bDownClear)
+		{
+			gDown.nErrorNo = m_nErrNo;
+			gDown.strErrNo.Format("%04d", m_nErrNo);
+			g_objMesAgent.Set_ErrorUpdate(1, gDown.strErrNo, gAlm.sAlmCatMajor);
+		}		
+			
 		Set_SPCError(m_nErrNo, m_strErrMsg);
 		Set_AlarmLog(m_nErrNo, m_strErrMsg);
 		strLog.Format("%s,%s,%s", m_strLotID, strErrNo, m_strErrMsg);
@@ -343,8 +340,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 		gDown.bDownHappen = TRUE;
 		gDown.bDownClear = FALSE;
-		gDown.bPDT = FALSE;
-
+		
  		g_objInspector.Set_StatusUpdate(INSPECTOR_ALL, 4);
 		g_objDispatcher.Set_StatusUpdate(2);	// 0:Stop, 1:Run, 2:Error
 		SetTimer(0, 100, NULL);

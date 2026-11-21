@@ -53,8 +53,8 @@ public:
 	CStaticCS	m_stcPitchData[6];
 	CStaticCS	m_stcDelayTime[10];
 	CGroupCS	m_grpTower;
-	CLabelCS	m_lblTower[13];
-	CCheckCS	m_chkTower[6][7];
+	CLabelCS	m_lblTower[14];
+	CCheckCS	m_chkTower[7][7];
 	CGroupCS	m_grpBuzzer;
 	CLabelCS	m_lblBuzzer[7];
 	CCheckCS	m_chkBuzzer[2][5];

@@ -2,6 +2,7 @@
 //
 #pragma once
 #include "LoopTimer.h"
+#include "afxwin.h"
 
 #define UM_UPDATE_MODEL			WM_USER+1
 #define UM_UPDATE_TRAY_INFO		WM_USER+2
@@ -62,6 +63,8 @@ public:
 	CStaticCS		m_stcMesConnect;
 	CStaticCS		m_stcMesOnline;
 	CStaticCS		m_stcNGMZCar[8];
+
+	CButton			m_btnPDT;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
@@ -173,6 +176,7 @@ public:
 
 	void Set_EnableSlot(int nSlotNo, bool bEnable);
 	
+
 };
 
 extern CWorkDlg g_dlgWork;

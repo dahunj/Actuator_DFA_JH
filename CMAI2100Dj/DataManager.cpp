@@ -47,7 +47,7 @@ void CDataManager::Reset_EquipData()
 	m_EquipData.dTrayPitchX = 0.0;
 	m_EquipData.dTrayPitchY = 0.0;
 
-	for (int i = 0; i < 6; i++) for (int j = 0; j < 7; j++) m_EquipData.bTower[i][j] = FALSE;
+	for (int i = 0; i < 7; i++) for (int j = 0; j < 7; j++) m_EquipData.bTower[i][j] = FALSE;
 	for (int i = 0; i < 2; i++) for (int j = 0; j < 5; j++) m_EquipData.bBuzzer[i][j] = FALSE;
 
 	m_EquipData.sPasswordMt = "";
@@ -321,7 +321,7 @@ BOOL CDataManager::Read_EquipData()
 	m_EquipData.dMZPitchZ = INI.Get_Double("PITCH", "MZ_CARRIER", 0.0);
 
 	CString strKey, strData, strTemp;
-	for (int i = 0; i < 6; i++) for (int j = 0; j < 7; j++) { strKey.Format("%d%d", i, j); m_EquipData.bTower[i][j] = INI.Get_Bool("TOWER", strKey, FALSE); }
+	for (int i = 0; i < 7; i++) for (int j = 0; j < 7; j++) { strKey.Format("%d%d", i, j); m_EquipData.bTower[i][j] = INI.Get_Bool("TOWER", strKey, FALSE); }
 	for (int i = 0; i < 2; i++) for (int j = 0; j < 5; j++) { strKey.Format("%d%d", i, j); m_EquipData.bBuzzer[i][j] = INI.Get_Bool("BUZZER", strKey, FALSE); }
 
 	m_EquipData.sPasswordMt = INI.Get_String("HIDDEN", "PASSWORD_MT", "");
@@ -435,7 +435,7 @@ BOOL CDataManager::Read_ModelEquipData(CString strPath)
 	m_EquipData.dMZPitchZ = INI.Get_Double("PITCH", "MZ_CARRIER", 0.0);
 
 	CString strKey;
-	for (int i = 0; i < 6; i++) for (int j = 0; j < 7; j++) { strKey.Format("%d%d", i, j); m_EquipData.bTower[i][j] = INI.Get_Bool("TOWER", strKey, FALSE); }
+	for (int i = 0; i < 7; i++) for (int j = 0; j < 7; j++) { strKey.Format("%d%d", i, j); m_EquipData.bTower[i][j] = INI.Get_Bool("TOWER", strKey, FALSE); }
 	for (int i = 0; i < 2; i++) for (int j = 0; j < 5; j++) { strKey.Format("%d%d", i, j); m_EquipData.bBuzzer[i][j] = INI.Get_Bool("BUZZER", strKey, FALSE); }
 
 	m_EquipData.sPasswordMt = INI.Get_String("HIDDEN", "PASSWORD_MT", "");

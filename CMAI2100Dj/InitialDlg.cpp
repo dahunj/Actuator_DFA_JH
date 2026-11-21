@@ -169,7 +169,7 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 
 						
 					}
-					else if(gDown.bDownHappen)
+					else if(gDown.bDownHappen) // 시간이 지나지 않아도 Report 는 할수 있게 해달라는 요청 
 					{
 						if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
 						{

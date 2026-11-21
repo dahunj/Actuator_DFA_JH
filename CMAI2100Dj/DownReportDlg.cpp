@@ -56,12 +56,7 @@ BOOL CDownReportDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	Initial_Controls();
-
-	gDown.bDownClear = TRUE;
-	gDown.bDownHappen = FALSE;
-	gDown.bPDT = FALSE;
-
-	
+		
 	CString strErrPick, strMiddle, strMiddleMsg;
 
 	if (gData.nLanguage == 0) strErrPick = gsCurrentDir + "\\System\\ErrorList_KOR.ini";
@@ -181,10 +176,7 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	if (bShow) 
 	{
 		g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
-		g_objMesAgent.Set_UnitState(eEquipState::DOWN);
-		
-		gDown.bDownClear = FALSE;
-		gDown.bDownHappen = FALSE;
+		g_objMesAgent.Set_UnitState(eEquipState::DOWN);	
 
 		CString sTempCat;
 		sTempCat.Format("00004%s", gAlm.sAlmCatMajor);
@@ -251,9 +243,7 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		{
 			strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);            
 		}				
-		m_stcAlmTime.SetWindowText(strTime);
-		
-		
+		m_stcAlmTime.SetWindowText(strTime);		
 	} 
 	else
 	{
@@ -331,7 +321,10 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	strActionDetail.Empty();
 	m_edtActionDetail.GetWindowText(strActionDetail);
 
-	if(gDown.bPDT){}
+	if(gDown.bPDT)
+	{
+		//pass
+	}
 	else if(strActionDetail.GetLength() < 5)
 	{
 		AfxMessageBox("Please Input Action Detail more than 5 string");
@@ -349,15 +342,14 @@ void CDownReportDlg::OnBnClickedBtnReport()
 		g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
 		g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 	}		
-	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+	else
+	{
+		g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+		g_objMesAgent.Set_ErrorUpdate(0, gDown.strErrNo, gAlm.sAlmCatMajor);
 		
+	}	
 	gDown.bDownHappen = FALSE;
 	gDown.bDownClear = TRUE;
-
-	CString sErrorNo;
-	sErrorNo.Format("%d", gDown.nErrorNo);
-
-	g_objMesAgent.Set_ErrorUpdate(0, sErrorNo, gAlm.sAlmCatMajor);
 
 	g_objLogFile.Save_HandlerLog("[Down Report] OK button push");
 	ShowWindow(SW_HIDE);

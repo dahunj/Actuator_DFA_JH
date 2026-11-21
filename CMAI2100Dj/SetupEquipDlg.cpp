@@ -77,8 +77,8 @@ void CSetupEquipDlg::DoDataExchange(CDataExchange* pDX)
 	for (int i = 0; i <10; i++) DDX_Control(pDX, IDC_STC_DELAY_TIME_0 + i, m_stcDelayTime[i]);
 
 	DDX_Control(pDX, IDC_GRP_TOWER, m_grpTower);
-	for (int i = 0; i < 13; i++) DDX_Control(pDX, IDC_LBL_TOWER_0 + i,  m_lblTower[i]);
-	for (int i = 0; i < 6; i++) for (int j = 0; j < 7; j++) DDX_Control(pDX, IDC_CHK_TOWER_0_0 + i * 7 + j,  m_chkTower[i][j]);
+	for (int i = 0; i < 14; i++) DDX_Control(pDX, IDC_LBL_TOWER_0 + i,  m_lblTower[i]);
+	for (int i = 0; i < 7; i++) for (int j = 0; j < 7; j++) DDX_Control(pDX, IDC_CHK_TOWER_0_0 + i * 7 + j,  m_chkTower[i][j]);
 	DDX_Control(pDX, IDC_GRP_BUZZER, m_grpBuzzer);
 	for (int i = 0; i < 7; i++) DDX_Control(pDX, IDC_LBL_BUZZER_0 + i,  m_lblBuzzer[i]);
 	for (int i = 0; i < 2; i++) for (int j = 0; j < 5; j++) DDX_Control(pDX, IDC_CHK_BUZZER_0_0 + i * 5 + j,  m_chkBuzzer[i][j]);
@@ -407,8 +407,8 @@ void CSetupEquipDlg::Initial_Controls()
 	m_stcDownReportTime.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x80), RGB(0xFF, 0xFF, 0xE0));
 
 	m_grpTower.Init_Ctrl("¹ÙÅÁ", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT);
-	for (int i = 0; i < 13; i++) m_lblTower[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x40, 0x40, 0x40));
-	for (int i = 0; i < 6; i++) for (int j = 0; j < 7; j++) m_chkTower[i][j].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0x00, 0x00, 0x00), RGB(0x00, 0xF0, 0x00), CCheckCS::emRed, 0);
+	for (int i = 0; i < 14; i++) m_lblTower[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x40, 0x40, 0x40));
+	for (int i = 0; i < 7; i++) for (int j = 0; j < 7; j++) m_chkTower[i][j].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0x00, 0x00, 0x00), RGB(0x00, 0xF0, 0x00), CCheckCS::emRed, 0);
 
 	m_grpBuzzer.Init_Ctrl("¹ÙÅÁ", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT);
 	for (int i = 0; i < 7; i++) m_lblBuzzer[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x40, 0x40, 0x40));
@@ -497,7 +497,7 @@ void CSetupEquipDlg::Display_EquipData()
 	strData.Format("%d",	 gData.nDoorLockTime);	 m_stcPitchData[4].SetWindowText(strData);
 	strData.Format("%0.2lf", pEquipData->dMZPitchZ); m_stcPitchData[5].SetWindowText(strData);
 
-	for (int i = 0; i < 6; i++) for (int j = 0; j < 7; j++) m_chkTower[i][j].SetCheck(pEquipData->bTower[i][j]);
+	for (int i = 0; i < 7; i++) for (int j = 0; j < 7; j++) m_chkTower[i][j].SetCheck(pEquipData->bTower[i][j]);
 	for (int i = 0; i < 2; i++) for (int j = 0; j < 5; j++) m_chkBuzzer[i][j].SetCheck(pEquipData->bBuzzer[i][j]);
 
 	m_stcPasswordMt.SetWindowText(pEquipData->sPasswordMt);
@@ -647,7 +647,7 @@ void CSetupEquipDlg::Save_EquipData()
 	m_stcPitchData[1].GetWindowText(strData); dData = atof(strData); INI.Set_Double("PITCH", "TOP_SCAN", dData, "%0.2lf");
 	m_stcPitchData[5].GetWindowText(strData); dData = atof(strData); INI.Set_Double("PITCH", "MZ_CARRIER", dData, "%0.2lf");
 
-	for (int i = 0; i < 6; i++) for (int j = 0; j < 7; j++) { strKey.Format("%d%d", i, j); INI.Set_Bool("TOWER", strKey, m_chkTower[i][j].GetCheck()); }
+	for (int i = 0; i < 7; i++) for (int j = 0; j < 7; j++) { strKey.Format("%d%d", i, j); INI.Set_Bool("TOWER", strKey, m_chkTower[i][j].GetCheck()); }
 	for (int i = 0; i < 2; i++) for (int j = 0; j < 5; j++) { strKey.Format("%d%d", i, j); INI.Set_Bool("BUZZER", strKey, m_chkBuzzer[i][j].GetCheck()); }
 
 	m_stcPasswordMt.GetWindowText(strData); INI.Set_String("HIDDEN", "PASSWORD_MT", strData);
@@ -749,7 +749,7 @@ void CSetupEquipDlg::Save_ModelEquipData(CString sPath)
 	m_stcPitchData[1].GetWindowText(strData); dData = atof(strData); INI.Set_Double("PITCH", "TOP_SCAN", dData, "%0.2lf");
 	m_stcPitchData[5].GetWindowText(strData); dData = atof(strData); INI.Set_Double("PITCH", "MZ_CARRIER", dData, "%0.2lf");
 
-	for (int i = 0; i < 6; i++) for (int j = 0; j < 7; j++) { strKey.Format("%d%d", i, j); INI.Set_Bool("TOWER", strKey, m_chkTower[i][j].GetCheck()); }
+	for (int i = 0; i < 7; i++) for (int j = 0; j < 7; j++) { strKey.Format("%d%d", i, j); INI.Set_Bool("TOWER", strKey, m_chkTower[i][j].GetCheck()); }
 	for (int i = 0; i < 2; i++) for (int j = 0; j < 5; j++) { strKey.Format("%d%d", i, j); INI.Set_Bool("BUZZER", strKey, m_chkBuzzer[i][j].GetCheck()); }
 
 	m_stcPasswordMt.GetWindowText(strData); INI.Set_String("HIDDEN", "PASSWORD_MT", strData);

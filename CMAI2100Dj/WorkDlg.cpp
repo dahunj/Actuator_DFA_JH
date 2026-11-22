@@ -243,6 +243,9 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		m_rdoWorkStart.EnableWindow(FALSE);
 	}
+	else{
+		m_rdoWorkStart.EnableWindow(TRUE);
+	}
 
 
 

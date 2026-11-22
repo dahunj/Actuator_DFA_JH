@@ -175,6 +175,8 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	if (bShow) 
 	{
+		g_objLogFile.Save_HandlerLog("[Down Report] Down Report Show");
+
 		g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
 		g_objMesAgent.Set_UnitState(eEquipState::DOWN);	
 
@@ -341,17 +343,17 @@ void CDownReportDlg::OnBnClickedBtnReport()
 		g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, 0 , 0, "PDT");
 		g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
 		g_objMesAgent.Set_UnitState(eEquipState::IDLE);
+		gDown.bPDT = FALSE;
 	}		
 	else
 	{
-		g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 		g_objMesAgent.Set_ErrorUpdate(0, gDown.strErrNo, gAlm.sAlmCatMajor);
-		
+		g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);		
 	}	
 	gDown.bDownHappen = FALSE;
 	gDown.bDownClear = TRUE;
 
-	g_objLogFile.Save_HandlerLog("[Down Report] OK button push");
+	g_objLogFile.Save_HandlerLog("[Down Report] Report button Cliecked");
 	ShowWindow(SW_HIDE);
 }
 

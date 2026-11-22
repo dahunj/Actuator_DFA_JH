@@ -231,10 +231,12 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		m_btnPDT.EnableWindow(FALSE);
 	}
-	else
+
+	if(gDown.bPDT)
 	{
-		m_btnPDT.EnableWindow(TRUE);
+		m_rdoWorkStart.EnableWindow(FALSE);
 	}
+
 
 
 	DX_DATA_20 *pDX20 = g_objAJinAXL.Get_pDX20();
@@ -258,6 +260,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				{
 					if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
 					{
+						
 						g_dlgDownReport.m_bStart = TRUE;					
 						gDown.dwDownStartTick = GetTickCount();
 
@@ -276,12 +279,18 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				else if(gDown.bDownHappen)  // 시간이 지나지 않아도 Report 는 할수 있게 해달라는 요청 
 				{
 					if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
-					{
+					{						
 						CTime CurTime = CTime::GetCurrentTime();                     
 						gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
 						g_objMesAgent.Set_DownActionReport("", "", gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 					}					
-				}				
+				}		
+
+				while(!gDown.bDownClear)// down report block 
+				{
+					g_objCommon.DoEvents();
+				} 
+
 
 				m_bAutoRunning = TRUE;
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
@@ -359,6 +368,8 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 
 		} else {				// Stop
+
+			m_btnPDT.EnableWindow(TRUE);
 			int nState = pMainDlg->Get_MainState();
 			if (nState != STATE_ALARM && nState != STATE_EMER) g_objCommon.Check_MainEmgAir();
 		}

@@ -66,6 +66,8 @@ public:
 
 	CButton			m_btnPDT;
 
+	CButton m_btn2;
+
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
@@ -177,6 +179,7 @@ public:
 	void Set_EnableSlot(int nSlotNo, bool bEnable);
 	
 
+	
 };
 
 extern CWorkDlg g_dlgWork;

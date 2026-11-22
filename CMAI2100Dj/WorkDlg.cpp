@@ -78,6 +78,7 @@ void CWorkDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STC_MES_CONNECT, m_stcMesConnect);
 	DDX_Control(pDX, IDC_STC_MES_ONLINE, m_stcMesOnline);
 	DDX_Control(pDX, IDC_BTN_PDT, m_btnPDT);
+	DDX_Control(pDX, IDC_BUTTON2, m_btn2);
 }
 
 BEGIN_MESSAGE_MAP(CWorkDlg, CDialogEx)
@@ -140,6 +141,12 @@ BOOL CWorkDlg::OnInitDialog()
 
 	m_rdoWorkStop.SetCheck(TRUE);
 	m_rdoWorkStop.Set_Color(RGB(0xFF, 0x00, 0x00), COLOR_DEFAULT);
+
+#ifndef AJIN_BOARD_USE
+	m_btn2.ShowWindow(TRUE);
+#else
+	m_btn2.ShowWindow(FALSE);
+#endif
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.

@@ -3564,7 +3564,7 @@ BOOL CSequenceMain::Run_Transfer1()
 			(nFmTran1Pos == 4) ) {	//Load-MZ
 			m_tTransfer1Loop.Takt_Start();
 			g_objCommon.Move_Position(AX_TRANSFER_Z1, 0);
-			//m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
+			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
 		}
 		break;
 	case 2:

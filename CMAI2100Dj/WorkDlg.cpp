@@ -1069,6 +1069,7 @@ BOOL CWorkDlg::LotID_Check()
 			sLog.Format("[Work Mode] LotID_Delete] (%d-%s)", i+1, gLot.sLotID[i]);
 			g_objLogFile.Save_HandlerLog(sLog);
 
+			gLot.nUnitNgCount[i] = 0;
 			gLot.nCmCount[i] = gLot.nGoodCount[i] = gLot.nNgCount[i] = gLot.nLotStatus[i] = gLot.nSkipCount[i] = 0;
 			gLot.sLotID[i] = "";
 		}
@@ -1774,6 +1775,7 @@ LRESULT CWorkDlg::OnJobComplete(WPARAM wParam, LPARAM lParam)
 	for (int i=0; i<28; i++) {
 		m_stcLotsIdS[i].SetWindowText("");
 		m_stcCmsCountS[i].SetWindowText("");
+		gLot.nUnitNgCount[i] = 0;
 		gLot.nCmCount[i] = gLot.nGoodCount[i] = gLot.nNgCount[i] = gLot.nLotStatus[i] = gLot.nSkipCount[i] = 0;
 	}
 	g_objSequenceMain.Beep_Post(1000);

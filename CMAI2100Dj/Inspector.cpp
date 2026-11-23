@@ -411,8 +411,6 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	{
 		//PASS
 	}
-
-
 	if ((sType == "B1" || sType == "AG") && sNGCode == "MC") sNGCode = "MCBTM";
 	if (sNGCode.Left(5) == "FDFAI") 
 	{ 
@@ -428,9 +426,7 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	else if (sJudge == "X") gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 5;	//외관불량(Ros 판정)
 	else if (sJudge == "M") gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 6;	//외관불량(Ros 판정)
 	else					gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 3;	//외관불량(ROS x)
-	
-	
-	
+		
 	if (sJudge != "G" && sNGCode.GetLength() > 0) gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = sNGCode;
 	gLot.nImageCnt[nPortNo-1][nTrayNo-1][nCMNo-1][0] = gLot.nImageCnt[nPortNo-1][nTrayNo-1][nCMNo-1][0] + nImage;
 	if (nVNo >=1 && nVNo <=5) {
@@ -467,9 +463,7 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	DWORD dwTerm = GetTickCount() - m_dwT2ScanDone[nPortNo-1][nTrayNo-1][nCMNo-1];
 	strLog.Format("[Get_InspectComplete] Inspection Complete LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Time(%d) NG(%d) Bar(%s) SNG(%d) MC(%d) GF(%d) SNG(%d) SRe(%d) MCBTM(%d) FDFAI(%d) NC(%s) ROS(%d)", 
 		sLotID, sPortNo, sTrayNo, nCMNo, dwTerm, nNGCnt, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], nNGSize, nNGMC, nNGGF, nNGSkip, nReSkip, nMCBTM, gLot.nFOcapExist[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], nRosCnt);	g_objLogFile.Save_HandlerLog(strLog);
-
 	
-
 #ifndef AJIN_BOARD_USE
 	gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1] = "AAAAAAAA";
 #endif

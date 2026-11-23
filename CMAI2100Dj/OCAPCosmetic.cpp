@@ -452,13 +452,14 @@ void OCAPCosmetic::Set_AddMZData_Cosmetic(int nPortNo)
 			for (int k=0; k<40; k++) 
 		{
 			int nJudge = gLot.nJudge_I[nNo][j][k][0];
-			if (nJudge != 3 && nJudge != 4) continue; // 치수/특수 NG 제외
+			
+			if (nJudge == 7 || nJudge == 8 || nJudge == 9) continue;
+ 
 			if (gLot.nJudge_R[nNo][j][k] == 2) continue; // ROS 최종 Good 제외
 			BOOL bFound = FALSE, bError = FALSE;
 			for (int v=1; v<=5; v++) 
 			{
-				int nVisionJudge = gLot.nJudge_I[nNo][j][k][v];
-				if (nVisionJudge < 3 || nVisionJudge > 6) continue;
+				int nVisionJudge = gLot.nJudge_I[nNo][j][k][v];				
 				if (OCAP_MatchCode_Cosmetic(gLot.sNGCode_I[nNo][j][k][v], i, bError)) bFound = TRUE;
 				// 수신 패킷의 추가 불량 코드 20개도 확인한다. 현재 장비의 Tray는 1이다.
 				/*if (j == 0) for (int c=0; c<20; c++) {

@@ -639,7 +639,9 @@ void CSequenceMain::Set_ClearRunData(int nType)
 	gData.sLotID_Tansfer[2] = gData.sLotID_LoadStage[2] = gData.sLotID_LoadPicker[2] = gData.sLotID_UnloadPicker[2] = gData.sLotID_NGTray[2] = gData.sLotID_GoodTray[2] = gData.sLotID_VisionStage[4] = ""; 
 
 	gLot.nJobCycle = gLot.nJobStatus = gLot.nUnLastPortID = gData.nCVJobSeq[0] = gData.nCVJobSeq[1] = 0;
-	for(int i=0; i<30; i++) {
+	for(int i=0; i<30; i++) 
+	{
+		gLot.nUnitNgCount[i] = 0;
 		gLot.nCmCount[i] = gLot.nLotStatus[i] = gLot.nGoodCount[i] = gLot.nNgCount[i] = gMes.nLotStatus[i] = 0;
 		gLot.nUnlGdTrayCount[i] = gLot.nUnlNGTrayCount[i] = gLot.nOutTrayCnt[i][0] = gLot.nOutTrayCnt[i][1] = gLot.nSkipCount[i] = 0;
 		gLot.nErrorCount[i] = gLot.dwErrorTime[i] = gLot.dwStopTime[i] = 0;
@@ -2081,7 +2083,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo, CString sMZID, CStri
 	else			  { sGoodMZID = m_sLastMZID;	sGoodCarID = m_sLastCarID; }
 //	g_objMesAgent.Set_LotEnd(gLot.sLotID[nNo], sGoodMZID, sGoodCarID, gLot.sRecipeName[nNo], gLot.nCmCount[nNo], gLot.nGoodCount[nNo], gLot.nNgCount[nNo]+gLot.nSkipCount[nNo]);
 	
-	g_objMesAgent.Set_UnitMaterialCount(gLot.nCmCount[nNo], nPortNo, gLot.nCmCount[nNo], gLot.nGoodCount[nNo], gLot.nNgCount[nNo]+gLot.nSkipCount[nNo]);
+	g_objMesAgent.Set_UnitMaterialCount(gLot.nCmCount[nNo], nPortNo, gLot.nCmCount[nNo], gLot.nGoodCount[nNo], gLot.nUnitNgCount[nNo]);
 	g_objMesAgent.Set_LotEnd(gLot.sLotID[nNo], gLot.sMZID_GD[nNo], gLot.sCarID_GD[nNo], gLot.sRecipeName[nNo], gLot.nCmCount[nNo], gLot.nGoodCount[nNo], gLot.nNgCount[nNo]+gLot.nSkipCount[nNo]);
 	g_objInspector.Set_LotEnd(INSPECTOR_ALL, gLot.sLotID[nNo], nPortNo);
 	g_objDispatcher.Set_LotEnd(nPortNo);
@@ -9112,7 +9114,17 @@ BOOL CSequenceMain::Run_UnloadPicker1()
 	case 28:
 		if (g_objCommon.Get_UnloadPickerUp(n1No)) {
 			m_tUnloadPicker1Loop.Takt_Save(18, 13); m_tUnloadPicker1Loop.Takt_Start(); 
-			gLot.nNgCount[n1UP]++;	gLot.nTrayPutCnt[n1UP][1]++;
+
+			//FAI or Special NG 
+			if(gData.InfoNgTray[n1PosY-1][n1PosX-1] == 7 
+				|| gData.InfoNgTray[n1PosY-1][n1PosX-1] == 8 
+				|| gData.InfoNgTray[n1PosY-1][n1PosX-1] == 9 
+				|| (gData.InfoNgTray[n1PosY-1][n1PosX-1] == 5 && gLot.nSpecialNG[n1UP][n1UT][n1UM+n1ModuleNo-1] == 1))
+			{
+				gLot.nUnitNgCount[n1UP]++;
+			}			
+
+			gLot.nNgCount[n1UP]++; gLot.nTrayPutCnt[n1UP][1]++;
 			if (Check_EmptyNGTray()) gLot.nOutTrayCnt[n1UP][1]++;
 
 			gData.sLotID_NGTray[n1NSNo-5]  = gData.sLotID_UnloadPicker[n1No-1];
@@ -9126,7 +9138,7 @@ BOOL CSequenceMain::Run_UnloadPicker1()
 			gLot.nHistory[n1UP][n1UT][n1UM+n1ModuleNo-1][6] = 1;
 			gLot.nHistory[n1UP][n1UT][n1UM+n1ModuleNo-1][7] = (n1PosY-1) * 4 + n1PosX;
 			gLot.nHistory[n1UP][n1UT][n1UM+n1ModuleNo-1][8] = n1NSNo-4;
-			g_objMesAgent.Set_CmEnd(1, n1UP+1, n1UT+1, n1UM+n1ModuleNo, (n1PosY-1) * 4 + n1PosX, gData.sCarID_NGTray[n1NSNo-5],gLot.nJudge_R[n1UP][n1UT][n1UM+n1ModuleNo-1],   gData.InfoNgTray[n1PosY-1][n1PosX-1]);
+			g_objMesAgent.Set_CmEnd(1, n1UP+1, n1UT+1, n1UM+n1ModuleNo, (n1PosY-1) * 4 + n1PosX, gData.sCarID_NGTray[n1NSNo-5],gLot.nJudge_R[n1UP][n1UT][n1UM+n1ModuleNo-1], gData.InfoNgTray[n1PosY-1][n1PosX-1]);
 			g_objLogFile.Save_OutTrayNLog(n1UP+1, n1UT+1, n1UM+n1ModuleNo, n1NSNo-5); 
 
 			if (m_nGoodStage1Case == 30 && gData.nPortNo_GoodTray[0] == 0)			 gData.nPortNo_GoodTray[0] = gData.nPortNo_NGTray[n1NSNo-5];
@@ -9636,6 +9648,15 @@ BOOL CSequenceMain::Run_UnloadPicker2()
 	case 28:
 		if (g_objCommon.Get_UnloadPickerUp(n2No)) {
 			m_tUnloadPicker2Loop.Takt_Save(19, 13); m_tUnloadPicker2Loop.Takt_Start(); 
+			//FAI or Special NG 
+			if(gData.InfoNgTray[n2PosY-1][n2PosX-1] == 7 
+				|| gData.InfoNgTray[n2PosY-1][n2PosX-1] == 8 
+				|| gData.InfoNgTray[n2PosY-1][n2PosX-1] == 9 
+				|| (gData.InfoNgTray[n2PosY-1][n2PosX-1] == 5 && gLot.nSpecialNG[n2UP][n2UT][n2UM+n2ModuleNo-1] == 1))
+			{
+				gLot.nUnitNgCount[n2UP]++;
+			}			
+
 			gLot.nNgCount[n2UP]++;	gLot.nTrayPutCnt[n2UP][1]++;
 			if (Check_EmptyNGTray()) gLot.nOutTrayCnt[n2UP][1]++;
 

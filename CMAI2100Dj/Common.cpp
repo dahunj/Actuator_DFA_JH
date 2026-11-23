@@ -1156,7 +1156,7 @@ void CCommon::Set_LotDataClear(int nPortNo)	//nPortNo:0~29;
 	if (nPortNo < 0 || nPortNo > 29) return;
 
 	int nNo = nPortNo;
-	gLot.nCmCount[nNo] = gLot.nLotStatus[nNo] = gLot.nGoodCount[nNo] = gLot.nNgCount[nNo] = gMes.nLotStatus[nNo] = 0;
+	gLot.nCmCount[nNo] = gLot.nLotStatus[nNo] = gLot.nGoodCount[nNo] = gLot.nNgCount[nNo] = gMes.nLotStatus[nNo] = gLot.nUnitNgCount[nNo] = 0;
 	gLot.nUnlGdTrayCount[nNo] = gLot.nUnlNGTrayCount[nNo] = gLot.nOutTrayCnt[nNo][0] = gLot.nOutTrayCnt[nNo][1] = gLot.nSkipCount[nNo] = 0;
 	gLot.nErrorCount[nNo] = gLot.dwErrorTime[nNo] = gLot.dwStopTime[nNo] = 0;
 	gLot.sLotID[nNo] = gLot.sLLStartTime[nNo] = gLot.sLLEndTime[nNo] = "";

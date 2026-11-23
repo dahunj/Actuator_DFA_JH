@@ -75,7 +75,7 @@
 #endif
 
 //****************************************************************************
-#define AJIN_BOARD_USE
+//#define AJIN_BOARD_USE
 #define CARRIER_TYPE_MEM
 //****************************************************************************
 
@@ -287,6 +287,8 @@ typedef struct {
 	int		nOutTrayCnt[30][5];	//0:Good, 1:NG
 	int		nTrayPutCnt[30][5];	//0:Good, 1:NG, 2:Load
 	int		nGoodCount[30];
+
+	int		nUnitNgCount[30];
 	int		nNgCount[30];
 	int		nSkipCount[30];
 	int		nJudge_I[30][10][40][6];	//2:G, 3:NG,     5:BAR_NOREAD, 6:MES_NG, 7:FAI치수불량

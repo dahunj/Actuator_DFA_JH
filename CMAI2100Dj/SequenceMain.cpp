@@ -1791,11 +1791,27 @@ BOOL CSequenceMain::Get_TrayPosition(int nPNo, int nJobNo, int nPosX, int nPosY,
 int CSequenceMain::Check_NGExist(int nPNo, int &nJNo)
 {
 	nJNo = 0;
-	for(int i=0; i<8; i++) {
-		if (gData.InfoUnloadPick[nPNo-1][i] > 2) {
+	for(int i=0; i<8; i++) 
+	{
+		if (gData.InfoUnloadPick[nPNo-1][i] > 2 && (m_pEquipData->bUseNGSize || m_pEquipData->bUseNtoNG))
+		{
+			if(gData.InfoUnloadPick[nPNo-1][i] == 3 || gData.InfoUnloadPick[nPNo-1][i] == 4)
+			{
+				//pass
+				return 0;
+			}
+			else
+			{
+				nJNo = gData.InfoUnloadPick[nPNo-1][i];
+				return (i+1);
+			}
+		}
+		else if(gData.InfoUnloadPick[nPNo-1][i] > 2)
+		{
 			nJNo = gData.InfoUnloadPick[nPNo-1][i];
 			return (i+1);
 		}
+	
 	}
 	return 0;
 }

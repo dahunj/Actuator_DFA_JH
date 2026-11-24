@@ -478,10 +478,12 @@ void OCAPCosmetic::Set_AddMZData_Cosmetic(int nPortNo)
 		if (nJudge >= 0 && nJudge <= 10) nFinal[nJudge]++;
 		if ((nJudge == 3 || nJudge == 4) && gLot.nJudge_R[nNo][j][k] != 2) {
 			BOOL bMapped = FALSE;
-			for (int i=0; i<100; i++) {
+			for (int i=0; i<100; i++) 
+			{
 				if (gCap_Cosmetic.sCosmeticCode_Cosmetic[i].IsEmpty()) continue;
 				BOOL bError = FALSE;
-				for (int v=1; v<=5; v++) {
+				for (int v=1; v<=5; v++) 
+				{
 					if (gLot.nJudge_I[nNo][j][k][v] < 3 || gLot.nJudge_I[nNo][j][k][v] > 6) continue;
 					if (OCAP_MatchCode_Cosmetic(gLot.sNGCode_I[nNo][j][k][v], i, bError)) bMapped = TRUE;
 					if (j == 0) for (int c=0; c<20; c++)

@@ -225,10 +225,13 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 
 	DX_DATA_13 *pDX13 = g_objAJinAXL.Get_pDX13();
-	if (pDX13->iStartSw && !m_rdoWorkStart.GetCheck()) {
+	if (pDX13->iStartSw && !m_rdoWorkStart.GetCheck()) 
+	{
 		g_objLogFile.Save_HandlerLog("[Work Mode] START S/W push");
 		m_rdoWorkStart.SetCheck(TRUE);
-	} else if (pDX13->iStopSw && !m_rdoWorkStop.GetCheck()) {
+	}
+	else if (pDX13->iStopSw && !m_rdoWorkStop.GetCheck()) 
+	{
 		g_objLogFile.Save_HandlerLog("[Work Mode] STOP S/W push");
 		m_rdoWorkStop.SetCheck(TRUE);
 		pMainDlg->Set_MainState(STATE_READY);
@@ -243,7 +246,8 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		m_rdoWorkStart.EnableWindow(FALSE);
 	}
-	else{
+	else
+	{
 		m_rdoWorkStart.EnableWindow(TRUE);
 	}
 
@@ -257,51 +261,49 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 
 	Display_Status();
 
-	if (m_rdoWorkStart.GetCheck()) {
+	if (m_rdoWorkStart.GetCheck()) 
+	{
 		if (!m_bAutoRunning) {		// First AutoRun
 			if (!Work_Start()) { SetTimer(0, 100, NULL); m_rdoWorkStop.SetCheck(TRUE); return; }
 
 			if (g_objSequenceInit.Get_InitComplete()) 
 			{
-				//Down Report Show 				
-				int nTerm = (int)(GetTickCount() - gDown.dwDownStartTick);
-				if (nTerm > pEquipData->nDownActionTime * 1000 && !g_dlgDownReport.IsWindowVisible() 
-					&& gDown.bDownHappen && !gDown.bDownClear)
+				if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
 				{
-					if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
-					{
-						
-						g_dlgDownReport.m_bStart = TRUE;					
-						gDown.dwDownStartTick = GetTickCount();
-
-						CTime CurTime = CTime::GetCurrentTime(); 
-						CurTime -= pEquipData->nNoWorkTime;
-						g_dlgDownReport.m_dwStartTime = GetTickCount();
-						g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
-
-						CString strLog;
-						strLog.Format("Down Report 시작\t%s", g_dlgDownReport.m_strStartTime);
-						g_objLogFile.Save_HandlerLog(strLog);
-
-						g_dlgDownReport.ShowWindow(TRUE);
-					}					
-				}
-				else if(gDown.bDownHappen)  // 시간이 지나지 않아도 Report 는 할수 있게 해달라는 요청 
-				{
-					if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
+					//Down Report Show 				
+					int nTerm = (int)(GetTickCount() - gDown.dwDownStartTick);
+					if (nTerm > pEquipData->nDownActionTime * 1000 && !g_dlgDownReport.IsWindowVisible() 
+						&& gDown.bDownHappen && !gDown.bDownClear)
 					{						
-						CTime CurTime = CTime::GetCurrentTime();                     
-						gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
-						g_objMesAgent.Set_DownActionReport("", "", gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+							g_dlgDownReport.m_bStart = TRUE;					
+							gDown.dwDownStartTick = GetTickCount();
+
+							CTime CurTime = CTime::GetCurrentTime(); 
+							CurTime -= pEquipData->nNoWorkTime;
+							g_dlgDownReport.m_dwStartTime = GetTickCount();
+							g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+
+							CString strLog;
+							strLog.Format("Down Report 시작\t%s", g_dlgDownReport.m_strStartTime);
+							g_objLogFile.Save_HandlerLog(strLog);
+
+							g_dlgDownReport.ShowWindow(TRUE);
+
+							while(!gDown.bDownClear)// down report block 
+							{
+								g_objCommon.DoEvents();
+							} 									
+					}
+					else if(gDown.bDownHappen)  // 시간이 지나지 않아도 Report 는 할수 있게 해달라는 요청 
+					{
+						if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
+						{						
+							CTime CurTime = CTime::GetCurrentTime();                     
+							gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+							g_objMesAgent.Set_DownActionReport("", "", gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+						}					
 					}					
-				}		
-
-				while(!gDown.bDownClear)// down report block 
-				{
-					g_objCommon.DoEvents();
-				} 
-
-
+				}	
 				m_bAutoRunning = TRUE;
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
 				pMainDlg->Enable_ModeButton(FALSE);
@@ -561,7 +563,7 @@ void CWorkDlg::OnBnClickedRdoSlectNo(UINT nID)
 }
 
 void CWorkDlg::OnBnClickedRdoWorkStart()
-{
+{	
 	g_objLogFile.Save_HandlerLog("[Work Mode] START button push");
 }
 
@@ -1069,7 +1071,7 @@ BOOL CWorkDlg::LotID_Check()
 			sLog.Format("[Work Mode] LotID_Delete] (%d-%s)", i+1, gLot.sLotID[i]);
 			g_objLogFile.Save_HandlerLog(sLog);
 
-			gLot.nUnitNgCount[i] = 0;
+			
 			gLot.nCmCount[i] = gLot.nGoodCount[i] = gLot.nNgCount[i] = gLot.nLotStatus[i] = gLot.nSkipCount[i] = 0;
 			gLot.sLotID[i] = "";
 		}
@@ -1774,8 +1776,7 @@ LRESULT CWorkDlg::OnJobComplete(WPARAM wParam, LPARAM lParam)
 
 	for (int i=0; i<28; i++) {
 		m_stcLotsIdS[i].SetWindowText("");
-		m_stcCmsCountS[i].SetWindowText("");
-		gLot.nUnitNgCount[i] = 0;
+		m_stcCmsCountS[i].SetWindowText("");		
 		gLot.nCmCount[i] = gLot.nGoodCount[i] = gLot.nNgCount[i] = gLot.nLotStatus[i] = gLot.nSkipCount[i] = 0;
 	}
 	g_objSequenceMain.Beep_Post(1000);

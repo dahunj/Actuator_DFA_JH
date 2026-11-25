@@ -8,6 +8,7 @@
 //#include "WorkDlg.h"
 //#include "OperatorDlg.h"
 #include "MesAgent.h"
+#include "EnumData.h"
 
 #define	MES_AGENT_IP	"127.0.0.1"
 #define MES_AGENT_PORT	10000		// MesAgent Handler Port
@@ -585,7 +586,9 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 	sToTray = sCarID;
 	int nSpecialNG = gLot.nSpecialNG[nPortNo-1][nTrayNo-1][nCmNo-1];
 
-	if (nType == 1) {
+	//In Case of NG Picker  
+	if (nType == 1)
+	{
 //		if (nNGType == 4) strResult = "MOK";	//Repair=Marginal
 //		else			  strResult = "NG";
 //		strResult = "MOK";	//All Marginal Set
@@ -616,25 +619,28 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 		if (gData.bJahwa) m_nPorketNo--;
 		else			  m_nPorketNo++;
 	} 
-	else 
+	else // case Good 
 	{
 		strResult = "OK";
-		strNgCode = "00";
-
-		
+		strNgCode = gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCmNo-1][eVision::Final];
+				
 		if(nRosInfo == 2)
 		{
 			strRosResult = "OK";
+			strNgCode = "00";
 		}
 		else if(nRosInfo == 3 || nRosInfo == 4)
 		{
-			strRosResult = "NG";
+			strRosResult = "NG";					
+		}
+		else if(strNgCode !="")
+		{
+			strRosResult = "NG";		
 		}
 		else
 		{
 			strRosResult = "Empty";
 		}
-
 		strSend.Format("CM,END,%s,%s,%s,%s,%s,%s,%d,%s,%d,%s", sLotID, strCmId, strResult, strNgCode, sFmMZ, sFmTray, nCmNo, sToTray, nOut, strRosResult);
 	}
 	g_objLogFile.Save_TestLog(strSend);

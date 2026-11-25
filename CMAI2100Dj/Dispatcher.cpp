@@ -40,7 +40,10 @@ END_MESSAGE_MAP()
 
 BOOL CDispatcher::Initialize()
 {
-	BOOL bOpenRecv = m_UdpRecv.Open_Socket(UDP_DISPATCHER_LPORT, this);
+	BOOL bOpenRecv = FALSE;
+
+	bOpenRecv = m_UdpRecv.Open_Socket(UDP_DISPATCHER_LPORT, this);
+
 	BOOL bOpenSend = m_UdpSend.Open_Socket(this);
 	if (!bOpenRecv || !bOpenSend) return FALSE;
 
@@ -446,7 +449,14 @@ void CDispatcher::Send_Command(CString sIp, CString sSend)
 	memcpy(chSend, (LPSTR)(LPCSTR)strSendSocket, nLength);
 
 	g_csDispatcher.Lock();		// Critical Section
+
+#ifndef AJIN_BOARD_USE
+	m_UdpSend.Write_Socket(sIp, 8021, (BYTE*)chSend, nLength);
+#else
 	m_UdpSend.Write_Socket(sIp, UDP_DISPATCHER_HPORT, (BYTE*)chSend, nLength);
+#endif
+
+	
 	g_csDispatcher.Unlock();	// Critical Section
 }
 

@@ -225,8 +225,10 @@ private:
 	BOOL Check_ROSDone(int nPNo, int nPortNo, int nTrayNo);
 	BOOL Check_JudgeDone(int nPNo, int nPortNo, int nTrayNo);
 	BOOL Check_ShipAlign(int &nJobNo);
+	
 	int  Check_NGExist(int nPNo, int &nJNo);
 	int  Check_GoodExist(int nPNo, int &nPosX, int &nPosY);
+
 	BOOL Select_NGTrayPoketNo(int nType, int &nPosX, int &nPosY);
 	BOOL Select_GoodTrayPoketNo(int nPNo, int nTNo, int &nPosX, int &nPosY);
 	BOOL Check_NGTrayFull();

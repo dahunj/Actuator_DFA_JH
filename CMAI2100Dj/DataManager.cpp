@@ -775,7 +775,13 @@ BOOL CDataManager::Read_RosData()
 	CIniFileCS INI(gsCurrentDir + "\\System\\RosData.ini");
 	if (!INI.Check_File()) { AfxMessageBox("RosData.ini File Not Found!!!"); return FALSE; }
 
+
+#ifndef AJIN_BOARD_USE
+	m_RosData.sHandlerIp = "127.0.0.1";
+#else
 	m_RosData.sHandlerIp = INI.Get_String("DISPATCHER", "HANDLER_IP", "0.0.0.0");
+#endif
+	
 	m_RosData.nJudgeTimeOver = INI.Get_Integer("DISPATCHER", "TIME_OVER", 10000);
 
 	CString strKey, strIp;

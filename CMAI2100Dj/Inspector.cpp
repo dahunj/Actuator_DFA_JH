@@ -373,44 +373,8 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 		g_objLogFile.Save_HandlerLog(strLog);
 		return;
 	}
+	
 
-
-	if (sJudge == "G") gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = "";
-	else			   gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = sNGCode;
-
-	if (pEquipData->bUseNGSize && pEquipData->bUseNtoNG) 
-	{		
-		if (sJudge == "M" || sJudge == "X" || sJudge == "R") 
-		{	
-			m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
-			StartLoggingThread(m_sLog);
-			sJudge = "G";
-		}
-	}
-	else if(pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)
-	{
-		
-		if (   sJudge == "M" || sJudge == "X" || sJudge == "R"
-			|| sJudge == "S" || sJudge == "T" || sJudge == "W") 
-		{
-			m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
-			StartLoggingThread(m_sLog);
-			sJudge = "G"; 		
-		}			
-	}
-	else if(!pEquipData->bUseNtoNG && pEquipData->bUseNGSize)
-	{
-		if (sJudge == "M" || sJudge == "X" || sJudge == "R" || sJudge == "N") 
-		{
-			m_sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
-			StartLoggingThread(m_sLog);
-			sJudge = "G"; 		
-		}			
-	}
-	else if(!pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)
-	{
-		//PASS
-	}
 	if ((sType == "B1" || sType == "AG") && sNGCode == "MC") sNGCode = "MCBTM";
 	if (sNGCode.Left(5) == "FDFAI") 
 	{ 
@@ -427,6 +391,9 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	else if (sJudge == "M") gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 6;	//외관불량(Ros 판정)
 	else					gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 3;	//외관불량(ROS x)
 		
+	if (sJudge == "G") gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = "";
+	else			   gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = sNGCode;
+
 	if (sJudge != "G" && sNGCode.GetLength() > 0) gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] = sNGCode;
 	gLot.nImageCnt[nPortNo-1][nTrayNo-1][nCMNo-1][0] = gLot.nImageCnt[nPortNo-1][nTrayNo-1][nCMNo-1][0] + nImage;
 	if (nVNo >=1 && nVNo <=5) {
@@ -446,9 +413,18 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 		if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == 7) nNGSize1++;
 		if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == 8) nNGSize2++;
 		if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == 9) nNGSize3++;
-		if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == 4) nRosCnt++;
-		if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == 5) nRosCnt++;
-		if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == 6) nRosCnt++;
+		if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == 4) 
+		{
+			nRosCnt++;
+		}
+		if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == 5) 
+		{
+			nRosCnt++;
+		}
+		if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == 6) 
+		{
+			nRosCnt++;
+		}
 		if (gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == "MC") nNGMC++;
 		if (gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == "MCBTM") nMCBTM++;
 		if (gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][i] == "GF") { nNGGF++;

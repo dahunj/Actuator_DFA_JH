@@ -18,6 +18,7 @@
 #include "OCAPFAI.h"
 #include "OCAPCosmetic.h"
 #include <math.h>
+#include "EnumData.h"
 
 CSequenceMain g_objSequenceMain;
 
@@ -640,8 +641,7 @@ void CSequenceMain::Set_ClearRunData(int nType)
 
 	gLot.nJobCycle = gLot.nJobStatus = gLot.nUnLastPortID = gData.nCVJobSeq[0] = gData.nCVJobSeq[1] = 0;
 	for(int i=0; i<30; i++) 
-	{
-		gLot.nUnitNgCount[i] = 0;
+	{		
 		gLot.nCmCount[i] = gLot.nLotStatus[i] = gLot.nGoodCount[i] = gLot.nNgCount[i] = gMes.nLotStatus[i] = 0;
 		gLot.nUnlGdTrayCount[i] = gLot.nUnlNGTrayCount[i] = gLot.nOutTrayCnt[i][0] = gLot.nOutTrayCnt[i][1] = gLot.nSkipCount[i] = 0;
 		gLot.nErrorCount[i] = gLot.dwErrorTime[i] = gLot.dwStopTime[i] = 0;
@@ -1442,14 +1442,17 @@ BOOL CSequenceMain::Check_InspectDone(int nPNo, int nPortNo, int nTrayNo)
 	}
 
 	if (!m_pEquipData->bUseBottom && !m_pEquipData->bUseTop1 && !m_pEquipData->bUseTop2 && !m_pEquipData->bUseBotAng && !m_pEquipData->bUseTopAng) bUseVision = FALSE;
-	if (bUseVision) {
+	if (bUseVision)
+	{
 		Set_InspectDone(nPNo, nPortNo, nTrayNo);
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < 8; i++)
+		{
 			if (gData.InfoUnloadPick[nPNo-1][i] == 1) return FALSE;
 		}
 	}
 
-	if (gData.bUseDryRun ||  gData.bCycleStop || gData.bResultTest || bUseVision == FALSE) {
+	if (gData.bUseDryRun ||  gData.bCycleStop || gData.bResultTest || bUseVision == FALSE) 
+	{
 		int nCno = gData.InfoUnloadPick[nPNo-1][9] - 1;
 		for(int i=0; i<8; i++) {
 			if (gData.InfoUnloadPick[nPNo-1][i] > 0) {
@@ -1490,12 +1493,48 @@ void CSequenceMain::Set_InspectDone(int nPNo, int nPortNo, int nTrayNo)
 	if (nPNo < 1 || nPNo > 2 || nPortNo < 1 || nPortNo > 30 || nTrayNo < 1 || nTrayNo > 10 ) return;
 
 	int nCno = gData.InfoUnloadPick[nPNo-1][9] - 1;
-	for(int i=0; i<8; i++) {
+	for(int i=0; i<8; i++) 
+	{
 		if ((i+nCno) >= 40) break;
 
-		if (gData.InfoUnloadPick[nPNo-1][i] > 0) {
-			if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][i+nCno][0] > 0) {
+		if (gData.InfoUnloadPick[nPNo-1][i] > 0) 
+		{
+			if (gLot.nJudge_I[nPortNo-1][nTrayNo-1][i+nCno][0] > 0)
+			{
+				//pre input 
 				gData.InfoUnloadPick[nPNo-1][i] = gLot.nJudge_I[nPortNo-1][nTrayNo-1][i+nCno][0];
+
+				if (m_pEquipData->bUseNGSize && m_pEquipData->bUseNtoNG) 
+				{
+					if(gData.InfoUnloadPick[nPNo-1][i] == 3 || gData.InfoUnloadPick[nPNo-1][i] == 4
+						|| (gData.InfoUnloadPick[nPNo-1][i] == 5 && gLot.nSpecialNG[nPortNo-1][nTrayNo-1][i+nCno] != 1) || gData.InfoUnloadPick[nPNo-1][i] == 6)
+					{
+						if(!m_pEquipData->bUseROS)
+						{
+							gData.InfoUnloadPick[nPNo-1][i] = 2;	
+						}
+						else
+						{
+							//pass to ROS, See Set_ROSDone	
+						}										
+					}					
+				}
+				else if(m_pEquipData->bUseNtoNG && !m_pEquipData->bUseNGSize)
+				{
+					if(gData.InfoUnloadPick[nPNo-1][i] == 7 || gData.InfoUnloadPick[nPNo-1][i] == 8 || gData.InfoUnloadPick[nPNo-1][i] == 9 )
+					{
+						//Overwrite "Good" over "Size-NG"
+						gData.InfoUnloadPick[nPNo-1][i] = 2;											
+					}					
+				}
+				else if(!m_pEquipData->bUseNtoNG && m_pEquipData->bUseNGSize)
+				{
+					if(gData.InfoUnloadPick[nPNo-1][i] == 5 && gLot.nSpecialNG[nPortNo-1][nTrayNo-1][i+nCno] == 1 )
+					{
+						//Overwrite "Good" over "Special-NG"
+						gData.InfoUnloadPick[nPNo-1][i] = 2;					
+					}					
+				}				
 			}
 		}
 	}
@@ -1547,7 +1586,8 @@ BOOL CSequenceMain::Check_ROSDone(int nPNo, int nPortNo, int nTrayNo)
 
 	int nCNo = gData.InfoUnloadPick[nPNo-1][9];
 	for(int i = 0; i < 8; i++) {
-		if (gData.InfoUnloadPick[nPNo-1][i] > 0) {
+		if (gData.InfoUnloadPick[nPNo-1][i] > 0) 
+		{
 			if (!g_objDispatcher.Is_JudgeDone(nPortNo, nTrayNo, i + nCNo)) return FALSE;
 		}
 	}
@@ -1564,10 +1604,22 @@ void CSequenceMain::Set_ROSDone(int nPNo, int nPortNo, int nTrayNo)
 	for(int i=0; i<8; i++) {
 		if ((i+nCno) >= 40) break;
 
-		if (gData.InfoUnloadPick[nPNo-1][i] > 0) {
-			if (gLot.nJudge_R[nPortNo-1][nTrayNo-1][i+nCno] > 0) {
-				if (gLot.nJudge_R[nPortNo-1][nTrayNo-1][i+nCno] == 2) gData.InfoUnloadPick[nPNo-1][i] = 2;	//ROS_OK
-				else												  gData.InfoUnloadPick[nPNo-1][i] = 4;	//ROS_Marginal
+		if (gData.InfoUnloadPick[nPNo-1][i] > 0) 
+		{
+			if (gLot.nJudge_R[nPortNo-1][nTrayNo-1][i+nCno] > 0) 
+			{
+				if (gLot.nJudge_R[nPortNo-1][nTrayNo-1][i+nCno] == 2) 
+				{
+					gData.InfoUnloadPick[nPNo-1][i] = 2;	//ROS_OK
+				}
+				else if(m_pEquipData->bUseNGSize || m_pEquipData->bUseNtoNG)
+				{
+					gData.InfoUnloadPick[nPNo-1][i] = 2;	//ROS_OK
+				}
+				else
+				{
+					gData.InfoUnloadPick[nPNo-1][i] = 4;	//ROS_Marginal
+				}					
 			}
 		}
 	}
@@ -1793,25 +1845,11 @@ int CSequenceMain::Check_NGExist(int nPNo, int &nJNo)
 	nJNo = 0;
 	for(int i=0; i<8; i++) 
 	{
-		if (gData.InfoUnloadPick[nPNo-1][i] > 2 && (m_pEquipData->bUseNGSize || m_pEquipData->bUseNtoNG))
-		{
-			if(gData.InfoUnloadPick[nPNo-1][i] == 3 || gData.InfoUnloadPick[nPNo-1][i] == 4)
-			{
-				//pass
-				return 0;
-			}
-			else
-			{
-				nJNo = gData.InfoUnloadPick[nPNo-1][i];
-				return (i+1);
-			}
-		}
-		else if(gData.InfoUnloadPick[nPNo-1][i] > 2)
+		if (gData.InfoUnloadPick[nPNo-1][i] > 2 )
 		{
 			nJNo = gData.InfoUnloadPick[nPNo-1][i];
-			return (i+1);
-		}
-	
+			return (i+1);			
+		}		
 	}
 	return 0;
 }
@@ -2012,6 +2050,8 @@ BOOL CSequenceMain::Set_LotStart(CString sLotID, int nPortNo)
 	gData.sLotID_Start = gLot.sLotID[nNo];
 
 	g_dlgWork.Set_EnableSlot(nPortNo, FALSE);
+
+	gLot.nUnitNgCount[nNo] = 0;
 
 	return TRUE;
 }
@@ -9028,15 +9068,20 @@ BOOL CSequenceMain::Run_UnloadPicker1()
 		int nType;
 		n1ModuleNo = Check_NGExist(n1No, nType);
 		nJudgeNo1 = nType;
-		if (n1ModuleNo > 0) {
+		if (n1ModuleNo > 0) 
+		{
 			m_nUnloadPicker1Case = 21; m_tUnloadPicker1Loop.Set_LoopTime(30000);
-		} else {
+		} 
+		else
+		{
 			m_nUnloadPicker1Case++; m_tUnloadPicker1Loop.Set_LoopTime(30000);
 		}
 		break;
 	case 20:
-		if (m_nUnloadPicker2Case < 20 || (m_nUnloadPicker2Case > 42 && m_nUnloadPicker2Case < 70)) {
-			if (Check_MZEndUnload(gData.sLotID_UnloadPicker[n1No-1], gData.nPortNo_UnloadPicker[n1No-1], n1No)) {
+		if (m_nUnloadPicker2Case < 20 || (m_nUnloadPicker2Case > 42 && m_nUnloadPicker2Case < 70)) 
+		{
+			if (Check_MZEndUnload(gData.sLotID_UnloadPicker[n1No-1], gData.nPortNo_UnloadPicker[n1No-1], n1No)) 
+			{
 				if (m_nNGStage1Case == 30) m_nNGStage1Case = 31;
 				if (m_nNGStage2Case == 30) m_nNGStage2Case = 31;
 				m_sLog.Format("Unload Picker:%d MZ-End Pno[%d] LotID[%s] Seq[%d-%d]", n1No, gData.nPortNo_UnloadPicker[n1No-1], gData.sLotID_UnloadPicker[n1No-1], m_nNGStage1Case, m_nNGStage2Case);
@@ -9132,10 +9177,10 @@ BOOL CSequenceMain::Run_UnloadPicker1()
 			m_tUnloadPicker1Loop.Takt_Save(18, 13); m_tUnloadPicker1Loop.Takt_Start(); 
 
 			//FAI or Special NG 
-			if(gData.InfoNgTray[n1PosY-1][n1PosX-1] == 7 
-				|| gData.InfoNgTray[n1PosY-1][n1PosX-1] == 8 
-				|| gData.InfoNgTray[n1PosY-1][n1PosX-1] == 9 
-				|| (gData.InfoNgTray[n1PosY-1][n1PosX-1] == 5 && gLot.nSpecialNG[n1UP][n1UT][n1UM+n1ModuleNo-1] == 1))
+			if(gData.InfoUnloadPick[n1No-1][n1ModuleNo-1] == 7 
+				|| gData.InfoUnloadPick[n1No-1][n1ModuleNo-1] == 8 
+				|| gData.InfoUnloadPick[n1No-1][n1ModuleNo-1] == 9 
+				|| (gData.InfoUnloadPick[n1No-1][n1ModuleNo-1] == 5 && gLot.nSpecialNG[n1UP][n1UT][n1UM+n1ModuleNo-1] == 1))
 			{
 				gLot.nUnitNgCount[n1UP]++;
 			}			
@@ -9182,7 +9227,8 @@ BOOL CSequenceMain::Run_UnloadPicker1()
 		break;
 	case 30:
 		n1ModuleNo = Check_GoodExist(n1No, n1PosX, n1PosY);	//Unload Pikcer에 작업 Module이 있는지 Check
-		if (n1ModuleNo > 0) {
+		if (n1ModuleNo > 0) 
+		{
 			m_nUnloadPicker1Case++; m_tUnloadPicker1Loop.Set_LoopTime(30000);
 		} else {
 			if (Check_LotEndUnloadNG(gData.sLotID_UnloadPicker[n1No-1], gData.nPortNo_UnloadPicker[n1No-1], n1No)) {
@@ -9665,10 +9711,10 @@ BOOL CSequenceMain::Run_UnloadPicker2()
 		if (g_objCommon.Get_UnloadPickerUp(n2No)) {
 			m_tUnloadPicker2Loop.Takt_Save(19, 13); m_tUnloadPicker2Loop.Takt_Start(); 
 			//FAI or Special NG 
-			if(gData.InfoNgTray[n2PosY-1][n2PosX-1] == 7 
-				|| gData.InfoNgTray[n2PosY-1][n2PosX-1] == 8 
-				|| gData.InfoNgTray[n2PosY-1][n2PosX-1] == 9 
-				|| (gData.InfoNgTray[n2PosY-1][n2PosX-1] == 5 && gLot.nSpecialNG[n2UP][n2UT][n2UM+n2ModuleNo-1] == 1))
+			if(gData.InfoUnloadPick[n2No-1][n2ModuleNo-1] == 7 
+				|| gData.InfoUnloadPick[n2No-1][n2ModuleNo-1] == 8 
+				|| gData.InfoUnloadPick[n2No-1][n2ModuleNo-1] == 9 
+				|| (gData.InfoUnloadPick[n2No-1][n2ModuleNo-1] == 5 && gLot.nSpecialNG[n2UP][n2UT][n2UM+n2ModuleNo-1] == 1))
 			{
 				gLot.nUnitNgCount[n2UP]++;
 			}			

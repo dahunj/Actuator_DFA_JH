@@ -631,10 +631,12 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 		}
 		else if(nRosInfo == 3 || nRosInfo == 4)
 		{
+			strResult = "MOK";
 			strRosResult = "NG";					
 		}
-		else if(strNgCode !="")
+		else if(strNgCode !="") // No Use ROS Case 
 		{
+			strResult = "MOK";
 			strRosResult = "NG";		
 		}
 		else

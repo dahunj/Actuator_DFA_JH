@@ -51,3 +51,5 @@ _ReSharper*/
 
 #NuGet
 packages/
+
+.vs/

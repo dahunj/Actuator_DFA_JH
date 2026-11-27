@@ -275,6 +275,9 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		}
 		else
 		{			
+			g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
+			g_objMesAgent.Set_UnitState(eEquipState::DOWN);	
+
 			gDown.strErrMsg = m_strErrMsg;
 
 			strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");

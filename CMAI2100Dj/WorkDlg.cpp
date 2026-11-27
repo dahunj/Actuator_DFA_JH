@@ -296,12 +296,12 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 					}
 					else if(gDown.bDownHappen)  // 시간이 지나지 않아도 Report 는 할수 있게 해달라는 요청 
 					{
-						if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
-						{						
-							CTime CurTime = CTime::GetCurrentTime();                     
-							gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
-							g_objMesAgent.Set_DownActionReport("", "", gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
-						}					
+						CTime CurTime = CTime::GetCurrentTime();                     
+						gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+						g_objMesAgent.Set_DownActionReport("", "", gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+						g_objMesAgent.Set_ErrorUpdate(0, gDown.strErrNo, gAlm.sAlmCatMajor);
+						gDown.bDownHappen = FALSE;
+						gDown.bDownClear = TRUE;										
 					}					
 				}	
 				m_bAutoRunning = TRUE;

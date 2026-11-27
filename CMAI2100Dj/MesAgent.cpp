@@ -776,13 +776,16 @@ void CMesAgent::Send_Command(CString sSend)
 	CString strSendSocket, strLog;
 
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
-	if (!pEquipData->bUseMES) return;	
 
-	if (!m_bConnected) return;
-	if (sSend.Left(11) != "OPER,UPDATE" && sSend.Left(7) != "CONTROL" && sSend.Left(9) != "LOT,ABORT") {
-		if (!m_bHostOnline) return;
-	}	
 
+#ifdef AJIN_BOARD_USE
+		if (!pEquipData->bUseMES) return;
+		if (!m_bConnected) return;
+
+		if (sSend.Left(11) != "OPER,UPDATE" && sSend.Left(7) != "CONTROL" && sSend.Left(9) != "LOT,ABORT") {
+			if (!m_bHostOnline) return;
+		}	
+#endif
 	strSendSocket.Format("@%s\n", sSend);
 
 	char chSend[6000] = { 0 };	// Buffer 1000, Last 0x00
